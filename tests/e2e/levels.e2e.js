@@ -14,45 +14,52 @@ const ROOT = path.join(__dirname, '..', '..');
 const tap = h => ['tap', h], btn = b => ['btn', b], wait = ms => ['wait', ms], stage = n => ['stage', n];
 const SCRIPTS = {
   '1-1': {
-    win: [tap('pin'), wait(1000), btn('go')],
-    fails: [[btn('go')]],
+    win: [tap('boulder'), wait(1500), tap('bridge'), wait(800), tap('route:bridge'), btn('go')],
+    fails: [[tap('route:stairs'), btn('go')], [tap('route:ladder'), btn('go')], [tap('bridge'), wait(800), tap('boulder')]],
   },
   '1-2': {
-    win: [tap('pin'), wait(1500), btn('go'), stage(1), wait(600), tap('plate')], stars: 3,
-    alt: [btn('go'), stage(1), wait(600), tap('plate'), wait(300), tap('pin'), wait(4500), ['drag', 'dial', [450, 850]], wait(300), tap('plate')],
+    win: [tap('door'), wait(600), tap('route:bridge'), btn('go'), stage(1), wait(600), tap('plate')], stars: 3,
+    alt: [tap('stick'), wait(1500), tap('route:beam'), btn('go'), stage(1), wait(600), tap('plate')],
+    alt2: [tap('route:beam'), btn('go'), stage(1), wait(600), tap('bucket'), wait(3500), tap('rain'), wait(3500), ['drag', 'dial', [450, 862]], wait(300), tap('plate')],
+    mistakes: [[tap('route:beam'), btn('go'), stage(1), wait(600), tap('plate')]],
   },
-  '1-3': { win: [tap('pin'), wait(1100), btn('go')], fails: [[btn('go')]] },
+  '1-3': {
+    win: [tap('stop'), wait(600), tap('rope'), wait(1200), tap('route:log'), btn('go')],
+    fails: [[tap('route:seesaw'), btn('go')], [tap('route:rope'), btn('go')], [tap('rope')]],
+  },
   '1-4': {
-    win: [tap('barrel'), wait(1600), tap('door'), stage(1), wait(600), tap('road'), wait(1200), btn('go')],
-    fails: [[tap('door')], [tap('barrel'), wait(1600), tap('door'), stage(1), wait(600), btn('go')]],
-    alt: [tap('barrel'), wait(1600), tap('door'), stage(1), wait(600), tap('grave'), wait(1200), btn('go')],
+    win: [tap('board'), wait(700), tap('barrel'), wait(1600), tap('door'), stage(1), wait(600), tap('grave'), wait(1100), btn('go')], stars: 3,
+    alt: [tap('board'), wait(700), tap('barrel'), wait(1600), tap('door'), stage(1), wait(600), tap('road'), wait(1100), tap('twigs'), wait(1100), btn('go')],
+    fails: [[tap('door')], [tap('barrel')], [tap('board'), wait(700), tap('barrel'), wait(1600), tap('door'), stage(1), wait(600), tap('road'), wait(1100), btn('go')],
+      [tap('board'), wait(700), tap('barrel'), wait(1600), tap('door'), stage(1), wait(600), btn('board')]],
   },
   '1-5': {
-    win: [tap('s0'), tap('s4'), tap('s6'), tap('s10'), tap('s13'), btn('go')],
-    fails: [[tap('s0'), tap('s4'), tap('s7'), tap('s11'), tap('s13'), btn('go')], [tap('donkeyWeak')]],
-    alt: [tap('donkeyStrong')],
+    win: [tap('s1'), tap('s6'), tap('s9'), tap('s14'), tap('s17'), btn('go')],
+    alt: [tap('animal:small'), btn('ride')],
+    fails: [[tap('s1'), tap('s5'), tap('s9'), tap('s14'), tap('s17'), btn('go')], [tap('animal:big'), btn('ride')], [tap('animal:mule'), btn('ride')], [btn('blow')]],
   },
   '1-6': {
-    win: [tap('hay'), wait(1000), tap('cart'), stage(1), wait(600),
-      tap('t7_3'), tap('t6_3'), tap('t5_3'), tap('t4_3'), tap('t3_2'), tap('t2_2'), tap('t1_1'), tap('t0_1'),
-      btn('path'), tap('t7_3'), tap('t6_3'), tap('t5_3'), tap('t4_3'), tap('t3_3'), tap('t3_2'), tap('t2_2'), tap('t1_2'), tap('t1_1'), tap('t0_1'), btn('go')],
-    fails: [[tap('cart')], [tap('hay'), wait(1000), tap('cart'), stage(1), wait(600), btn('path'),
-      tap('t7_3'), tap('t6_3'), tap('t5_3'), tap('t4_3'), tap('t3_3'), tap('t2_3'), tap('t1_3'), tap('t0_3'), btn('go')]],
+    win: [tap('crate'), wait(900), tap('hay'), wait(1000), tap('cart'), stage(1), wait(600),
+      tap('t8_3'), tap('t7_3'), tap('t6_3'), tap('t5_3'), tap('t4_3'), tap('t3_2'), tap('t2_3'), tap('t1_3'), tap('t0_3'),
+      btn('path'), ...['8_3', '7_3', '6_3', '5_3', '4_3', '4_2', '3_2', '2_2', '2_3', '1_3', '0_3'].map(k => tap('t' + k)), btn('go')],
+    fails: [[tap('cart')], [tap('hay'), wait(1500), tap('cart')],
+      [tap('crate'), wait(900), tap('hay'), wait(1000), tap('cart'), stage(1), wait(600), btn('path'), ...['8_3', '7_3', '6_3', '5_3', '4_3', '3_3', '2_3', '1_3', '0_3'].map(k => tap('t' + k)), btn('go')]],
   },
   '1-7': {
-    win: [['scale', 'field', 1.2], ['scale', 'branch', 1.2], ['scale', 'stone', 1.2], btn('check')],
-    mistakes: [[btn('check')], [['scale', 'field', 2.0], ['scale', 'branch', 1.2], ['scale', 'stone', 1.2], btn('check')]],
+    win: [tap('field:c'), ['scale', 'field', 1.2], tap('branch:c'), ['scale', 'branch', 1.2], tap('stone:c'), ['scale', 'stone', 1.2], btn('check')],
+    mistakes: [[btn('check')], [tap('field:c'), ['scale', 'field', 1.2], tap('branch:c'), ['scale', 'branch', 1.2], tap('stone:c'), ['scale', 'stone', 1.2], tap('cemetery:c'), ['scale', 'cemetery', 1.2], btn('check')],
+      [tap('field:c'), ['scale', 'field', 2.0], tap('branch:c'), ['scale', 'branch', 1.2], tap('stone:c'), ['scale', 'stone', 1.2], btn('check')]],
   },
   '1-8': {
-    win: [tap('A4'), tap('B3'), tap('B4'), tap('B5'), ...[0, 1, 2, 3, 4, 5, 6, 7, 8].map(i => tap('D' + i)), btn('check')],
-    mistakes: [[tap('A4'), btn('check')]],
+    win: [tap('A4'), tap('B3'), tap('B4'), tap('B5'), ...[0, 1, 2, 3, 4, 5, 6, 7, 8].map(i => tap('D' + i)), tap('Ee3'), tap('F3'), tap('F4'), tap('F5'), btn('check')],
+    mistakes: [[tap('A4'), tap('B3'), tap('B4'), tap('B5'), tap('C3'), tap('C4'), tap('C5'), btn('check')]],
   },
   '1-9': {
     win: [tap('L'), btn('blow')],
-    fails: [[tap('R'), btn('blow')], [tap('R'), btn('ride')], [tap('L'), btn('walk')]],
-    alt: [tap('L'), btn('ride')],
+    alt: [tap('R'), btn('walk')],
+    fails: [[tap('M'), btn('blow')], [tap('M'), btn('ride')], [tap('L'), btn('walk')]],
   },
-  '1-10': { win: [tap('trodden')], fails: [[tap('furrow')], [tap('goat')]] },
+  '1-10': { win: [tap('trodden')], fails: [[tap('busy')], [tap('light')], [tap('furrow')]] },
   'C-1': {
     win: [tap('door'), wait(700), tap('flap'), wait(700), tap('shelf')],
     fails: [[tap('shelf')], [tap('flap'), wait(700), tap('shelf')]],
@@ -92,6 +99,7 @@ async function run() {
     if (only && only !== id) continue;
     const cases = [['win', sc.win, 'win']];
     if (sc.alt) cases.push(['alt', sc.alt, 'win']);
+    if (sc.alt2) cases.push(['alt2', sc.alt2, 'win']);
     (sc.fails || []).forEach((f, i) => cases.push(['fail' + (i + 1), f, 'fail']));
     (sc.mistakes || []).forEach((f, i) => cases.push(['mistake' + (i + 1), f, 'fail']));
     for (const [name, steps, expect] of cases) {

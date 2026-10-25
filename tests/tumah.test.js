@@ -117,9 +117,41 @@ test('lime marks: a little wider than the tumah, not much wider (Tumat Met 8:9)'
 test('reading lime marks (Tumat Met 8:11)', () => {
   assert.deepEqual(T.readMarks('oneStone', { cell: 4 }).tamei, [4]);
   assert.deepEqual(T.readMarks('twoStonesLimeBetween', { row: 1 }).tamei, [3, 4, 5]);
-  assert.deepEqual(T.readMarks('twoStonesSherdsBetween').tamei, []);
+  assert.deepEqual(T.readMarks('twoStonesSherdsBetween', { row: 1 }).tamei, []);
+  assert.deepEqual(T.readMarks('twoStonesLimeOnTop', { row: 1 }).tamei, [3, 4, 5]);
   assert.equal(T.readMarks('fourEdges').tamei.length, 9);
-  assert.equal(T.readMarks('fourEdges').edgesTahor, true);
+  assert.deepEqual(T.readMarks('fourEdges').edges, []);
+  assert.deepEqual(T.readMarks('oneEdge', { edge: 3 }), { tamei: [], edges: [3], src: 'Rambam, Tumat Met 8:11' });
+});
+
+test('mark only doubtful places, not known graves or an exact k\'zayit (Tumat Met 8:9)', () => {
+  for (const k of ['lostGrave', 'branches', 'juttingStone']) assert.equal(T.shouldMark(k).mark, true, k);
+  assert.equal(T.shouldMark('knownCemetery').mark, false);
+  assert.equal(T.shouldMark('kzayit').mark, false);
+});
+
+test('a nevelah conveys by touch and carrying, not by ohel (She\'ar Avot HaTumot 1:1; Tumat Met 1:10)', () => {
+  assert.equal(T.passOver('nevelah').result, false);
+  assert.equal(T.personTouches('nevelah').status, 'rishon');
+  assert.equal(T.personMovesWithStick('nevelah').status, 'rishon');
+  assert.equal(T.kohenMay('nevelah').ok, true);
+});
+
+test('a rope thinner than a tefach is not an ohel; thin branches still bring tumah (Tumat Met 12:1, 13:2)', () => {
+  assert.equal(T.underSameOhel(true, true, { widthTefach: 0.3 }).result, false);
+  assert.equal(T.underSameOhel(true, true, { sturdy: false }).result, true);
+});
+
+test('people and vessels don\'t block tumah; a board on stones or a live animal does (Oholot 6:1)', () => {
+  assert.equal(T.coverBlocks('person').blocks, false);
+  assert.equal(T.coverBlocks('vessels').blocks, false);
+  assert.equal(T.coverBlocks('animal').blocks, true);
+  assert.equal(T.coverBlocks('stones').blocks, true);
+});
+
+test('a mikveh of drawn water is invalid by Rabbinic law (Mikvaot 4:1-2)', () => {
+  assert.equal(T.mikveh({ drawn: false }).valid, true);
+  assert.equal(T.mikveh({ drawn: true }).valid, false);
 });
 
 test('vessels in an ohel with a met: open clay tamei, sealed clay tahor, stone never, metal always (Bamidbar 19:15; Kelim 10:1)', () => {

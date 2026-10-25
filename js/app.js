@@ -42,13 +42,13 @@
     g.clearRect(0, 0, 540, 520);
     g.save(); g.beginPath(); g.arc(270, 270, 250, 0, Math.PI * 2); g.clip();
     G.sky(g, 'day', t);
-    G.hills(g, 330, G.C.hill1, 4, 50); G.hills(g, 380, G.C.hill2, 7, 30);
-    G.walls(g, 300, 250, 200, 110);
-    G.tree(g, 90, 420, 0.8, 'olive');
-    G.ground(g, 0, 430, 540, 120, 'grass');
-    Chars.draw(g, 'gad', 160, 470, { s: 1.15, hold: 'blower', mood: 'happy' });
-    Chars.draw(g, 'eli', 300, 480, { s: 1.6, mood: 'happy' });
-    Chars.draw(g, 'miriam', 410, 470, { s: 1.15, dir: -1 });
+    G.distance(g, t, { seed: 4, y: 330 });
+    G.walls(g, 290, 250, 220, 120);
+    G.tree(g, 80, 430, 0.85, 'olive');
+    G.platform(g, -10, 440, 560, 140, { seed: 3 });
+    Chars.draw(g, 'gad', 150, 470, { s: 1.1, hold: 'blower', mood: 'happy', t });
+    Chars.draw(g, 'eli', 290, 484, { s: 1.5, mood: 'happy', t });
+    Chars.draw(g, 'miriam', 410, 470, { s: 1.1, dir: -1, t });
     g.restore();
     g.beginPath(); g.arc(270, 270, 250, 0, Math.PI * 2); g.lineWidth = 6; g.strokeStyle = G.C.ink; g.stroke();
   }

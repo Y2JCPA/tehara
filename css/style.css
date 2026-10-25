@@ -114,7 +114,10 @@ html[lang="he"] .logo-he { display: none; }
 #toast.good { background: #e6f9ec; }
 #toast.hint { background: #fff6d6; }
 .action-bar { height: var(--act-h); flex: none; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; }
-.action-bar .btn { font-size: 19px; padding: 10px 18px; }
+.action-bar .btn { font-size: 19px; padding: 10px 18px; white-space: nowrap; }
+.action-bar:has(.btn:nth-child(3)) { gap: 6px; }
+.action-bar:has(.btn:nth-child(3)) .btn { font-size: 15px; padding: 9px 11px; border-radius: 14px; }
+.action-bar:has(.btn:nth-child(4)) .btn { font-size: 13px; padding: 8px 8px; }
 .action-bar .btn.on { background: var(--green); color: #fff; }
 
 /* ---------- why card ---------- */

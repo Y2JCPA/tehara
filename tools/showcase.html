@@ -1,0 +1,38 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Tehara art showcase</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;700;800&family=Suez+One&display=swap">
+<body style="margin:0;background:#333">
+<canvas id="c" width="1080" height="1920" style="width:540px;height:960px"></canvas>
+<script src="../js/gfx.js"></script>
+<script src="../js/chars.js"></script>
+<script>
+// Dev tool: shows the drawing kit in one scene.
+const g = document.getElementById('c').getContext('2d'); g.scale(2, 2);
+function frame(t) {
+  G.sky(g, 'day', t); G.distance(g, t, { seed: 3, y: 330 });
+  G.platform(g, 0, 400, 200, 600, { seed: 2 });
+  G.stairs(g, 200, 400, 6, { dir: 1 });
+  G.platform(g, 368, 520, 172, 480, { seed: 3, top: 'grass' });
+  G.tomb(g, 450, 520, 0.8);
+  G.chasm(g, 200, 520, 168, 440);
+  G.ladder(g, 330, 520, 760);
+  G.tree(g, 90, 400, 0.8, 'olive');
+  G.stoneWall(g, 20, 600, 160, 120);
+  G.pin(g, 30, 800, 170, 800, 0, { glint: 1 });
+  G.plank(g, 270, 860, 160); G.log(g, 270, 900, 200);
+  G.bone(g, 60, 880, 1.2, 0.3, true, t); G.twig(g, 120, 880, 1.2, 0.2); G.deadMouse(g, 450, 640); G.deadFox(g, 440, 700, 0.8);
+  G.jar(g, 400, 820, 0.8, { seal: 'kg' }); G.jar(g, 470, 820, 0.8, { material: 'stone', sealed: true }); G.jar(g, 520, 820, 0.6, { material: 'metal', flask: true });
+  G.stoneTile(g, 300, 940, 26, {}); G.stoneTile(g, 370, 940, 26, { wobbly: true });
+  G.donkey(g, 460, 930, 0.6, { strong: false, phase: t / 100 });
+  G.sign(g, 120, 360, 'Beit HaPeras', { w: 130 });
+  Chars.draw(g, 'eli', 120, 400, { t, mood: 'happy' });
+  Chars.draw(g, 'gad', 60, 400, { t, hold: 'blower' });
+  Chars.draw(g, 'miriam', 170, 400, { t, dir: -1 });
+  Chars.draw(g, 'yehuda', 260, 520, { t, walking: true, phase: t / 90 });
+  Chars.draw(g, 'zevulun', 520, 520, { t, dir: -1 });
+  G.vignette(g);
+  requestAnimationFrame(frame);
+}
+document.fonts.ready.then(() => requestAnimationFrame(frame));
+</script>

@@ -23,6 +23,8 @@ const Tumah = (function () {
     lostGraveField: { touch: true, carry: true, ohel: true, src: 'Mishnah Oholot 18:3; Moed Katan 5b' },
     // A sheretz (dead mouse, lizard): touch only, not carry, not ohel (She'ar Avot HaTumot 4:2)
     sheretz:    { touch: true,  carry: false, ohel: false, src: "Rambam, She'ar Avot HaTumot 4:2" },
+    // A nevelah (an animal that died by itself): touch and carry, not ohel (She'ar Avot HaTumot 1:1; Tumat Met 1:10)
+    nevelah:    { touch: true,  carry: true,  ohel: false, src: "Rambam, She'ar Avot HaTumot 1:1; Tumat Met 1:10" },
   };
 
   // Which kinds are part of tumat met (forbidden to a Kohen)
@@ -63,6 +65,7 @@ const Tumah = (function () {
   // ---------- 3. A person who touched something ----------
   // Returns the person's new status.
   function personTouches(kind) {
+    if (kind === 'nevelah') return { status: 'rishon', until: 'evening', src: "Rambam, She'ar Avot HaTumot 1:1" };
     if (kind === 'sheretz') return { status: 'rishon', until: 'evening', src: 'Vayikra 11:31; Rambam, Tumat Met 5:7' };
     if (FROM_MET[kind]) return { status: 'tameiMet', until: 'day7', src: 'Bamidbar 19:11; Rambam, Tumat Met 5:1-2' };
     return { status: 'tahor' };
@@ -92,6 +95,14 @@ const Tumah = (function () {
     if (widthTefach < 1 || heightTefach < 1) return { brings: false, blocks: false, src: 'Rambam, Tumat Met 12:1' };
     if (sturdy) return { brings: true, blocks: true, level: 'doraita', src: 'Rambam, Tumat Met 12:1, 13:2' };
     return { brings: true, blocks: false, level: 'derabbanan', src: 'Rambam, Tumat Met 13:2' };
+  }
+
+  // People and vessels can bring tumah as an ohel, but can't block it; a board
+  // resting on stones or on a live animal does block (Mishnah Oholot 6:1;
+  // Rambam Tumat Met 18:3: a door held shut by a person doesn't block)
+  function coverBlocks(heldBy) {
+    const blocks = heldBy === 'stones' || heldBy === 'animal' || heldBy === 'itself';
+    return { blocks, src: 'Mishnah Oholot 6:1; Rambam, Tumat Met 18:3' };
   }
 
   // Is a spot under a cover that also covers a met or grave?
@@ -157,21 +168,41 @@ const Tumah = (function () {
     return { result: 'ok', src: 'Rambam, Tumat Met 8:9' };
   }
 
-  // Reading marks on a 3x3 field (cells 0-8, row by row) (Rambam Tumat Met 8:11).
+  // Reading marks on a 3x3 field (cells 0-8, row by row; edges 0 top, 1 right,
+  // 2 bottom, 3 left) (Rambam Tumat Met 8:11). Returns { tamei: cells, edges }.
   // pattern: 'oneStone' {cell} | 'twoStonesLimeBetween' {row} |
-  //          'twoStonesSherdsBetween' | 'fourEdges' | 'oneEdge'
+  //          'twoStonesSherdsBetween' {row} | 'twoStonesLimeOnTop' {row} |
+  //          'fourEdges' | 'oneEdge' {edge}
   function readMarks(pattern, opts = {}) {
     const src = 'Rambam, Tumat Met 8:11';
+    const row = r => [r * 3, r * 3 + 1, r * 3 + 2];
     switch (pattern) {
-      case 'oneStone': return { tamei: [opts.cell], src };                 // "תחתיה טמא"
-      case 'twoStonesLimeBetween': {                                         // "ביניהן טמא"
-        const r = opts.row; return { tamei: [r * 3, r * 3 + 1, r * 3 + 2], src };
-      }
-      case 'twoStonesSherdsBetween': return { tamei: [], src };              // "אין זה אלא בניין"
-      case 'fourEdges': return { tamei: [0, 1, 2, 3, 4, 5, 6, 7, 8], edgesTahor: true, src }; // whole field tamei
-      case 'oneEdge': return { tamei: [], edgeTamei: true, src };            // the edge only; the field is tahor
+      case 'oneStone': return { tamei: [opts.cell], edges: [], src };            // "תחתיה טמא"
+      case 'twoStonesLimeBetween': return { tamei: row(opts.row), edges: [], src }; // "ביניהן טמא"
+      case 'twoStonesSherdsBetween': return { tamei: [], edges: [], src };      // lime on top, sherd between: "אין זה אלא בניין"
+      case 'twoStonesLimeOnTop': return { tamei: row(opts.row), edges: [], src }; // lime spread on top, no sherd: "הרי זה ציון וטמא"
+      case 'fourEdges': return { tamei: [0, 1, 2, 3, 4, 5, 6, 7, 8], edges: [], src }; // edges tahor, whole field tamei
+      case 'oneEdge': return { tamei: [], edges: [opts.edge], src };            // the edge is tamei, the field tahor
       default: throw new Error('Unknown pattern: ' + pattern);
     }
+  }
+
+  // Which places get a lime mark? Only doubtful ones: a field where a grave
+  // was lost, branches and jutting stones over a grave. Not well-known graves,
+  // and not an exact k'zayit, which will shrink in the ground (Rambam Tumat Met 8:9)
+  function shouldMark(kind) {
+    const src = 'Rambam, Tumat Met 8:9';
+    if (kind === 'lostGrave' || kind === 'branches' || kind === 'juttingStone') return { mark: true, src };
+    if (kind === 'knownCemetery') return { mark: false, reason: 'known', src };
+    if (kind === 'kzayit') return { mark: false, reason: 'shrinks', src };
+    throw new Error('Unknown place: ' + kind);
+  }
+
+  // ---------- Mikveh ----------
+  // Rainwater gathered by itself is a kosher mikveh; drawn water (שאובין) is
+  // invalid by Rabbinic law (Rambam Mikvaot 4:1-2)
+  function mikveh({ drawn }) {
+    return drawn ? { valid: false, level: 'derabbanan', src: 'Rambam, Mikvaot 4:2' } : { valid: true, src: 'Rambam, Mikvaot 4:1' };
   }
 
   // ---------- 7. Vessels in an ohel with a met (tzamid patil) ----------
@@ -234,7 +265,7 @@ const Tumah = (function () {
     personTouches, personMovesWithStick, canEatTerumah,
     ohelCover, underSameOhel,
     crossField, markedFieldKind,
-    LIME_BAND, limeMark, readMarks,
+    LIME_BAND, limeMark, readMarks, shouldMark, mikveh, coverBlocks,
     vesselInOhel, itemInOhel,
     liquidTouches, hands,
     jugIsPure, communityTumah,
