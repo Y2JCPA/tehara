@@ -112,7 +112,7 @@ async function run() {
       const errs = [];
       page.on('pageerror', e => errs.push(e.message));
       try {
-        await page.goto(`http://localhost:${PORT}/?gfx=low#level=${id}`);
+        await page.goto(`http://localhost:${PORT}/legacy.html?gfx=low#level=${id}`);
         await page.waitForFunction(() => window.__tehara, null, { timeout: 15000 });
         await page.waitForTimeout(500);
         await page.evaluate(() => { window.__teharaWon = null; });
@@ -178,3 +178,4 @@ async function doStep(page, st) {
 }
 
 run();
+

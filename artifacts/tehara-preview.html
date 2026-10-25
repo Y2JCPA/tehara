@@ -1,0 +1,614 @@
+<!doctype html><html lang="en" dir="ltr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#244e42"><meta name="description" content="A little adventure. A world of discovery. An illustrated puzzle journey to Jerusalem."><title>Tehara · The road to Jerusalem</title><style>:root{--paper:#f7f4eb;--ink:#233d37;--muted:#747e6f;--green:#244e42;--gold:#e8b958;--line:#dedfd2;--serif:'Fraunces',Georgia,serif;--sans:'DM Sans','Heebo',sans-serif}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px}
+button,a,input{touch-action:manipulation}
+button{font:inherit;cursor:pointer;color:inherit}
+button:disabled{cursor:default}
+button,a{-webkit-tap-highlight-color:transparent}
+button:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid #be8224;outline-offset:5px}
+a{color:var(--green)}
+[hidden]{display:none!important}
+.shell{max-width:1440px;margin:auto;padding:0 64px}
+.nav{height:100px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);gap:16px}
+.brand{display:flex;align-items:center;gap:12px;border:0;background:none;padding:0;font:600 28px var(--serif);letter-spacing:-1px}
+.brand-icon{width:32px;height:38px;color:#a17838}
+.brand small{font:400 18px var(--sans);color:#8b927f;border-inline-start:1px solid #d4d7c9;padding-inline-start:12px;letter-spacing:0}
+.nav-right{display:flex;gap:28px;align-items:center}
+.nav-link{background:none;border:0;padding:10px 0;font-size:13px;color:#6c7869}
+.nav-link.active{color:var(--green);box-shadow:0 2px var(--green)}
+.setting{border:1px solid #dce0d2;border-radius:50%;background:transparent;width:38px;height:38px;display:grid;place-items:center;font-size:15px}
+.settings{display:flex;gap:8px}
+.eyebrow{font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:700;color:#74846a;display:flex;align-items:center;gap:9px}
+.eyebrow:before{content:'';height:5px;width:5px;background:#bda16a;border-radius:100%}
+.hero{display:grid;grid-template-columns:.85fr 1.15fr;align-items:center;min-height:600px;gap:10px;position:relative}
+.hero-copy{padding:35px 0;position:relative;z-index:1}
+.hero h1{font:500 clamp(48px,5.1vw,72px)/1.07 var(--serif);letter-spacing:-2.9px;margin:25px 0}
+.hero h1 em{font-style:normal;color:#76915e}
+.hero-copy>p{font-size:15px;line-height:1.9;color:#7a8072;max-width:360px;margin:0 0 30px}
+.primary,.secondary{border:0;border-radius:7px;padding:15px 23px;font-size:13px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:22px;min-height:47px}
+.primary{background:var(--green);color:#fff;box-shadow:0 4px 10px #244e4212}
+.primary:hover{background:#34654f;transform:translateY(-1px)}
+.secondary{background:#ebece1;color:var(--ink)}
+.hero-small{display:flex;gap:16px;font-size:10px;color:#919780;margin-top:22px}
+.hero-art{width:105%;margin-inline-start:-5%;position:relative}
+.hero-art svg{width:100%;height:auto;display:block}
+.hero-stamp{position:absolute;bottom:60px;inset-inline-end:0;color:#7b856e;font-size:10px;letter-spacing:.5px;display:flex;align-items:center;gap:8px}
+.dot{height:5px;width:5px;border-radius:50%;background:#7c9861;display:inline-block}
+.journey-heading{display:flex;align-items:flex-end;justify-content:space-between;margin:3px 0 23px}
+.journey-heading h2{font:500 29px var(--serif);margin:10px 0 0;letter-spacing:-.7px}
+.subtle{font-size:12px;color:#909782}
+.chapter-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.chapter{display:grid;grid-template-columns:180px 1fr;background:#fffdf7;border:1px solid var(--line);border-radius:12px;overflow:hidden;text-align:start;padding:0;position:relative;transition:transform .2s,box-shadow .2s}
+.chapter:hover{transform:translateY(-3px);box-shadow:0 9px 26px #244e4210}
+.chapter-illustration{background:#e8eadb;overflow:hidden;display:flex;align-items:center}
+.chapter-illustration svg{width:100%;height:100%;min-height:172px}
+.chapter-body{padding:25px}
+.chapter-body .eyebrow{font-size:9px;letter-spacing:1.6px}
+.chapter h3{font:500 23px var(--serif);margin:12px 0 8px}
+.chapter p{font-size:12px;color:#858b7a;margin:0 0 19px;line-height:1.6}
+.chapter-bottom{display:flex;justify-content:space-between;gap:12px;color:#92977f;font-size:10px}
+.chapter-arrow{font-size:19px;color:#5e7558}
+.progress-track{height:3px;background:#e8eadd;margin-top:12px;border-radius:3px}
+.progress-track span{display:block;background:#8b9c6c;height:100%;border-radius:3px}
+.footer{display:flex;justify-content:space-between;align-items:center;padding:30px 0 23px;margin-top:38px;border-top:1px solid var(--line);font-size:10px;color:#969a8b;gap:15px}
+.footer span{display:flex;gap:7px;align-items:center}
+.footer button{background:none;border:0;color:inherit;font-size:10px;text-decoration:underline}
+.map-head{padding:48px 0 28px;display:flex;justify-content:space-between;align-items:end}
+.map-head h1{font:500 43px var(--serif);margin:15px 0 10px}
+.map-head p{color:#7b8474;max-width:520px;line-height:1.7}
+.level-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-bottom:45px}
+.level-card{border:1px solid var(--line);border-radius:12px;background:#fffdf7;text-align:start;padding:0;overflow:hidden}
+.level-card:not(:disabled):hover{border-color:#80936c;box-shadow:0 5px 15px #244e4210}
+.level-card:disabled{opacity:.5}
+.level-preview{height:118px;background:#e9ebdf;overflow:hidden;position:relative}
+.level-preview svg{width:100%;height:100%}
+.level-number{position:absolute;inset-inline-start:10px;top:10px;border-radius:50%;width:25px;height:25px;background:#fffdf4;display:grid;place-items:center;font-size:10px}
+.level-info{padding:16px}
+.level-info h3{font:500 17px var(--serif);margin:0 0 10px;min-height:42px}
+.level-info small{font-size:10px;color:#989b88}
+.stars{color:#b99548;letter-spacing:3px}
+.play-layout{display:grid;grid-template-columns:245px 1fr;gap:40px;margin-top:32px;align-items:start}
+.play-aside{padding-top:14px}
+.play-aside h1{font:500 32px/1.15 var(--serif);margin:20px 0 18px;letter-spacing:-.8px}
+.play-aside p{font-size:13px;color:#7d8676;line-height:1.8}
+.step-dots{display:flex;gap:7px;margin-top:25px}
+.step-dots span{width:23px;height:3px;background:#d8ddcc;border-radius:4px}
+.step-dots .done{background:#9aaa7c}
+.step-dots .current{background:#335847}
+.rule-pill{display:inline-flex;align-items:center;gap:7px;border:1px solid #dde3d2;border-radius:20px;padding:8px 12px;font-size:10px;color:#6b8261;margin-top:20px}
+.play-main{min-width:0}
+.play-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;font-size:10px;color:#89927d}
+.tools{display:flex;gap:7px}
+.tools button{border:1px solid #d9decd;background:transparent;border-radius:5px;padding:7px 10px;font-size:11px}
+.board{border:1px solid #d7ddcc;background:#dce9dc;border-radius:14px;overflow:hidden;position:relative;isolation:isolate;box-shadow:0 14px 40px #28433109}
+.board svg{display:block;width:100%;height:auto;aspect-ratio:800/600}
+.board [data-action]{cursor:pointer;outline:none}
+.board [data-action]:hover .interactive,.board [data-action]:focus-visible .interactive{filter:brightness(1.12);stroke:#fff;stroke-width:4}
+.board.busy [data-action]{pointer-events:none}
+.board .hero-actor{transition:transform 1.25s cubic-bezier(.4,0,.3,1)}
+.feedback{min-height:58px;padding:16px 0 10px;font-size:13px;color:#6d7d63;line-height:1.6;display:flex;align-items:center;gap:10px}
+.feedback.error{color:#865c97}
+.feedback.hint{color:#9b7c35}
+.action-row{display:flex;gap:9px;flex-wrap:wrap;padding-bottom:10px}
+.action-row button{font-size:12px;padding:12px 16px;border-radius:6px;min-height:44px}
+.action-row .selected{background:#dbe5cb;box-shadow:inset 0 0 0 1px #799063}
+.action-row button:disabled{opacity:.55}
+.play-caption{display:flex;justify-content:space-between;color:#989e8d;font-size:10px;border-top:1px solid var(--line);margin-top:10px;padding-top:14px}
+.modal-backdrop{position:fixed;inset:0;background:#18372de0;backdrop-filter:blur(8px);z-index:20;padding:24px;display:grid;place-items:center;overflow:auto}
+.modal{width:min(100%,560px);border-radius:18px;background:var(--paper);padding:40px;box-shadow:0 25px 100px #0003;position:relative;max-height:calc(100dvh - 48px);overflow:auto}
+.modal h2{font:500 34px var(--serif);margin:12px 0 20px;letter-spacing:-.7px}
+.modal p{font-size:14px;line-height:1.9;color:#74806c}
+.modal .stars{font-size:28px;margin:12px 0}
+.modal .eyebrow{justify-content:center}
+.modal.win{text-align:center}
+.modal .sources{border-top:1px solid var(--line);padding-top:18px;text-align:start;font-size:12px}
+.sources a{display:block;margin:9px 0;line-height:1.6}
+.modal-actions{display:flex;gap:10px;justify-content:center;margin-top:26px}
+.close{position:absolute;top:12px;inset-inline-end:16px;border:0;background:none;font-size:24px;color:#8b957f}
+.notebook-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:40px}
+.note{border:1px solid var(--line);border-radius:10px;padding:25px;background:#fffdf7}
+.note h3{font:500 22px var(--serif);margin:12px 0}
+.note p{font-size:13px;line-height:1.8;color:#7a8470}
+.note a{font-size:11px}
+.empty{padding:70px 0;text-align:center;color:#7a8470}
+.badge{background:#e8eddd;color:#657b53;font-size:10px;padding:7px 10px;border-radius:20px}
+.confetti{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.confetti i{position:absolute;left:50%;top:40%;width:7px;height:12px;background:var(--gold);animation:confetti 1.7s ease-out forwards;animation-delay:var(--delay);transform:rotate(var(--r))}
+.float{animation:float 5s ease-in-out infinite}
+.sparkle{animation:breathe 3s infinite}
+.reveal{animation:appear .5s ease-out}
+.gold-pin{filter:drop-shadow(0 5px 3px #78502025)}
+.marked-path{stroke-dasharray:8 9;animation:path 25s linear infinite}
+.walk-legs{animation:walk .25s alternate infinite;transform-origin:center bottom}
+@keyframes float{50%{transform:translateY(-7px)}
+}
+@keyframes breathe{50%{opacity:.45}
+}
+@keyframes appear{from{opacity:0;transform:translateY(5px)}
+to{opacity:1;transform:translateY(0)}
+}
+@keyframes confetti{to{translate:var(--x) 420px;rotate:var(--r);opacity:0}
+}
+@keyframes path{to{stroke-dashoffset:-300}
+}
+@keyframes walk{to{transform:rotate(5deg)}
+}
+
+@media(min-width:1500px){.hero{min-height:660px}
+}
+@media(max-width:1100px){.shell{padding:0 32px}
+.hero{min-height:530px}
+.hero h1{font-size:56px}
+.chapter{grid-template-columns:130px 1fr}
+.chapter-body{padding:22px}
+.play-layout{grid-template-columns:200px 1fr;gap:24px}
+.level-grid{grid-template-columns:repeat(4,1fr)}
+}
+@media(max-width:760px){.shell{padding:0 21px}
+.nav{height:76px}
+.brand{font-size:25px}
+.brand small{display:none}
+.nav-right{gap:15px}
+.nav-link{font-size:11px}
+.setting{width:31px;height:31px;font-size:12px}
+.settings{gap:5px}
+.hero{display:flex;flex-direction:column;min-height:0;gap:0;padding-top:27px;align-items:stretch}
+.hero-copy{padding:0;max-width:480px}
+.hero h1{font-size:51px;letter-spacing:-2px;margin:18px 0}
+.hero-copy>p{font-size:13px;line-height:1.8;max-width:320px;margin-bottom:22px}
+.hero-small{margin-top:14px;font-size:9px}
+.hero-art{width:110%;margin:-18px -5% -15px}
+.hero-stamp{bottom:27px;inset-inline-end:15px;font-size:8px}
+.journey-heading{margin-top:10px}
+.journey-heading h2{font-size:25px}
+.journey-heading>.subtle{font-size:10px}
+.chapter-grid{grid-template-columns:1fr;gap:14px}
+.chapter{grid-template-columns:115px 1fr}
+.chapter-illustration svg{min-height:151px}
+.chapter-body{padding:19px}
+.chapter h3{font-size:22px}
+.chapter p{margin-bottom:12px}
+.footer{margin-top:28px;align-items:start;font-size:9px}
+.footer span{max-width:230px;line-height:1.6}
+.map-head{padding-top:30px}
+.map-head h1{font-size:33px}
+.map-head p{font-size:12px}
+.level-grid{grid-template-columns:repeat(2,1fr);gap:12px}
+.level-preview{height:110px}
+.level-info{padding:13px}
+.level-info h3{font-size:17px;min-height:37px}
+.play-layout{display:flex;flex-direction:column;gap:15px;margin-top:20px}
+.play-aside{padding:0;width:100%}
+.play-aside h1{font-size:26px;margin:10px 0 7px}
+.play-aside p{font-size:12px;line-height:1.6;margin:0;max-width:500px}
+.play-aside .rule-pill{display:none}
+.step-dots{margin-top:13px}
+.play-main{width:100%}
+.play-toolbar{margin-bottom:10px}
+.board{border-radius:10px}
+.feedback{font-size:12px;min-height:65px;padding:13px 0}
+.action-row{gap:7px}
+.action-row button{flex:1;padding:12px 9px;min-width:95px;font-size:11px}
+.play-caption{font-size:9px;padding-bottom:20px}
+.notebook-grid{grid-template-columns:1fr}
+.modal{padding:30px 22px}
+.modal h2{font-size:29px}
+.modal p{font-size:13px}
+.modal-actions{flex-wrap:wrap}
+.hero-art svg{max-height:350px}
+.eyebrow{font-size:9px;letter-spacing:1.8px}
+}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+}
+
+@media(min-width:761px){.board svg{max-height:calc(100dvh - 290px)}
+}
+
+</style></head><body><div id="app"></div><noscript>Tehara needs JavaScript to play.</noscript><script>/* ============================================
+   TEHARA: the rules engine
+   Every win or fail in the game is decided here, not in the level code,
+   so a level can't teach something the halacha doesn't say.
+   Each rule returns { ok/result, rule, src } where src names the
+   controlling source (Rambam's Sefer Taharah first).
+   Research and full quotes: docs/research/02-*.md and 03-*.md
+   ============================================ */
+const Tumah = (function () {
+  // ---------- 1. What conveys tumah, and how ----------
+  // Modes: touch (מגע), carry (משא, which includes moving it: היסט),
+  // ohel (being under one roof with it, or over it).
+  const CONVEYS = {
+    // A corpse: touch, carry and ohel (Rambam Tumat Met 1:1-2, 1:10)
+    met:        { touch: true,  carry: true,  ohel: true,  src: 'Rambam, Tumat Met 1:1-2, 1:10' },
+    // A closed grave with the tumah inside: touch and ohel, Torah law (Tumat Met 2:15)
+    grave:      { touch: true,  carry: false, ohel: true,  src: 'Rambam, Tumat Met 2:15' },
+    // A single bone, even barley-sized: touch and carry, never ohel (Tumat Met 2:10)
+    bone:       { touch: true,  carry: true,  ohel: false, src: 'Rambam, Tumat Met 2:10' },
+    // Earth of a field where a grave was plowed: touch and carry, not ohel; Rabbinic (Tumat Met 10:2)
+    plowedField:{ touch: true,  carry: true,  ohel: false, src: 'Rambam, Tumat Met 10:2; Oholot 18:2' },
+    // A field where a whole grave was lost: touch, carry and ohel (Oholot 18:3)
+    lostGraveField: { touch: true, carry: true, ohel: true, src: 'Mishnah Oholot 18:3; Moed Katan 5b' },
+    // A sheretz (dead mouse, lizard): touch only, not carry, not ohel (She'ar Avot HaTumot 4:2)
+    sheretz:    { touch: true,  carry: false, ohel: false, src: "Rambam, She'ar Avot HaTumot 4:2" },
+    // A nevelah (an animal that died by itself): touch and carry, not ohel (She'ar Avot HaTumot 1:1; Tumat Met 1:10)
+    nevelah:    { touch: true,  carry: true,  ohel: false, src: "Rambam, She'ar Avot HaTumot 1:1; Tumat Met 1:10" },
+  };
+
+  // Which kinds are part of tumat met (forbidden to a Kohen)
+  const FROM_MET = { met: true, grave: true, bone: true, plowedField: true, lostGraveField: true };
+
+  function conveys(kind, mode) {
+    const k = CONVEYS[kind];
+    if (!k) throw new Error('Unknown tumah kind: ' + kind);
+    if (!(mode in k)) throw new Error('Unknown mode: ' + mode);
+    return { result: k[mode], src: k.src };
+  }
+
+  // Moving something by pressing a plank it lies on counts as carrying (היסט)
+  // (Rambam Tumat Met 1:7: "מסיט בכלל נושא")
+  function moveViaPlank(kind) {
+    return { result: conveys(kind, 'carry').result, src: 'Rambam, Tumat Met 1:7' };
+  }
+
+  // Walking over it, with nothing touching it
+  function passOver(kind) {
+    return conveys(kind, 'ohel');
+  }
+
+  // ---------- 2. Kohanim ----------
+  // A Kohen may not become tamei from a met (Vayikra 21:1; Rambam Avel 3:1),
+  // but may from every other tumah (Rambam Tumat Okhalin 16:9).
+  function kohenMay(kind) {
+    if (FROM_MET[kind]) return { ok: false, src: 'Vayikra 21:1; Rambam, Avel 3:1' };
+    return { ok: true, src: 'Rambam, Tumat Okhalin 16:9' };
+  }
+
+  // A met "holds" 4 amot; a Kohen may not come inside them (Rambam Avel 3:13)
+  const MET_DISTANCE_AMOT = 4;
+  function kohenDistanceOk(amot) {
+    return { ok: amot >= MET_DISTANCE_AMOT, src: 'Rambam, Avel 3:13' };
+  }
+
+  // ---------- 3. A person who touched something ----------
+  // Returns the person's new status.
+  function personTouches(kind) {
+    if (kind === 'nevelah') return { status: 'rishon', until: 'evening', src: "Rambam, She'ar Avot HaTumot 1:1" };
+    if (kind === 'sheretz') return { status: 'rishon', until: 'evening', src: 'Vayikra 11:31; Rambam, Tumat Met 5:7' };
+    if (FROM_MET[kind]) return { status: 'tameiMet', until: 'day7', src: 'Bamidbar 19:11; Rambam, Tumat Met 5:1-2' };
+    return { status: 'tahor' };
+  }
+
+  // A sheretz pushed away with a stick: it conveys only by touch, not by moving
+  function personMovesWithStick(kind) {
+    const carries = conveys(kind, 'carry').result;
+    return { status: carries ? personTouches(kind).status : 'tahor', src: conveys(kind, 'carry').src };
+  }
+
+  // Eating terumah: someone tamei until evening needs tevilah AND nightfall
+  // (three medium stars) (Vayikra 22:7; Rambam Terumot 7:2)
+  function canEatTerumah(p) {
+    if (p.status === 'tahor') return { ok: true };
+    if (p.status === 'tameiMet') return { ok: false, need: 'sprinkling', src: 'Bamidbar 19:12' };
+    if (!p.immersed) return { ok: false, need: 'mikveh', src: 'Vayikra 22:6' };
+    if (!p.starsOut) return { ok: false, need: 'stars', src: 'Rambam, Terumot 7:2' };
+    return { ok: true, src: 'Rambam, Terumot 7:2' };
+  }
+
+  // ---------- 4. Ohel ----------
+  // A cover of at least 1x1 tefach and 1 tefach high brings tumah and blocks it
+  // (Rambam Tumat Met 12:1). A strong one does so by Torah law; a weak one
+  // (thin branches) brings it by Rabbinic law and doesn't block (13:2).
+  function ohelCover({ widthTefach = 1, heightTefach = 1, sturdy = true }) {
+    if (widthTefach < 1 || heightTefach < 1) return { brings: false, blocks: false, src: 'Rambam, Tumat Met 12:1' };
+    if (sturdy) return { brings: true, blocks: true, level: 'doraita', src: 'Rambam, Tumat Met 12:1, 13:2' };
+    return { brings: true, blocks: false, level: 'derabbanan', src: 'Rambam, Tumat Met 13:2' };
+  }
+
+  // People and vessels can bring tumah as an ohel, but can't block it; a board
+  // resting on stones or on a live animal does block (Mishnah Oholot 6:1;
+  // Rambam Tumat Met 18:3: a door held shut by a person doesn't block)
+  function coverBlocks(heldBy) {
+    const blocks = heldBy === 'stones' || heldBy === 'animal' || heldBy === 'itself';
+    return { blocks, src: 'Mishnah Oholot 6:1; Rambam, Tumat Met 18:3' };
+  }
+
+  // Is a spot under a cover that also covers a met or grave?
+  function underSameOhel(coverReachesSpot, coverReachesTumah, cover = {}) {
+    const c = ohelCover(cover);
+    return { result: c.brings && coverReachesSpot && coverReachesTumah, src: 'Rambam, Tumat Met 1:10, 13:2' };
+  }
+
+  // ---------- 5. Beit HaPeras ----------
+  // field: 'plowed' (a grave was plowed) | 'lost' (a grave was lost in it)
+  // method: 'walk' | 'blow' | 'stones' | 'ride' | 'trodden'
+  // opts: { solid, strong } for stones / ride
+  // purpose: 'pesach' | 'mitzvah' | 'terumah' | 'mikdash'
+  // Returns { tahor, reason, src }
+  function crossField({ field, method, solid, strong, purpose }) {
+    if (field === 'lost') {
+      // A whole grave conveys by ohel, so passing over it in any way is tamei
+      return { tahor: false, reason: 'ohel', src: 'Mishnah Oholot 18:3; Rambam, Tumat Met 10:10' };
+    }
+    if (field !== 'plowed') throw new Error('Unknown field: ' + field);
+    switch (method) {
+      case 'walk':
+        return { tahor: false, reason: 'touch', src: 'Rambam, Tumat Met 10:2' };
+      case 'stones':
+        return solid
+          ? { tahor: true, src: 'Rambam, Tumat Met 10:11' }
+          : { tahor: false, reason: 'wobbly', src: 'Rambam, Tumat Met 10:11' };
+      case 'ride':
+        return strong
+          ? { tahor: true, src: 'Rambam, Tumat Met 10:11' }
+          : { tahor: false, reason: 'weak', src: 'Rambam, Tumat Met 10:11' };
+      case 'blow':
+        // "מנפח אדם בית הפרס והולך" (Berakhot 19b), even a Kohen (Rambam Eruvin 6:17),
+        // and he brings his Pesach (Korban Pesach 6:8). Not relied on for terumah
+        // ("אין בודקין לתרומה", Oholot 18:4), nor for anything holier.
+        if (purpose === 'terumah' || purpose === 'mikdash') {
+          return { tahor: false, reason: 'notForTerumah', src: 'Mishnah Oholot 18:4; Rashi, Berakhot 19b' };
+        }
+        return { tahor: true, src: 'Berakhot 19b; Rambam, Eruvin 6:17; Korban Pesach 6:8' };
+      case 'trodden':
+        // A trodden Beit HaPeras is tahor for the one bringing the Pesach (Korban Pesach 6:8)
+        if (purpose === 'pesach') return { tahor: true, src: 'Rambam, Korban Pesach 6:8' };
+        return { tahor: false, reason: 'onlyPesach', src: 'Rambam, Korban Pesach 6:8' };
+      default:
+        throw new Error('Unknown method: ' + method);
+    }
+  }
+
+  // A marked field of unknown kind: trees = plowed grave, no trees = lost grave
+  // (Rambam Tumat Met 10:10, 8:10)
+  function markedFieldKind(hasTrees) {
+    return { field: hasTrees ? 'plowed' : 'lost', src: 'Rambam, Tumat Met 10:10' };
+  }
+
+  // ---------- 6. Lime markings ----------
+  // Marks go a little beyond the tumah (so taharot aren't lost) but not far
+  // (so the land isn't lost) (Rambam Tumat Met 8:9). The game picks the band.
+  const LIME_BAND = { min: 0.06, max: 0.4 }; // extra size, as a fraction of the tumah's size
+  function limeMark(markSize, tumahSize) {
+    const extra = markSize / tumahSize - 1;
+    if (extra < LIME_BAND.min) return { result: 'tooTight', src: 'Rambam, Tumat Met 8:9' };
+    if (extra > LIME_BAND.max) return { result: 'tooWide', src: 'Rambam, Tumat Met 8:9' };
+    return { result: 'ok', src: 'Rambam, Tumat Met 8:9' };
+  }
+
+  // Reading marks on a 3x3 field (cells 0-8, row by row; edges 0 top, 1 right,
+  // 2 bottom, 3 left) (Rambam Tumat Met 8:11). Returns { tamei: cells, edges }.
+  // pattern: 'oneStone' {cell} | 'twoStonesLimeBetween' {row} |
+  //          'twoStonesSherdsBetween' {row} | 'twoStonesLimeOnTop' {row} |
+  //          'fourEdges' | 'oneEdge' {edge}
+  function readMarks(pattern, opts = {}) {
+    const src = 'Rambam, Tumat Met 8:11';
+    const row = r => [r * 3, r * 3 + 1, r * 3 + 2];
+    switch (pattern) {
+      case 'oneStone': return { tamei: [opts.cell], edges: [], src };            // "תחתיה טמא"
+      case 'twoStonesLimeBetween': return { tamei: row(opts.row), edges: [], src }; // "ביניהן טמא"
+      case 'twoStonesSherdsBetween': return { tamei: [], edges: [], src };      // lime on top, sherd between: "אין זה אלא בניין"
+      case 'twoStonesLimeOnTop': return { tamei: row(opts.row), edges: [], src }; // lime spread on top, no sherd: "הרי זה ציון וטמא"
+      case 'fourEdges': return { tamei: [0, 1, 2, 3, 4, 5, 6, 7, 8], edges: [], src }; // edges tahor, whole field tamei
+      case 'oneEdge': return { tamei: [], edges: [opts.edge], src };            // the edge is tamei, the field tahor
+      default: throw new Error('Unknown pattern: ' + pattern);
+    }
+  }
+
+  // Which places get a lime mark? Only doubtful ones: a field where a grave
+  // was lost, branches and jutting stones over a grave. Not well-known graves,
+  // and not an exact k'zayit, which will shrink in the ground (Rambam Tumat Met 8:9)
+  function shouldMark(kind) {
+    const src = 'Rambam, Tumat Met 8:9';
+    if (kind === 'lostGrave' || kind === 'branches' || kind === 'juttingStone') return { mark: true, src };
+    if (kind === 'knownCemetery') return { mark: false, reason: 'known', src };
+    if (kind === 'kzayit') return { mark: false, reason: 'shrinks', src };
+    throw new Error('Unknown place: ' + kind);
+  }
+
+  // ---------- Mikveh ----------
+  // Rainwater gathered by itself is a kosher mikveh; drawn water (שאובין) is
+  // invalid by Rabbinic law (Rambam Mikvaot 4:1-2)
+  function mikveh({ drawn }) {
+    return drawn ? { valid: false, level: 'derabbanan', src: 'Rambam, Mikvaot 4:2' } : { valid: true, src: 'Rambam, Mikvaot 4:1' };
+  }
+
+  // ---------- 7. Vessels in an ohel with a met (tzamid patil) ----------
+  // material: 'clay' | 'stone' | 'metal' ; sealed: tightly sealed (צמיד פתיל)
+  // item: 'oil' / 'food' (food or drink) | 'clay' | 'metal' | 'stone'
+  const NEVER_TAMEI = { stone: true }; // also dung and earth vessels (Rambam Kelim 1:6)
+  function vesselInOhel({ material, sealed }) {
+    if (NEVER_TAMEI[material]) return { tahor: true, src: 'Mishnah Kelim 10:1; Rambam, Kelim 1:6' };
+    if (material === 'clay') return { tahor: !!sealed, src: 'Bamidbar 19:15; Rambam, Tumat Met 21:1' };
+    return { tahor: false, src: 'Rambam, Tumat Met 21:1' }; // metal: tamei, sealed or not
+  }
+
+  // A clay vessel becomes tamei only through its inside (or a zav moving it),
+  // never by being touched on the outside (Rambam Kelim 13:1)
+  function clayTouchedOutside() {
+    return { tahor: true, src: 'Rambam, Kelim 13:1' };
+  }
+
+  function itemInOhel({ item, vessel }) {
+    const src = 'Mishnah Kelim 10:1; Rambam, Tumat Met 21:1';
+    if (NEVER_TAMEI[item]) return { tahor: true, src };
+    if (!vessel || !vessel.sealed) return { tahor: false, src };
+    if (NEVER_TAMEI[vessel.material]) return { tahor: true, src };        // stone saves everything
+    if (vessel.material === 'clay') {                                      // clay saves food, drink and clay only
+      return { tahor: item === 'oil' || item === 'food' || item === 'clay', src };
+    }
+    return { tahor: false, src };                                          // metal saves nothing
+  }
+
+  // ---------- 8. Liquids and hands ----------
+  // Levels: 'tahor', 'av', 1, 2, 3
+  // A liquid that touches anything tamei (Av, Rishon or Sheni) becomes Rishon
+  // (Rambam She'ar Avot HaTumot 7:5; Parah 8:7)
+  function liquidTouches(otherLevel) {
+    if (otherLevel === 'tahor' || otherLevel === 3) return { level: 'tahor', src: "Rambam, She'ar Avot HaTumot 7:5" };
+    return { level: 1, src: "Rambam, She'ar Avot HaTumot 7:5; Mishnah Parah 8:7" };
+  }
+
+  // Hands that weren't washed count as Sheni, by Rabbinic law (She'ar Avot HaTumot ch. 8)
+  function hands(washed) {
+    return { level: washed ? 'tahor' : 2, src: "Rambam, She'ar Avot HaTumot 8" };
+  }
+
+  // ---------- 9. Chanukah ----------
+  // A jug of oil after the Greeks were in the Heichal: pure only if it lay
+  // sealed with the Kohen Gadol's seal, intact and unmoved (Shabbat 21b and
+  // Rashi there: "hidden and sealed... he recognized they hadn't touched it";
+  // Tosafot there on moving)
+  function jugIsPure({ sealed, intact, moved }) {
+    const src = 'Shabbat 21b; Rashi there';
+    if (!sealed) return { pure: false, reason: 'noSeal', src };
+    if (!intact) return { pure: false, reason: 'broken', src };
+    if (moved) return { pure: false, reason: 'moved', src: 'Shabbat 21b, Tosafot there' };
+    return { pure: true, src };
+  }
+
+  // For the whole community, tumah is only pushed aside (דחויה), so first
+  // search for a pure way (Rambam Bi'at HaMikdash 4:15)
+  function communityTumah() {
+    return { status: 'dechuya', mustSearchFirst: true, src: "Rambam, Bi'at HaMikdash 4:15" };
+  }
+
+  return {
+    conveys, moveViaPlank, passOver,
+    kohenMay, kohenDistanceOk, MET_DISTANCE_AMOT,
+    personTouches, personMovesWithStick, canEatTerumah,
+    ohelCover, underSameOhel,
+    crossField, markedFieldKind,
+    LIME_BAND, limeMark, readMarks, shouldMark, mikveh, coverBlocks,
+    vesselInOhel, itemInOhel, clayTouchedOutside,
+    liquidTouches, hands,
+    jugIsPure, communityTumah,
+  };
+})();
+
+if (typeof module !== 'undefined') module.exports = Tumah;
+
+</script><script>/* Every puzzle evaluates the retained, source-linked Tumah engine.
+   State changes are discrete; animations never decide halachic outcomes. */
+const TeharaLevels = (() => {
+  const B = (en, he) => ({en, he});
+  const source = (name, path) => ({name, url:'https://www.sefaria.org/'+path});
+  const met = source('Rambam · Tumat Met 1:10','Mishneh_Torah,_Defilement_by_a_Corpse.1.10');
+  const field = source('Rambam · Tumat Met 10:11','Mishneh_Torah,_Defilement_by_a_Corpse.10.11');
+  const seal = source('Bamidbar 19:15','Numbers.19.15');
+  const levels = [
+    {id:'1-1',type:'bridge',title:B('A small first step','צעד ראשון'),goal:B('Eli is on his way to Jerusalem. Pull the golden pin to lower the bridge, then send him across.','אלי בדרך לירושלים. משכו את יתד הזהב כדי להוריד את הגשר, ואז שלחו אותו לדרך.'),hint:B('The round golden handle opens the bridge.','ידית הזהב העגולה פותחת את הגשר.'),why:B('You cleared Eli’s first crossing! Golden pins change the world. Look first, change the path, then let Eli walk. In the coming puzzles, the route will also depend on the laws of tumah and taharah.','פתחתם לאלי את המעבר הראשון! יתדות הזהב משנות את הדרך. קודם מסתכלים, אחר כך משנים, ורק אז שולחים את אלי. בהמשך תצטרכו גם להכיר את דיני הטומאה והטהרה.'),sources:[],initial:{bridge:false},actions:[['pin',B('Pull the pin','משכו את היתד')],['go',B('Let’s go →','לדרך ←')]],solution:['pin','go'],act(s,a){if(a==='pin'){s.bridge=true;return 'change'}if(a==='go')return s.bridge?'win':'blocked'}},
+    {id:'1-2',type:'roof',title:B('Under one roof','תחת קורת גג אחת'),goal:B('A burial chamber shares its awning with the path. Slide the awning away from Eli’s crossing.','חדר קבורה והדרך חולקים גגון אחד. הזיזו את הגגון מהמעבר של אלי.'),hint:B('A roof connects the chamber to the path. Open a gap above the crossing.','הגג מחבר בין חדר הקבורה לדרך. פתחו רווח מעל המעבר.'),why:B('A met conveys tumah to people under the same ohel (cover). Moving the awning away separates Eli’s path from the covered chamber. Tumah is a halachic status, not dirt or germs.','מת מטמא את הנמצאים תחת אותו אוהל. הזזת הגגון מפרידה בין דרכו של אלי לחדר הקבורה. טומאה היא מעמד הלכתי, לא לכלוך ולא חיידקים.'),sources:[met],initial:{roof:true},actions:[['roof',B('Slide the awning','הזיזו את הגגון')],['go',B('Cross the path →','חצו את הדרך ←')]],solution:['roof','go'],act(s,a){if(a==='roof'){s.roof=!s.roof;return 'change'}if(a==='go')return Tumah.underSameOhel(s.roof,true).result?'fail':'win'},failure:B('The awning still joins the path to the burial chamber. Slide it away and try again.','הגגון עדיין מחבר בין הדרך לחדר הקבורה. הזיזו אותו ונסו שוב.')},
+    {id:'1-3',type:'bone',title:B('The quiet crossing','המעבר השקט'),goal:B('A small bone lies on a loose plank. Choose a route that won’t touch or move it.','עצם קטנה מונחת על קרש רופף. בחרו דרך שלא תיגע בעצם ולא תזיז אותה.'),hint:B('The high stone arch never touches the loose plank.','קשת האבן הגבוהה אינה נוגעת בקרש הרופף.'),why:B('Even a bone the size of a barley grain conveys tumah by touch or by moving it. Moving the plank beneath it counts. This single bone does not convey tumah through ohel, so the separate arch is safe.','אפילו עצם כשעורה מטמאה במגע ובמשא. גם הזזת הקרש שמתחתיה נחשבת היסט. עצם יחידה זו אינה מטמאה באוהל, ולכן הקשת הנפרדת בטוחה.'),sources:[source('Rambam · Tumat Met 2:10','Mishneh_Torah,_Defilement_by_a_Corpse.2.10'),source('Rambam · Tumat Met 1:7','Mishneh_Torah,_Defilement_by_a_Corpse.1.7')],initial:{route:null},actions:[['arch',B('Stone arch','קשת האבן')],['plank',B('Loose plank','הקרש הרופף')],['go',B('Let’s go →','לדרך ←')]],solution:['arch','go'],act(s,a){if(a!=='go'){s.route=a;return 'change'}if(!s.route)return 'blocked';return (s.route==='arch'?!Tumah.passOver('bone').result:!Tumah.moveViaPlank('bone').result)?'win':'fail'},failure:B('The plank moved the bone. Choose the separate stone arch.','הקרש הזיז את העצם. בחרו בקשת האבן הנפרדת.')},
+    {id:'1-4',type:'tree',title:B('A little open sky','קצת שמים פתוחים'),goal:B('Branches stretch over a grave and the road. Retract the overhanging branch before Eli passes.','ענפים מאהילים על קבר ועל הדרך. הרחיקו את הענף מהדרך לפני שאלי יעבור.'),hint:B('The branch forms a shared cover. Tap its golden handle.','הענף יוצר אוהל משותף. הקישו על ידית הזהב.'),why:B('Overhanging branches can convey tumah from a grave to the path beneath them. Here the branches are a weak cover, which brings tumah by Rabbinic law. Opening the sky removes this shared cover.','ענפים המאהילים על קבר עלולים להביא טומאה גם לדרך שתחתיהם. כאן מדובר בסככות שאינן חזקות, המביאות טומאה מדברי סופרים. פתיחת השמים מפרידה את האוהל.'),sources:[source('Rambam · Tumat Met 13:2','Mishneh_Torah,_Defilement_by_a_Corpse.13.2')],initial:{branch:true},actions:[['branch',B('Move the branch','הרחיקו את הענף')],['go',B('Walk the road →','צעדו בדרך ←')]],solution:['branch','go'],act(s,a){if(a==='branch'){s.branch=false;return 'change'}if(a==='go')return Tumah.underSameOhel(s.branch,true,{sturdy:false}).result?'fail':'win'},failure:B('Eli would share the branch’s cover with the grave. Open the sky above the road.','אלי יהיה תחת אותו ענף עם הקבר. פתחו את השמים מעל הדרך.')},
+    {id:'1-5',type:'stones',title:B('Steady as a stone','יציב כמו אבן'),goal:B('A grave was plowed in this field. Test the stepping stones and choose a steady crossing.','קבר נחרש בשדה הזה. בדקו את האבנים ובחרו מעבר יציב.'),hint:B('Test first. The upper stones wobble; the lower ones stay still.','בדקו קודם. האבנים העליונות מתנדנדות; התחתונות יציבות.'),why:B('In a plowed-grave field, bone fragments may lie in the soil. Crossing on stones is permitted when the stones do not move beneath your feet. A wobbling stone can move the earth and fragments below.','בבית הפרס שנחרש בו קבר ייתכנו שברי עצמות באדמה. אפשר לעבור על אבנים שאינן מתנדנדות תחת הרגליים. אבן מתנדנדת עלולה להזיז את הקרקע שמתחתיה.'),sources:[field],initial:{tested:false,route:null},actions:[['test',B('Test the stones','בדקו את האבנים')],['upper',B('Upper stones','אבנים עליונות')],['lower',B('Lower stones','אבנים תחתונות')],['go',B('Cross →','עברו ←')]],solution:['test','lower','go'],act(s,a){if(a==='test'){s.tested=true;return 'change'}if(a!=='go'){s.route=a;return 'change'}if(!s.route)return 'blocked';return Tumah.crossField({field:'plowed',method:'stones',solid:s.route==='lower',purpose:'mitzvah'}).tahor?'win':'fail'},failure:B('Those stones wobble and shift the soil. Try the steady lower crossing.','האבנים האלה מתנדנדות ומזיזות את הקרקע. נסו את המעבר התחתון היציב.')},
+    {id:'1-6',type:'field',title:B('A breath of discovery','משב של גילוי'),goal:B('Eli must cross a plowed-grave field for a mitzvah; there is no other road. Blow to reveal the ground, then choose four safe steps from left to right.','אלי צריך לחצות בית הפרס לצורך מצווה ואין דרך אחרת. נפחו כדי לחשוף את הקרקע, ואז בחרו ארבעה צעדים בטוחים משמאל לימין.'),hint:B('Reveal the ground, then choose a bone-free step in each column: lower, middle, lower, middle.','חשפו את הקרקע, ואז בחרו צעד בלי עצם בכל עמודה: תחתון, אמצעי, תחתון, אמצעי.'),why:B('For this mitzvah journey through a plowed-grave field, Eli can blow on the ground, look for bone fragments, and step around them. This method is not relied on for terumah, and does not work in a field with a lost whole grave.','לצורך מצווה, בבית הפרס שנחרש בו קבר, אלי יכול לנפח את העפר, לבדוק אם יש עצם ולצעוד סביבה. אין מסתמכים על בדיקה זו לתרומה, והיא אינה מועילה בשדה שאבד בו קבר שלם.'),sources:[source('Rambam · Eruvin 6:17','Mishneh_Torah,_Eruvin.6.17'),source('Mishnah Oholot 18:4','Mishnah_Oholot.18.4')],failure:B('There is a bone on that step. Choose a clear foothold in the same column.','יש עצם בצעד הזה. בחרו מקום דריכה פנוי באותה עמודה.'),initial:{checked:0,path:[]},actions:[['blow',B('Blow & check a step','נפחו ובדקו צעד')],['upper',B('Upper step','צעד עליון')],['middle',B('Middle step','צעד אמצעי')],['lower',B('Lower step','צעד תחתון')],['go',B('Cross the field →','חצו את השדה ←')]],solution:['blow','blow','blow','blow','lower','middle','lower','middle','go'],act(s,a){if(a==='blow'){s.checked=Math.min(4,s.checked+1);return 'change'}if(['upper','middle','lower'].includes(a)||a.startsWith('step:')){if(s.checked<4)return 'blocked';const row=a.startsWith('step:')?Number(a.split(':')[2]):{upper:0,middle:1,lower:2}[a],col=a.startsWith('step:')?Number(a.split(':')[1]):s.path.length;if(col!==s.path.length||col>3)return 'blocked';if([[0,1],[2],[0],[2]][col].includes(row)&&Tumah.conveys('bone','touch').result)return 'fail';s.path.push(row);return 'change'}if(a==='go'){if(s.checked<4||s.path.length<4)return 'blocked';return Tumah.crossField({field:'plowed',method:'blow',purpose:'mitzvah'}).tahor?'win':'fail'}}},
+    {id:'1-7',type:'marks',title:B('Leave a little room','השאירו קצת מקום'),goal:B('The old lime mark washed away. Mark the doubtful grave area with a small margin, without closing the whole road.','סימון הסיד נשטף. סמנו את שטח הספק עם מרווח קטן, בלי לחסום את כל הדרך.'),hint:B('The middle outline leaves a little space beyond the area.','הקו האמצעי משאיר מעט מרווח מעבר לשטח.'),why:B('Lime marks extend a little beyond a doubtful area of tumah, so passersby keep clear. They should not be too close or unnecessarily far away. The outlines here illustrate that principle; they are not halachic measurements.','מרחיבים מעט את סימון הסיד מעבר למקום הטומאה שבספק, כדי להזהיר את העוברים. אין לצמצם מדי ואין להרחיב ללא צורך. הקווים במשחק ממחישים את העיקרון ואינם מידות הלכתיות.'),sources:[source('Rambam · Tumat Met 8:9','Mishneh_Torah,_Defilement_by_a_Corpse.8.9')],initial:{mark:null},actions:[['tight',B('Close outline','סימון צמוד')],['margin',B('Small margin','מרווח קטן')],['wide',B('Wide outline','סימון רחב')],['go',B('Paint the mark','צבעו בסיד')]],solution:['margin','go'],act(s,a){if(a!=='go'){s.mark=a;return 'change'}if(!s.mark)return 'blocked';return Tumah.limeMark({tight:100,margin:120,wide:170}[s.mark],100).result==='ok'?'win':'fail'},failure:B('Give the area a small margin. Don’t crowd it or close off extra land.','השאירו מרווח קטן. אל תצמצמו מדי ואל תחסמו שטח נוסף.')},
+    {id:'1-8',type:'lost',title:B('The road around','הדרך מסביב'),goal:B('This time a whole grave was lost in the field. A blower cannot help. Find another way.','הפעם אבד בשדה קבר שלם. ניפוח העפר אינו מועיל. מצאו דרך אחרת.'),hint:B('Follow the road outside the marked field.','בחרו בדרך שמחוץ לשדה המסומן.'),why:B('A whole grave can convey tumah through ohel. Blowing away loose soil cannot solve that problem. This is different from a field containing only scattered bone fragments; Eli takes the road outside the field.','קבר שלם מטמא גם באוהל. ניפוח העפר אינו פותר את הבעיה. שלא כמו שדה עם שברי עצמות מפוזרים, כאן אלי הולך בדרך שמחוץ לשדה.'),sources:[source('Mishnah Oholot 18:3','Mishnah_Oholot.18.3')],initial:{route:null},actions:[['field',B('Blow & cross','נפחו ועברו')],['detour',B('Road around','הדרך מסביב')],['go',B('Let’s go →','לדרך ←')]],solution:['detour','go'],act(s,a){if(a!=='go'){s.route=a;return 'change'}if(!s.route)return 'blocked';return s.route==='detour'||Tumah.crossField({field:'lost',method:'blow',purpose:'mitzvah'}).tahor?'win':'fail'},failure:B('A lost whole grave can convey tumah above it. Take the outside road.','קבר שלם שאבד יכול לטמא את המאהיל עליו. בחרו בדרך החיצונית.')},
+    {id:'1-9',type:'sunset',title:B('Wait for the stars','מחכים לכוכבים'),goal:B('After touching a sheretz, Eli needs immersion and nightfall before terumah. Choose the rain-fed mikveh, then wait.','אלי נגע בשרץ. כדי לאכול תרומה עליו לטבול ולהמתין לערב. בחרו במקווה מי הגשמים ואז המתינו.'),hint:B('Rainwater, immersion, then nightfall. A bucket-filled pool won’t work.','מי גשמים, טבילה ואז צאת הכוכבים. בריכה שמולאה בדליים אינה מועילה.'),why:B('A person who became tamei from a sheretz needs immersion and nightfall before eating terumah. The mikveh here is filled by rainwater gathering naturally; the bucket-filled pool contains drawn water.','מי שנטמא משרץ צריך טבילה והערב שמש לפני אכילת תרומה. המקווה כאן מתמלא ממי גשמים הנקווים מעצמם; בבריכת הדליים יש מים שאובים.'),sources:[source('Vayikra 22:6–7','Leviticus.22.6-7'),source('Rambam · Mikvaot 4:2','Mishneh_Torah,_Immersion_Pools.4.2')],initial:{immersed:false,night:false},actions:[['rain',B('Rain-fed mikveh','מקווה מי גשמים')],['bucket',B('Bucket-filled pool','בריכת דליים')],['wait',B('Wait for night','חכו לערב')],['go',B('Eat terumah','אכלו תרומה')]],solution:['rain','wait','go'],act(s,a){if(a==='rain'||a==='bucket'){if(!Tumah.mikveh({drawn:a==='bucket'}).valid)return 'fail';s.immersed=true;return 'change'}if(a==='wait'){s.night=true;return 'change'}if(a==='go')return Tumah.canEatTerumah({status:'rishon',immersed:s.immersed,starsOut:s.night}).ok?'win':'fail'},failure:B('Eli needs both immersion in a valid mikveh and nightfall before terumah.','אלי צריך גם טבילה במקווה כשר וגם הערב שמש לפני אכילת תרומה.')},
+    {id:'1-10',type:'finale',title:B('Jerusalem, at last','סוף סוף ירושלים'),goal:B('One last plowed-grave field. Eli carries terumah, so blowing is not enough. Choose the strong donkey.','עוד בית הפרס אחד. אלי נושא תרומה, ולכן ניפוח אינו מספיק. בחרו בחמור החזק.'),hint:B('The strong donkey carries Eli across without shifting the soil beneath his feet.','החמור החזק נושא את אלי בלי שרגליו יזיזו את הקרקע.'),why:B('Blowing and checking a plowed-grave field is not relied on for terumah. A strong animal that will not throw its rider is another permitted way across. Eli has reached Jerusalem—and learned why the details matter.','אין בודקים בית הפרס לתרומה בניפוח. בהמה חזקה שאינה מטילה את הרוכב היא דרך אחרת לעבור. אלי הגיע לירושלים ולמד מדוע הפרטים חשובים.'),sources:[field,source('Mishnah Oholot 18:4','Mishnah_Oholot.18.4')],initial:{route:null},actions:[['blow',B('Blow the soil','נפחו את העפר')],['donkey',B('Strong donkey','חמור חזק')],['go',B('To Jerusalem →','לירושלים ←')]],solution:['donkey','go'],act(s,a){if(a!=='go'){s.route=a;return 'change'}if(!s.route)return 'blocked';return Tumah.crossField({field:'plowed',method:s.route==='donkey'?'ride':'blow',strong:true,purpose:'terumah'}).tahor?'win':'fail'},failure:B('Blowing is not relied on for terumah. Choose the strong donkey for this crossing.','אין מסתמכים על ניפוח לתרומה. בחרו בחמור החזק למעבר הזה.')},
+    {id:'C-1',type:'search',title:B('First, we search','קודם מחפשים'),goal:B('Yehuda is helping prepare the Mikdash. Before using impure oil, search the storeroom for pure oil.','יהודה עוזר להכין את המקדש. לפני שמשתמשים בשמן טמא, חפשו במחסן שמן טהור.'),hint:B('Light the lantern and look through all three shelves.','הדליקו את העששית וחפשו בכל שלושת המדפים.'),why:B('For communal service, tumah is pushed aside when necessary, but one first seeks a pure way. That is why the search for pure oil matters.','בעבודת הציבור הטומאה דחויה בעת הצורך, אך קודם מחפשים דרך לעשות בטהרה. לכן החיפוש אחר שמן טהור חשוב.'),sources:[source('Rambam · Biat HaMikdash 4:15','Mishneh_Torah,_Admission_into_the_Sanctuary.4.15')],initial:{searched:0},actions:[['search',B('Search a shelf','חפשו במדף')],['go',B('Finish the search','סיימו את החיפוש')]],solution:['search','search','search','go'],act(s,a){if(a==='search'){s.searched=Math.min(3,s.searched+1);return 'change'}if(a==='go')return Tumah.communityTumah().mustSearchFirst&&s.searched<3?'blocked':'win'}},
+    {id:'C-2',type:'jugs',title:B('The hidden jug','הפך הנסתר'),goal:B('Three jugs, three stories. Inspect them and find the one with an intact seal that has not been moved.','שלושה פכים, שלושה סיפורים. בדקו ומצאו את הפך שחתימתו שלמה ולא הוזז.'),hint:B('The middle jug has an intact seal and undisturbed dust around it.','לפך האמצעי חתימה שלמה והאבק סביבו לא הוזז.'),why:B('The Chanukah account tells of one jug bearing the Kohen Gadol’s seal. In this puzzle, an intact seal and undisturbed position identify the protected jug, following the interpretation used in the original research.','בסיפור חנוכה נמצא פך אחד בחותמו של כהן גדול. במשחק חתימה שלמה ומקום שלא הופרע מזהים את הפך השמור, לפי הפירוש שנבחר במחקר המקורי.'),sources:[source('Shabbat 21b · Rashi and Tosafot','Shabbat.21b')],initial:{jug:null},actions:[['left',B('Broken seal','חותם שבור')],['middle',B('Intact & undisturbed','שלם ולא הוזז')],['right',B('Moved jug','פך שהוזז')],['go',B('Choose this jug','בחרו בפך')]],solution:['middle','go'],act(s,a){if(a!=='go'){s.jug=a;return 'change'}if(!s.jug)return 'blocked';return Tumah.jugIsPure({sealed:true,intact:s.jug!=='left',moved:s.jug==='right'}).pure?'win':'fail'},failure:B('Check both the seal and whether the jug was moved.','בדקו גם את החותם וגם אם הפך הוזז.')},
+    {id:'C-3',type:'seal',title:B('Sealed tight','סגור היטב'),goal:B('Oil in a clay jar needs protection in an ohel with a met. Fit the lid and seal it tightly.','שמן בכלי חרס זקוק להגנה באוהל המת. התאימו מכסה ואטמו אותו היטב.'),hint:B('A lid resting on top is not a tight seal. Fit it, then add the seal.','מכסה שמונח למעלה אינו צמיד פתיל. הניחו ואז אטמו.'),why:B('A tightly sealed clay vessel protects the oil inside it in an ohel with a met. An open vessel, or one with a loose lid, does not provide this protection. This is tzamid patil.','כלי חרס המוקף צמיד פתיל מציל את השמן שבתוכו באוהל המת. כלי פתוח או מכסה רופף אינם מגינים כך. זהו דין צמיד פתיל.'),sources:[seal],initial:{lid:false,sealed:false},actions:[['lid',B('Fit the lid','התאימו מכסה')],['seal',B('Seal the rim','אטמו את השפה')],['go',B('Check the oil','בדקו את השמן')]],solution:['lid','seal','go'],act(s,a){if(a==='lid'){s.lid=true;return 'change'}if(a==='seal'){if(!s.lid)return 'blocked';s.sealed=true;return 'change'}if(a==='go')return Tumah.itemInOhel({item:'oil',vessel:{material:'clay',sealed:s.sealed}}).tahor?'win':'fail'},failure:B('A loose lid is not enough. Fit the lid and seal the rim tightly.','מכסה רופף אינו מספיק. התאימו את המכסה ואטמו היטב.')},
+    {id:'C-4',type:'vessels',title:B('More than a pretty cup','לא רק כלי יפה'),goal:B('Which vessel stays tahor in an ohel with a met? Compare an open clay jar, a stone cup, and a sealed metal jug.','איזה כלי נשאר טהור באוהל המת? השוו כלי חרס פתוח, כוס אבן וכלי מתכת סגור.'),hint:B('Stone vessels do not become tamei. A seal does not protect a metal vessel.','כלי אבן אינם מקבלים טומאה. חותם אינו מציל כלי מתכת.'),why:B('Stone vessels do not become tamei. An open clay vessel becomes tamei in an ohel with a met; sealing a metal vessel does not protect it. Material matters.','כלי אבן אינם מקבלים טומאה. כלי חרס פתוח נטמא באוהל המת, וחותם אינו מגן על כלי מתכת. החומר שממנו עשוי הכלי משנה.'),sources:[source('Rambam · Kelim 1:6','Mishneh_Torah,_Vessels.1.6'),seal],initial:{vessel:null},actions:[['clay',B('Open clay','חרס פתוח')],['stone',B('Stone cup','כוס אבן')],['metal',B('Sealed metal','מתכת סגורה')],['go',B('Choose the vessel','בחרו בכלי')]],solution:['stone','go'],act(s,a){if(a!=='go'){s.vessel=a;return 'change'}if(!s.vessel)return 'blocked';return Tumah.vesselInOhel({material:s.vessel,sealed:s.vessel==='metal'}).tahor?'win':'fail'},failure:B('This vessel becomes tamei here. Try a material that does not receive tumah.','הכלי הזה נטמא כאן. נסו חומר שאינו מקבל טומאה.')},
+    {id:'C-5',type:'oil',title:B('Keep the oil pure','שומרים על השמן'),goal:B('The oil is tahor. Wash Yehuda’s hands before pouring it into the lamp.','השמן טהור. רחצו את ידיו של יהודה לפני מזיגתו לנר.'),hint:B('Unwashed hands have the status of sheni. Liquids have a special rule.','ידיים שלא ניטלו הן שניות. למשקים יש דין מיוחד.'),why:B('Unwashed hands are treated as sheni by Rabbinic law. Liquid that touches a sheni becomes rishon. Washing the hands before handling the oil preserves its tahor status in this puzzle.','סתם ידיים הן שניות מדברי סופרים. משקה הנוגע בשני נעשה ראשון לטומאה. נטילת ידיים לפני הטיפול בשמן שומרת כאן על טהרתו.'),sources:[source('Rambam · Shear Avot HaTumot 7:5','Mishneh_Torah,_Other_Sources_of_Defilement.7.5')],initial:{washed:false},actions:[['wash',B('Wash hands','טלו ידיים')],['go',B('Pour the oil','מזגו את השמן')]],solution:['wash','go'],act(s,a){if(a==='wash'){s.washed=true;return 'change'}if(a==='go')return Tumah.liquidTouches(Tumah.hands(s.washed).level).level==='tahor'?'win':'fail'},failure:B('Unwashed hands make the oil tamei. Wash before pouring.','ידיים שלא ניטלו מטמאות את השמן. טלו ידיים לפני המזיגה.')},
+    {id:'C-6',type:'lamps',title:B('A little light','מעט אור'),goal:B('The pure oil is ready. Light the seven lamps of the Mikdash menorah. Remember the miracle of eight days.','השמן הטהור מוכן. הדליקו את שבעת נרות המנורה במקדש וזכרו את נס שמונת הימים.'),hint:B('Tap each of the seven lamps, or use the light button.','הקישו על כל אחד משבעת הנרות או השתמשו בכפתור ההדלקה.'),why:B('The menorah in the Mikdash has seven lamps. The Chanukah account tells how oil sufficient for one day lasted eight days. A Chanukah lamp used at home commemorates those eight days; it is different from the seven-branched Mikdash menorah.','למנורת המקדש שבעה נרות. בסיפור חנוכה השמן שהיה מספיק ליום אחד דלק שמונה ימים. נרות החנוכה בבית מזכירים את שמונת הימים, והם שונים ממנורת המקדש בעלת שבעת הקנים.'),sources:[source('Shabbat 21b','Shabbat.21b'),source('Shemot 25:37','Exodus.25.37')],initial:{lit:[]},actions:[['light',B('Light the next lamp','הדליקו את הנר הבא')],['go',B('Celebrate →','חוגגים ←')]],solution:[...Array(7).fill('light'),'go'],act(s,a){if(a.startsWith('lamp')){const n=Number(a.slice(4));if(!s.lit.includes(n))s.lit.push(n);return 'change'}if(a==='light'){const n=[0,1,2,3,4,5,6].find(n=>!s.lit.includes(n));if(n!==undefined)s.lit.push(n);return 'change'}if(a==='go')return s.lit.length===7?'win':'blocked'}}
+  ];
+  return levels.map((l,i)=>({...l,index:i,pack:i<10?'road':'light'}));
+})();
+if(typeof module!=='undefined')module.exports=TeharaLevels;
+</script><script>/* Original SVG illustration kit. No remote assets or GPU required. */
+const TeharaArt = (()=>{
+ const defs=`<defs><linearGradient id="sky" x2="0" y2="1"><stop stop-color="#dfece3"/><stop offset="1" stop-color="#f2edcf"/></linearGradient><linearGradient id="night" x2="0" y2="1"><stop stop-color="#233e4b"/><stop offset="1" stop-color="#6a8277"/></linearGradient><linearGradient id="earth" x2="0" y2="1"><stop stop-color="#bdba88"/><stop offset="1" stop-color="#999873"/></linearGradient><linearGradient id="stone" x2="0" y2="1"><stop stop-color="#eddfb6"/><stop offset="1" stop-color="#cbbb8f"/></linearGradient><linearGradient id="gold" x2="0" y2="1"><stop stop-color="#f5d88a"/><stop offset=".5" stop-color="#d5a34c"/><stop offset="1" stop-color="#b78435"/></linearGradient><linearGradient id="robe" x2="1" y2="0"><stop stop-color="#e9e8d5"/><stop offset=".55" stop-color="#fffef1"/><stop offset="1" stop-color="#d9d9c2"/></linearGradient><radialGradient id="glow"><stop stop-color="#ffdf85" stop-opacity=".6"/><stop offset="1" stop-color="#ffdf85" stop-opacity="0"/></radialGradient><pattern id="blocks" width="70" height="36" patternUnits="userSpaceOnUse"><rect width="70" height="36" fill="url(#stone)"/><path d="M0 0H70M0 36H70M35 0V18M0 18H70M0 18V36M70 18V36" fill="none" stroke="#b2a77b" stroke-opacity=".35" stroke-width="1.5"/></pattern><filter id="shadow" x="-40%" y="-40%" width="180%" height="200%"><feDropShadow dx="0" dy="6" stdDeviation="7" flood-color="#2d4430" flood-opacity=".14"/></filter><filter id="soft"><feGaussianBlur stdDeviation="10"/></filter></defs>`;
+ const svg=(body,box='0 0 800 600',label='')=>`<svg xmlns="http://www.w3.org/2000/svg" viewBox="${box}" ${label?`role="img" aria-label="${label}"`:'aria-hidden="true"'}>${defs}${body}</svg>`;
+ const stone=(x,y,w,h)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="4" fill="url(#blocks)"/><path d="M${x} ${y}h${w}" stroke="#fff0ca" stroke-width="5"/>`;
+ function tree(x,y,s=1){return `<g transform="translate(${x} ${y}) scale(${s})"><ellipse cy="3" rx="67" ry="13" fill="#3b5734" opacity=".1"/><path d="M-11 0L-4-102L-30-142M-4-80L23-126" fill="none" stroke="#8e8760" stroke-width="13" stroke-linecap="round"/><g fill="#83996b"><ellipse cx="-35" cy="-135" rx="46" ry="35"/><ellipse cx="28" cy="-146" rx="47" ry="37"/><ellipse cy="-171" rx="45" ry="35"/></g><g fill="#9bae7c"><ellipse cx="-35" cy="-151" rx="35" ry="25"/><ellipse cx="12" cy="-177" rx="35" ry="25"/></g><g fill="#b6c396" opacity=".7"><ellipse cx="-18" cy="-180" rx="7" ry="3" transform="rotate(-25 -18 -180)"/><ellipse cx="41" cy="-158" rx="8" ry="3" transform="rotate(-25 41 -158)"/><ellipse cx="-58" cy="-137" rx="7" ry="3"/></g></g>`}
+ function bush(x,y,s=1){return `<g transform="translate(${x} ${y}) scale(${s})" fill="#81916a"><ellipse rx="30" ry="15"/><circle cx="-15" cy="-12" r="15"/><circle cx="10" cy="-16" r="20"/><path d="M-25 1q20-24 48-7" fill="#99a47a"/></g>`}
+ function city(x,y,s=1){return `<g transform="translate(${x} ${y}) scale(${s})" filter="url(#shadow)"><path d="M0 0V-61h30v-26h17v-20h18v20h26v-29h22v29h25v-17h22v17h25v-21h25v21h35v87Z" fill="#ddd4ab"/><path d="M30-60V-93h20v-18h14v18h23v-24h22v24h26v-18h18v18h22v-18h20v18h30v33" fill="#eee3ba"/><path d="M0-32h245V0H0Z" fill="url(#blocks)"/><path d="M107 0v-37q16-22 32 0V0" fill="#8b9273"/><path d="M114 0v-32q9-13 18 0V0" fill="#667e62"/><g fill="#9ca283"><path d="M18-44v-12q5-8 10 0v12Z"/><path d="M68-44v-12q5-8 10 0v12Z"/><path d="M167-44v-12q5-8 10 0v12Z"/><path d="M215-44v-12q5-8 10 0v12Z"/></g><path d="M70-118h94v12H70Z" fill="#d4c399"/><path d="M82-153h70v36H82Z" fill="#e9dcaf"/><path d="M76-154h83l-8-7H84Z" fill="#dbc898"/><path d="M90-145h8v27h-8m17-27h8v27h-8m17-27h8v27h-8m15-27h8v27h-8" fill="#bcae80"/></g>`}
+ function hero(x,y,s=1,walking=false,yehuda=false){return `<g class="hero-actor" transform="translate(${x} ${y})"><g transform="scale(${s})"><ellipse cy="3" rx="25" ry="7" fill="#3c4d30" opacity=".17"/><g class="${walking?'walk-legs':''}"><path d="M-13-18l-2 18h12l3-18m6 0 2 18h12l-5-18" fill="#917a52"/><path d="M-16 1h15m8 0h14" stroke="#5d6748" stroke-width="5" stroke-linecap="round"/></g><path d="M-17-65Q0-75 18-64l10 47q-28 14-55-1Z" fill="url(#robe)" stroke="#d4d7bb" stroke-width="1.5"/><path d="M-9-61l-6 40M7-58l8 37" stroke="#dadbc1" stroke-width="2" fill="none"/><path d="M-21-43q24 10 44-1l1 6q-25 10-46 0Z" fill="${yehuda?'#a77748':'#b2bb94'}"/><path d="M-14-62q-14 4-15 21" fill="none" stroke="#eeeeda" stroke-width="13" stroke-linecap="round"/><path d="M-28-40l-1 7" stroke="#c5a37a" stroke-width="8" stroke-linecap="round"/><path d="M17-61q12 5 14 16" fill="none" stroke="#f5f2df" stroke-width="13" stroke-linecap="round"/><path d="M31-44l2 6" stroke="#c5a37a" stroke-width="8" stroke-linecap="round"/><rect x="-6" y="-77" width="12" height="16" rx="4" fill="#caa87e"/><ellipse cy="-91" rx="20" ry="25" fill="#d6b38b"/><ellipse cx="18" cy="-87" rx="5" ry="7" fill="#caa77d"/><path d="M-19-90q-6-27 14-30 25-4 25 25l-7-8q-15 1-25-8l-4 22Z" fill="#5f634a"/><path d="M-19-110q20-13 39 1l-1-8q-17-17-37 0Z" fill="#e8e8d3"/><circle cx="7" cy="-90" r="2" fill="#46513c"/><path d="M5-80q6 4 11-1" fill="none" stroke="#9a785b" stroke-width="2" stroke-linecap="round"/><path d="M-20-85v14" stroke="#6c684b" stroke-width="3" stroke-linecap="round"/></g></g>`}
+ function donkey(x,y,s=1){return `<g transform="translate(${x} ${y}) scale(${s})"><ellipse cy="5" rx="65" ry="10" fill="#344c32" opacity=".12"/><path d="M-41-35l-7 36h10l13-33m49-2 8 35h10l-5-42" stroke="#797e6a" stroke-width="8" fill="none"/><ellipse cx="-6" cy="-51" rx="49" ry="27" fill="#9a9b83"/><path d="M28-57l6-40 22-3 14 29-9 12Z" fill="#a5a48b"/><ellipse cx="60" cy="-71" rx="16" ry="12" fill="#ccc4a1"/><path d="M39-95l-5-28q4-11 11 5l5 22m2 0 6-28q6-7 7 5l-2 26" fill="#8e937e"/><circle cx="56" cy="-87" r="3" fill="#455340"/><path d="M-48-53q-30 3-21 31" stroke="#7d826a" stroke-width="5" fill="none"/><path d="M-29-76h51v34h-51Z" fill="#bc9d67"/><path d="M-20-72h34v29h-34Z" fill="#d4b67c"/><path d="M-20-62h34m-34 11h34" stroke="#9e8054" stroke-width="2"/></g>`}
+ function jar(x,y,s=1,material='clay',sealed=false,broken=false){const c=material==='stone'?'#c7c9b1':material==='metal'?'#b8b37a':'#c68c60';return `<g transform="translate(${x} ${y}) scale(${s})"><ellipse cy="2" rx="31" ry="7" fill="#2f4431" opacity=".1"/><path d="M-12-67v12q-22 5-23 26-2 32 35 32t35-32q-1-21-23-26v-12Z" fill="${c}" stroke="#766e4833" stroke-width="2"/><path d="M-20-47q-10 17-5 34" stroke="#fff4d5" stroke-opacity=".35" stroke-width="7" stroke-linecap="round" fill="none"/><path d="M23-52q22-5 22 10t-13 16" fill="none" stroke="${c}" stroke-width="7"/><ellipse cy="-67" rx="15" ry="5" fill="#7e7050"/>${sealed?`<path d="M-17-72h34v9h-34Z" fill="#d9b984"/><path d="M-17-63h34" stroke="#e2cf9f" stroke-width="6"/><circle cy="-61" r="9" fill="#a76748"/><path d="M-4-61h8m-4-4v8" stroke="#e3bf81" stroke-width="1.5"/>`:''}${broken?'<path d="M-1-70l5 5-8 5 6 5" stroke="#eee6c8" stroke-width="4" fill="none"/>':''}</g>`}
+ function bone(x,y,s=1){return `<g transform="translate(${x} ${y}) rotate(-20) scale(${s})" fill="#eee6cf" stroke="#b9ae93" stroke-width="1"><path d="M-15-4q-10-12-14-4-4 5 3 9-7 8 1 11 5 2 10-8h30q9 11 14 4 5-6-3-9 6-8-1-11-6-2-10 8Z"/></g>`}
+ const label=(text,x,y,dark=false)=>`<g pointer-events="none"><rect x="${x-65}" y="${y-15}" width="130" height="30" rx="15" fill="${dark?'#fff8e4':'#f7f5e9'}" opacity=".9"/><text x="${x}" y="${y+4}" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" fill="#66785c">${text}</text></g>`;
+ const click=(action,name,body)=>`<g data-action="${action}" role="button" tabindex="0" aria-label="${name}">${body}</g>`;
+ const pin=(x,y,a,name)=>click(a,name,`<g class="gold-pin" transform="translate(${x} ${y})"><rect class="interactive" x="-13" y="-33" width="100" height="66" rx="25" fill="transparent"/><path d="M0 0h90" stroke="#af7c32" stroke-width="11" stroke-linecap="round"/><path d="M0-2h88" stroke="#efcb76" stroke-width="6" stroke-linecap="round"/><circle class="interactive" r="22" fill="none" stroke="url(#gold)" stroke-width="9"/><circle class="sparkle" r="31" fill="none" stroke="#fff1bb" stroke-width="2" opacity=".6"/></g>`);
+ function background(night=false){return `<rect width="800" height="600" fill="url(#${night?'night':'sky'})"/>${night?'<g fill="#f0dfab"><circle cx="132" cy="78" r="2"/><circle cx="450" cy="55" r="2"/><circle cx="620" cy="117" r="2"/><circle cx="730" cy="67" r="2"/><circle cx="320" cy="95" r="1.5"/></g><circle cx="640" cy="80" r="23" fill="#f0e7bc"/>':'<circle cx="610" cy="98" r="42" fill="#f6e4ad" opacity=".8"/><g fill="#fffaf0" opacity=".5"><path d="M70 112q20-28 42-8 17-34 42-10 31-10 41 18Z"/><path d="M470 70q15-20 32-8 18-26 35-4 20-8 30 12Z"/></g>'}<path d="M0 280Q100 180 220 245T450 215T800 240V600H0Z" fill="${night?'#6b8274':'#c0cdae'}"/><path d="M0 330Q180 230 330 300T600 270T800 300V600H0Z" fill="${night?'#66816e':'#a6ba92'}"/><path d="M0 390Q220 310 400 355T800 340V600H0Z" fill="${night?'#57715d':'#93ab7f'}"/>${city(565,273,.6)}<path d="M800 600H0V480Q170 426 330 466T800 443Z" fill="${night?'#64755a':'#b8bc8e'}"/><path d="M580 302q-130 20-96 80T290 482q-90 40-85 118h190q-95-79 90-129t80-117q-24-25 15-52Z" fill="${night?'#9c9d7b':'#e5d9b0'}" opacity=".8"/>`}
+ function landscape(){return svg(`<defs><clipPath id="vignette"><path d="M55 130Q76 54 190 58Q300 18 423 58Q579 18 680 79Q767 99 751 195Q806 291 757 386Q793 477 681 524Q535 576 370 551Q186 581 81 500Q16 449 43 350Q-3 241 55 130Z"/></clipPath></defs><g clip-path="url(#vignette)"><ellipse cx="430" cy="515" rx="317" ry="38" fill="#647d4b" opacity=".06"/><g>${background(false)}</g><path d="M0 0H800V600H0Z" fill="none"/><path d="M0 0H800V600H0Z" fill="#f7f4eb" opacity=".05"/>${tree(158,425,1.15)}${tree(710,390,.7)}${bush(73,453,1.2)}${stone(120,455,225,24)}${stone(125,479,215,36)}<path d="M166 454V365q0-48 47-48t47 48v89" fill="url(#blocks)"/><path d="M189 454v-86q23-39 46 0v86" fill="#596c4f"/><path d="M148 319h130l-12-12H162Z" fill="#e2d1a4"/>${hero(318,469,1.05)}${donkey(492,477,.66)}${bush(625,489,1.1)}<path d="M55 514q230 35 615-4" stroke="#b1ba8c" stroke-width="3" fill="none"/><path d="M648 374l4-10m-9 4 12 4M369 247l3-9m-7 3 10 4" stroke="#bba36b" stroke-width="2" opacity=".8"/><path d="M343 163q7-8 15 0 7-8 14 0m-340 100q5-7 12 0 6-7 12 0" stroke="#899879" stroke-width="2" fill="none"/></g>`,'0 0 800 600','Eli and his donkey on a sunlit road to Jerusalem')}
+ function chapter(pack){return pack==='road'?svg(`${background()}${tree(145,455,1.1)}${stone(260,430,270,50)}<path d="M350 480v-85q45-70 90 0v85" fill="#94aa7c"/>${hero(550,462,1.2)}${bush(670,480)}`):svg(`${background(true)}${stone(120,190,560,370)}${stone(155,160,490,40)}<path d="M250 555V330q150-170 300 0v225" fill="#647563"/>${menorah(400,491,1.1,[0,1,2,3,4,5,6])}`)}
+ function menorah(x,y,s=1,lit=[],interactive=false){return `<g transform="translate(${x} ${y}) scale(${s})"><ellipse cy="12" rx="100" ry="13" fill="#263b2e" opacity=".14"/><path d="M0 0V-210M-75-185v40q0 65 75 65t75-65v-40M-50-197v52q0 40 50 40t50-40v-52M-25-205v60q0 15 25 15t25-15v-60" stroke="url(#gold)" stroke-width="9" fill="none" stroke-linecap="round"/><path d="M-35 0h70l-10-15h-50Z" fill="url(#gold)"/>${[-75,-50,-25,0,25,50,75].map((v,i)=>{let yy=-210+Math.abs(v)/3;let b=`<rect class="interactive" x="${v-13}" y="${yy-12}" width="26" height="13" rx="3" fill="url(#gold)"/>${lit.includes(i)?`<circle cx="${v}" cy="${yy-29}" r="35" fill="url(#glow)"/><path class="sparkle" d="M${v} ${yy-12}q-13-15 0-34 13 19 0 34" fill="#ffe7a2"/><path d="M${v} ${yy-12}q-5-8 0-17 5 9 0 17" fill="#fff8d3"/>`:''}<rect x="${v-15}" y="${yy-43}" width="30" height="55" fill="transparent"/>`;return interactive?click('lamp'+i,'Light lamp '+(i+1),b):b}).join('')}</g>`}
+ function scene(l,s,L,won=false,busy=false){
+  const night=l.pack==='light'||(l.type==='sunset'&&s.night);let body=background(night),actor=true;
+  const txt=(en,he)=>L({en,he});
+  const path=(d,selected)=>`<path d="${d}" fill="none" stroke="${selected?'#f7e5ac':'#e4d5a8'}" stroke-width="30" stroke-linecap="round"/><path d="${d}" fill="none" stroke="#728b5e" stroke-width="3" stroke-linecap="round" class="marked-path" opacity="${selected?1:.4}"/>`;
+  const grave=(x,y)=>`${stone(x-55,y-45,110,45)}<path d="M${x-65} ${y-45}h130l-12-14H${x-53}Z" fill="#dcd0b3"/><ellipse cx="${x}" cy="${y+7}" rx="70" ry="15" fill="#ae94ba" opacity=".2"/>`;
+  if(l.type==='bridge')body+=`<path d="M0 430H280V600H0ZM520 430H800V600H520Z" fill="url(#earth)"/><path d="M0 430H280M520 430H800" stroke="#7f996c" stroke-width="14"/><path d="M288 600q30-60 120-45t100 45" fill="#9dbcb0"/><path d="M283 430v170M517 430v170" stroke="#a6a57c" stroke-width="6"/><g transform="translate(280 428) rotate(${s.bridge?0:-75})" style="transition:transform .55s"><rect width="240" height="19" rx="3" fill="#b99a65"/><path d="M10 3h220M20 3v15m30-15v15m30-15v15m30-15v15m30-15v15m30-15v15m30-15v15" stroke="#e0bf83" stroke-width="3"/></g>${!s.bridge?pin(280,345,'pin',txt('Pull the bridge pin','משכו את יתד הגשר')):label(txt('Ready to cross','אפשר לעבור'),402,350)}${tree(665,435,.8)}${label(txt('Jerusalem →','← ירושלים'),672,340)}`;
+  else if(l.type==='roof')body+=`${stone(0,430,800,170)}<rect x="260" y="260" width="225" height="170" fill="#6c7964"/>${grave(365,427)}<path d="M240 260v170m265-170v170" stroke="#a58e64" stroke-width="15"/><g style="transform:translateX(${s.roof?0:-245}px);transition:transform .6s"><path d="M230 253h450l-25-32H250Z" fill="#b99d6b"/><path d="M250 235h395" stroke="#dfc68b" stroke-width="4"/></g>${s.roof?'<rect x="260" y="265" width="415" height="161" fill="#b29bc0" opacity=".23"/>':''}${pin(600,200,'roof',txt('Slide the awning','הזיזו את הגגון'))}${label(txt('Burial chamber','חדר קבורה'),365,474)}${label(txt('The crossing','המעבר'),610,474)}`;
+  else if(l.type==='bone')body+=`${stone(0,450,235,150)}${stone(565,450,235,150)}<path d="M230 450q170-245 340 0" fill="none" stroke="#d7c79c" stroke-width="42"/><path d="M230 430q170-245 340 0" fill="none" stroke="#f0dfb5" stroke-width="4"/><rect x="230" y="468" width="345" height="15" rx="4" fill="#a99062"/>${bone(400,461,.8)}${click('arch',txt('Choose stone arch','בחרו בקשת האבן'),`<path class="interactive" d="M235 400q165-175 330 0" fill="none" stroke="${s.route==='arch'?'#ecce82':'transparent'}" stroke-width="38"/>`)}${click('plank',txt('Choose loose plank','בחרו בקרש הרופף'),`<rect class="interactive" x="240" y="449" width="320" height="60" fill="transparent" stroke="${s.route==='plank'?'#ecce82':'transparent'}" stroke-width="3"/>`)}${label(txt('Stone arch','קשת האבן'),400,290)}${label(txt('Loose plank','קרש רופף'),400,525)}`;
+  else if(l.type==='tree')body+=`${stone(0,450,800,150)}${grave(348,448)}${tree(220,450,1.45)}<g style="transform:rotate(${s.branch?0:-65}deg);transform-origin:220px 240px;transition:transform .6s"><path d="M220 240q140-25 390 20" fill="none" stroke="#8e8760" stroke-width="17"/><ellipse cx="455" cy="238" rx="145" ry="37" fill="#8da174"/></g>${s.branch?'<rect x="295" y="280" width="340" height="168" fill="#aa8fba" opacity=".2"/>':''}${pin(588,210,'branch',txt('Move the branch','הרחיקו את הענף'))}${label(txt('The path','הדרך'),610,495)}`;
+  else if(['stones','field','lost','finale'].includes(l.type)){
+    body+=`<path d="M215 326h400l55 220H170Z" fill="#b3a47b" stroke="#e8e4c4" stroke-width="5" stroke-dasharray="12 9"/>${label(l.type==='lost'?txt('Lost whole grave','קבר שלם שאבד'):txt('Plowed-grave field','בית הפרס שנחרש'),414,300)}`;
+    if(l.type==='stones'){for(let r=0;r<2;r++){body+=click(r?'lower':'upper',txt(r?'Lower stones':'Upper stones',r?'אבנים תחתונות':'אבנים עליונות'),Array.from({length:5},(_,i)=>`<g transform="translate(${245+i*72} ${385+r*105}) rotate(${s.tested&&!r?(i%2?8:-8):0})"><ellipse class="interactive" rx="27" ry="16" fill="${s.route===(r?'lower':'upper')?'#eddb9d':'#d0cfb6'}" stroke="#a1a687" stroke-width="3"/><path d="M-20-6q20-12 40 0" stroke="#eeebd2" stroke-width="3" fill="none"/></g>`).join(''));}if(s.tested)body+=`${label(txt('Wobbly','מתנדנדות'),710,385)}${label(txt('Steady','יציבות'),710,490)}`;}
+    if(l.type==='field'){for(let i=0;i<4;i++){for(let r=0;r<3;r++){const x=255+i*98,y=365+r*65,clear=i<s.checked,hasBone=[[0,1],[2],[0],[2]][i].includes(r);body+=click('step:'+i+':'+r,txt('Step '+(i+1)+', row '+(r+1),'צעד '+(i+1)+', שורה '+(r+1)),`<rect class="interactive" x="${x-40}" y="${y-27}" width="80" height="54" rx="15" fill="${s.path[i]===r?'#d5ddb2':clear?'#d9cba1':'#a49972'}" stroke="${s.path[i]===r?'#69835c':'#b7ad85'}" stroke-width="3"/>${clear&&hasBone?bone(x,y,.4):''}${s.path[i]===r?`<path d="M${x-10} ${y}l7 7 14-17" stroke="#6c865d" stroke-width="4" fill="none"/>`:''}`)}}body+=label(s.checked<4?`${s.checked} / 4`:txt('Choose each step →','בחרו כל צעד →'),420,555);}
+
+    if(l.type==='lost'){body+=path('M140 440Q90 570 410 575T710 440',s.route==='detour');body+=click('detour',txt('Choose road around','בחרו בדרך מסביב'),'<path class="interactive" d="M150 480q90 160 470 50" fill="none" stroke="transparent" stroke-width="65"/>');body+=path('M220 435H610',s.route==='field');}
+    if(l.type==='finale')body+=`${donkey(485,480,1.1)}${s.route==='donkey'?label(txt('Ready for Eli','מוכן לאלי'),480,315):''}`;
+    body+=`${tree(735,435,.65)}${bush(90,490,.8)}`;
+  }
+  else if(l.type==='marks'){body+=`${stone(0,490,800,110)}${grave(410,445)}${[1,1.2,1.7].map((v,i)=>click(['tight','margin','wide'][i],txt(['Close outline','Small margin','Wide outline'][i],['סימון צמוד','מרווח קטן','סימון רחב'][i]),`<ellipse class="interactive" cx="410" cy="440" rx="${85*v}" ry="${47*v}" fill="none" stroke="${s.mark===['tight','margin','wide'][i]?'#fff9d8':'#e7e8d0'}" stroke-width="${s.mark===['tight','margin','wide'][i]?8:3}" stroke-dasharray="${s.mark===['tight','margin','wide'][i]?'0':'6 7'}"/>`)).join('')}${jar(670,480,.9,'stone')}${label(txt('Lime wash','סיד'),675,520)}`}
+  else if(l.type==='sunset'){body+=`${stone(0,470,800,130)}<path d="M230 470h150v55H230Z" fill="#90b2a3" stroke="#c7c5a1" stroke-width="10"/><path d="M440 470h150v55H440Z" fill="#90b2a3" stroke="#c7c5a1" stroke-width="10"/><path d="M270 490q20-9 40 0t40 0m110 0q20-9 40 0t40 0" stroke="#c1d5bc" stroke-width="3" fill="none"/>${label(txt('Rainwater','מי גשמים'),305,562)}${label(txt('Drawn water','מים שאובים'),515,562)}<path d="M280 380l-5 16m20-32-5 16m30-2-5 16" stroke="#91b2a7" stroke-width="4" stroke-linecap="round"/><path d="M500 410h33l-5 32h-22Z" fill="#a58d65"/><path d="M503 409q13-30 26 0" stroke="#8e7f5e" fill="none" stroke-width="4"/>${s.immersed?label(txt('Immersed ✓','טבל ✓'),150,320):''}${s.night?label(txt('Nightfall ✓','צאת הכוכבים ✓'),650,150):''}`;}
+  else{
+    body+=`${stone(0,120,800,480)}<path d="M50 600V275q100-180 200 0v325m300 0V275q100-180 200 0v325" fill="#697f6b"/><path d="M280 600V240q120-180 240 0v360" fill="#4e695b"/>${stone(0,500,800,100)}<rect y="484" width="800" height="17" fill="#dfcda0"/>`;
+    if(l.type==='search'){for(let i=0;i<3;i++)body+=`<rect x="270" y="${260+i*70}" width="260" height="12" rx="2" fill="#ab9468"/>${jar(330,260+i*70,.65,'clay',s.searched>i)}${jar(450,260+i*70,.65,'clay',s.searched>i)}${s.searched>i?label('✓',590,240+i*70):''}`;body+=label(`${s.searched} / 3`,400,550);}
+    if(l.type==='jugs'||l.type==='vessels'){['left','middle','right'].forEach((a,i)=>{let mat=l.type==='vessels'?['clay','stone','metal'][i]:'clay',action=l.type==='vessels'?mat:a;body+=click(action,txt(['Choose left vessel','Choose middle vessel','Choose right vessel'][i],['בחרו בכלי השמאלי','בחרו בכלי האמצעי','בחרו בכלי הימני'][i]),`<rect class="interactive" x="${210+i*165}" y="290" width="130" height="190" rx="25" fill="${s.jug===a||s.vessel===mat?'#f7de9b22':'transparent'}" stroke="${s.jug===a||s.vessel===mat?'#e4cf8a':'transparent'}" stroke-width="3"/>${jar(275+i*165,468,1.4,mat,l.type==='jugs'||i===2,l.type==='jugs'&&i===0)}${l.type==='jugs'&&i===2?'<path d="M580 479q10-6 28 0m-30 8h20" stroke="#d3c9a4" fill="none" stroke-width="3"/>':''}`)});}
+    if(l.type==='seal'){body+=jar(420,475,2,'clay',s.lid);if(s.lid&&!s.sealed)body+='<path d="M388 349h64" stroke="#6f6e53" stroke-width="6" stroke-dasharray="6 4"/>';if(s.sealed)body+=label(txt('Tightly sealed ✓','צמיד פתיל ✓'),420,275);else body+=pin(585,340,s.lid?'seal':'lid',txt('Fit and seal the lid','התאימו ואטמו את המכסה'));}
+    if(l.type==='oil'){body+=`${jar(345,470,1.6,'clay',true)}${menorah(565,480,.6,[])}<path d="M205 420h40l-5 43h-30Z" fill="#b1b69a"/><path d="M210 418q16-35 30 0" stroke="#c1c3a7" stroke-width="4" fill="none"/>${s.washed?label(txt('Hands washed ✓','ידיים נטולות ✓'),245,310):''}`;}
+    if(l.type==='lamps'){body+=menorah(430,485,1.5,s.lit,true);actor=false;body+=label(`${s.lit.length} / 7`,430,554);}
+  }
+  if(actor){let x=won?710:['roof','tree'].includes(l.type)?540:120,y=['bridge','roof'].includes(l.type)?428:l.type==='bone'?445:l.type==='tree'?448:480;body+=hero(x,y,.92,busy,l.pack==='light');}
+  body+=`${bush(35,570,.8)}${bush(758,568,.7)}`;
+  return svg(body,'0 0 800 600',L(l.title));
+ }
+ return {landscape,chapter,scene,hero,svg,menorah};
+})();
+</script><script>(()=>{
+ const $=s=>document.querySelector(s), app=$('#app');
+ const read=(key,fallback)=>{try{const v=localStorage.getItem(key);return v===null?fallback:JSON.parse(v)}catch{return fallback}};
+ const save=(key,v)=>{try{localStorage.setItem(key,JSON.stringify(v))}catch{}};
+ let lang=read('tehara.v2.lang','en');if(!['en','he'].includes(lang))lang='en';
+ let progress=read('tehara.v2.stars',{});if(!progress||typeof progress!=='object'||Array.isArray(progress))progress={};
+ let sound=read('tehara.v2.sound',true),page='home',pack='road',level=null,state={},fails=0,hints=0,busy=false,generation=0,won=false,focusBefore=null;
+ const all=new URLSearchParams(location.search).get('unlock')==='all';
+ const L=o=>typeof o==='string'?o:o?.[lang]||o?.en||'';
+ const t=(en,he)=>lang==='he'?he:en;
+ const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const leaf='<svg class="brand-icon" viewBox="0 0 32 38" aria-hidden="true"><path d="M16 35V9m0 16C1 25 1 10 16 14m0 4C31 18 31 3 16 7m0 9C6 14 5 3 16 1" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>';
+ const levels=p=>TeharaLevels.filter(l=>l.pack===p);
+ const count=p=>levels(p).filter(l=>progress[l.id]).length;
+ const totalStars=()=>Object.values(progress).reduce((n,x)=>n+(Number.isInteger(x)?x:0),0);
+ const unlocked=l=>all||l.index===0||l.index===10||!!progress[TeharaLevels[l.index-1].id];
+ function nav(){return `<header class="nav"><button class="brand" data-nav="home" aria-label="${t('Tehara home','טהרה — דף הבית')}">${leaf}Tehara <small>טהרה</small></button><div class="nav-right"><button class="nav-link ${page==='home'||page==='map'||page==='game'?'active':''}" data-nav="home">${t('The journey','המסע')}</button><button class="nav-link ${page==='notebook'?'active':''}" data-nav="notebook">${t('My discoveries','התגליות שלי')}</button><div class="settings"><button class="setting" data-setting="lang" aria-label="${t('Switch to Hebrew','Switch to English')}">${t('עב','EN')}</button><button class="setting" data-setting="sound" aria-label="${sound?t('Mute sound','השתקת צליל'):t('Enable sound','הפעלת צליל')}" aria-pressed="${sound}">${sound?'♫':'♩'}</button></div></div></header>`}
+ function footer(){return `<footer class="footer"><span>${leaf.replace('brand-icon','footer-leaf').replace('<svg ','<svg width="13" height="17" ')}${t('Rooted in the sources. Made for curious minds.','מחובר למקורות. נוצר לסקרנים.')}</span><button data-about>${t('A note for grown-ups','מילה למבוגרים')}</button><span>${t('No ads. No rush. Just discovery.','בלי פרסומות. בלי לחץ. פשוט לגלות.')}</span></footer>`}
+ function render(){document.documentElement.lang=lang;document.documentElement.dir=lang==='he'?'rtl':'ltr';app.innerHTML=`<div class="shell">${nav()}<main id="main">${page==='home'?home():page==='map'?map():page==='notebook'?notebook():game()}</main>${page!=='game'?footer():''}</div>`;bind();if(page==='game')paint();}
+ function home(){return `<section class="hero"><div class="hero-copy"><div class="eyebrow">${t('A puzzle adventure in ancient Israel','הרפתקת חשיבה בארץ ישראל הקדומה')}</div><h1>${t('A little adventure.<br>A world of<br><em>discovery.</em>','הרפתקה קטנה.<br>עולם של<br><em>תגליות.</em>')}</h1><p>${t('Walk with Eli on the road to Jerusalem. Move a roof, find a path, and discover the wisdom hidden in every little puzzle.','צאו עם אלי בדרך לירושלים. הזיזו גג, מצאו דרך וגלו את החוכמה שמסתתרת בכל חידה קטנה.')}</p><button class="primary" data-continue>${t(totalStars()?'Continue the adventure':'Begin the adventure',totalStars()?'ממשיכים בהרפתקה':'מתחילים בהרפתקה')} <span>${t('→','←')}</span></button><div class="hero-small"><span>◷ ${t('Little puzzles, big ideas','חידות קטנות, רעיונות גדולים')}</span><span>✧ ${t('Ages 7 to endlessly curious','מגיל 7 ועד סקרנות אינסופית')}</span></div></div><div class="hero-art">${TeharaArt.landscape()}<div class="hero-stamp"><span class="dot"></span>${t('Next stop: Jerusalem','התחנה הבאה: ירושלים')}</div></div></section><section><div class="journey-heading"><div><div class="eyebrow">${t('Choose your chapter','בחרו פרק')}</div><h2>${t('Every path has a story.','לכל דרך יש סיפור.')}</h2></div><span class="subtle">${t('16 puzzles · 2 adventures','16 חידות · 2 הרפתקאות')}</span></div><div class="chapter-grid">${['road','light'].map(p=>`<button class="chapter" data-pack="${p}"><div class="chapter-illustration">${TeharaArt.chapter(p)}</div><div class="chapter-body"><div class="eyebrow">${p==='road'?t('Chapter 01 · The journey','פרק 01 · המסע'):t('A Chanukah story','סיפור לחנוכה')}</div><h3>${p==='road'?t('The road to Jerusalem','הדרך לירושלים'):t('A light in the darkness','אור בחשכה')}</h3><p>${p==='road'?t('A young Kohen. An open road. A few unexpected turns.','כהן צעיר. דרך פתוחה. כמה הפתעות בדרך.'):t('Help Yehuda find the little jug that changed everything.','עזרו ליהודה למצוא את הפך הקטן ששינה הכול.')}</p><div class="chapter-bottom"><span>${count(p)} / ${levels(p).length} ${t('discoveries','תגליות')}</span><span class="chapter-arrow">${t('→','←')}</span></div><div class="progress-track"><span style="width:${100*count(p)/levels(p).length}%"></span></div></div></button>`).join('')}</div></section>`}
+ function map(){return `<section class="map-head"><div><div class="eyebrow">${pack==='road'?t('Chapter 01 · The journey','פרק 01 · המסע'):t('A Chanukah story','סיפור לחנוכה')}</div><h1>${pack==='road'?t('The road to Jerusalem','הדרך לירושלים'):t('A light in the darkness','אור בחשכה')}</h1><p>${t('One small discovery at a time. Complete a puzzle to open the next part of the journey.','תגלית קטנה בכל פעם. פתרו חידה כדי לפתוח את התחנה הבאה במסע.')}</p></div><span class="badge">${count(pack)} / ${levels(pack).length}</span></section><div class="level-grid">${levels(pack).map((l,i)=>`<button class="level-card" data-level="${l.id}" ${unlocked(l)?'':'disabled'} aria-label="${esc(L(l.title))}${unlocked(l)?'':t(' · locked',' · נעול')}"><div class="level-preview">${TeharaArt.scene(l,l.initial,L)}<span class="level-number">${unlocked(l)?i+1:'◇'}</span></div><div class="level-info"><h3>${L(l.title)}</h3><small class="stars">${progress[l.id]?'★'.repeat(progress[l.id])+'☆'.repeat(3-progress[l.id]):unlocked(l)?t('Ready to discover →','מוכנים לגלות ←'):t('A discovery ahead','תגלית בהמשך')}</small></div></button>`).join('')}</div>`}
+ function notebook(){const found=TeharaLevels.filter(l=>progress[l.id]);return `<section class="map-head"><div><div class="eyebrow">${t('Your little book of wisdom','ספר החוכמה הקטן שלכם')}</div><h1>${t('My discoveries','התגליות שלי')}</h1><p>${t('The ideas you met along the way. Each discovery stays here, with a link back to its source.','הרעיונות שפגשתם בדרך. כל תגלית נשמרת כאן, עם קישור למקור שלה.')}</p></div><span class="badge">${totalStars()} ★</span></section>${found.length?`<div class="notebook-grid">${found.map(l=>`<article class="note"><div class="eyebrow">${l.id}</div><h3>${L(l.title)}</h3><p>${L(l.why)}</p>${l.sources.map(s=>`<a href="${s.url}" target="_blank" rel="noopener noreferrer">${s.name} ↗</a>`).join('<br>')}<p><button class="secondary" data-level="${l.id}">${t('Play again','שחקו שוב')}</button></p></article>`).join('')}</div>`:`<div class="empty"><p>${t('A whole journey of discoveries is waiting for you.','מסע שלם של תגליות מחכה לכם.')}</p><button class="primary" data-continue>${t('Find your first discovery →','גלו את התגלית הראשונה ←')}</button></div>`}`}
+ function game(){return `<div class="play-layout"><aside class="play-aside"><div class="eyebrow">${t('Discovery','תגלית')} ${levels(level.pack).indexOf(level)+1} / ${levels(level.pack).length}</div><h1>${L(level.title)}</h1><p>${L(level.goal)}</p><div class="step-dots" aria-hidden="true">${levels(level.pack).map(l=>`<span class="${l===level?'current':progress[l.id]?'done':''}"></span>`).join('')}</div><span class="rule-pill">✧ ${t('Look. Think. Discover.','הסתכלו. חשבו. גלו.')}</span></aside><section class="play-main" aria-label="${t('Puzzle','חידה')}"><div class="play-toolbar"><button class="nav-link" data-pack="${level.pack}">${t('← All discoveries','כל התגליות →')}</button><div class="tools"><button data-hint>${t('✧ A little hint','✧ רמז קטן')}</button><button data-restart aria-label="${t('Restart puzzle','התחילו מחדש')}">↻ ${t('Restart','מחדש')}</button></div></div><div class="board" id="board"></div><div class="feedback" id="feedback" role="status" aria-live="polite">${t('Tap a golden handle or use the buttons below.','הקישו על ידית זהב או השתמשו בכפתורים למטה.')}</div><div class="action-row" id="actions"></div><div class="play-caption"><span>✧ ${t('Every wrong turn teaches you something.','כל פנייה שגויה מלמדת משהו.')}</span><span>${t('No timer. Take your time.','בלי שעון. קחו את הזמן.')}</span></div></section></div>`}
+ function paint(){if(page!=='game')return;const focus=document.activeElement?.dataset.action;$('#board').innerHTML=TeharaArt.scene(level,state,L,won,busy);$('#board').classList.toggle('busy',busy);$('#board').querySelectorAll('[data-action]').forEach(el=>{el.addEventListener('click',()=>action(el.dataset.action));el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();action(el.dataset.action)}});if(busy)el.setAttribute('tabindex','-1')});$('#actions').innerHTML=level.actions.map(([id,label])=>`<button data-action="${id}" class="${id==='go'?'primary':'secondary'} ${[state.route,state.mark,state.vessel,state.jug].includes(id)?'selected':''}" ${busy?'disabled':''} ${id!=='go'?`aria-pressed="${[state.route,state.mark,state.vessel,state.jug].includes(id)}"`:''}>${L(label)}</button>`).join('');$('#actions').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>action(b.dataset.action)));if(focus){const target=$(`#actions [data-action="${focus}"]`)||$(`#board [data-action="${focus}"]`);target?.focus({preventScroll:true})}}
+ function start(id,force=false){const l=TeharaLevels.find(l=>l.id===id);if(!l||(!force&&!unlocked(l)))return;generation++;level=l;pack=l.pack;page='game';state=structuredClone(l.initial);fails=0;hints=0;busy=false;won=false;history.replaceState(null,'','#level='+id);save('tehara.v2.last',id);render();window.scrollTo(0,0);document.title=`${L(l.title)} · Tehara`;}
+ function navigate(p){generation++;busy=false;won=false;page=p;history.replaceState(null,'',location.pathname+location.search);render();window.scrollTo(0,0);document.title='Tehara · '+t('The road to Jerusalem','הדרך לירושלים')}
+ function continueGame(){const last=read('tehara.v2.last',null);let l=TeharaLevels.find(l=>l.id===last);if(l&&progress[l.id])l=levels(l.pack).find(x=>!progress[x.id])||l;if(!l||!unlocked(l))l=TeharaLevels[0];start(l.id)}
+ function message(msg,kind=''){const el=$('#feedback');if(el){el.textContent=msg;el.className='feedback '+kind}}
+ function changed(a){if(level.type==='field')return state.checked<4?t(`Eli revealed ${state.checked} of 4 columns. Keep blowing.`,`אלי חשף ${state.checked} מתוך 4 עמודות. המשיכו לנפח.`):t(`Choose a clear step in column ${Math.min(4,state.path.length+1)}. ${state.path.length}/4 steps chosen.`,`בחרו צעד פנוי בעמודה ${Math.min(4,state.path.length+1)}. נבחרו ${state.path.length}/4 צעדים.`);if(level.type==='search')return t(`${state.searched} of 3 shelves searched. Keep looking.`,`${state.searched} מתוך 3 מדפים נבדקו. המשיכו לחפש.`);if(level.type==='lamps')return t(`${state.lit.length} of 7 lamps are shining.`,`${state.lit.length} מתוך 7 נרות דולקים.`);if(a==='test')return t('The upper stones wobble. The lower stones stay steady.','האבנים העליונות מתנדנדות. האבנים התחתונות יציבות.');if(a==='rain')return t('Eli has immersed. Now wait for nightfall.','אלי טבל. עכשיו מחכים לערב.');if(a==='wait')return t('The stars are out. Has Eli immersed?','הכוכבים יצאו. האם אלי טבל?');if(a==='wash')return t('Hands washed. The oil is ready to pour.','הידיים נטולות. אפשר למזוג את השמן.');if(a==='seal')return t('The clay jar is tightly sealed.','כלי החרס אטום בצמיד פתיל.');return t('The world has changed. Look at the path before you go.','העולם השתנה. הסתכלו בדרך לפני שתצאו.')}
+ function action(a){if(busy||won||page!=='game')return;const before=structuredClone(state);const result=level.act(state,a);if(!result)return;audio(result==='fail'?'fail':'tap');if(result==='win'){finish();return}if(result==='blocked'){state=before;message(t('Not quite ready. Check the path or finish preparing first.','עוד לא מוכנים. בדקו את הדרך או סיימו את ההכנה.'),'hint');return}if(result==='fail'){fails++;state=before;paint();message(L(level.failure)||t('Try another way.','נסו דרך אחרת.'),'error');return}paint();message(changed(a));}
+ function finish(){busy=true;won=true;const gen=generation;paint();message(t('A clear path. A new discovery.','דרך פתוחה. תגלית חדשה.'));const actor=$('#board .hero-actor');if(actor){let points=[[120,480],[710,480]];if(level.type==='bridge')points=[[120,428],[710,428]];if(level.type==='roof')points=[[540,428],[740,428]];if(level.type==='tree')points=[[540,448],[740,448]];if(level.type==='bone')points=[[120,445],[235,430],[315,320],[400,295],[485,320],[565,430],[710,445]];if(level.type==='stones')points=[[120,480],[245,state.route==='lower'?490:385],[530,state.route==='lower'?490:385],[710,480]];if(level.type==='lost')points=[[120,480],[170,540],[340,568],[540,568],[710,480]];if(level.type==='field')points=[[120,480],...state.path.map((r,i)=>[255+i*98,365+r*65]),[710,480]];actor.style.transition='none';actor.animate(points.map(([x,y])=>({transform:`translate(${x}px, ${y}px)`})),{duration:1200,fill:'forwards',easing:'ease-in-out'});}const st=Math.max(1,3-(fails?1:0)-(hints?1:0));progress[level.id]=Math.max(progress[level.id]||0,st);save('tehara.v2.stars',progress);setTimeout(()=>{if(gen!==generation)return;audio('win');showWin(st);},matchMedia('(prefers-reduced-motion: reduce)').matches?120:1300)}
+ function showWin(st){const next=TeharaLevels.find(l=>l.pack===level.pack&&l.index===level.index+1);modal(`<div class="eyebrow">${t('Discovery made','תגלית חדשה')}</div><div class="stars" aria-label="${st} ${t('stars','כוכבים')}">${'★'.repeat(st)}${'☆'.repeat(3-st)}</div><h2>${L(level.title)}</h2><p>${L(level.why)}</p>${level.sources.length?`<div class="sources"><small>${t('FOLLOW THE SOURCE','אל המקור')}</small>${level.sources.map(s=>`<a href="${s.url}" target="_blank" rel="noopener noreferrer">${s.name} ↗</a>`).join('')}</div>`:''}<div class="modal-actions"><button class="secondary" data-win-map>${t('Chapter map','מפת הפרק')}</button><button class="primary" data-next>${next?t('Next discovery →','לתגלית הבאה ←'):t('Back to the journey →','בחזרה למסע ←')}</button></div>`,'win');$('[data-next]').onclick=()=>{closeModal();next?start(next.id):navigate('home')};$('[data-win-map]').onclick=()=>{closeModal();pack=level.pack;navigate('map')};window.__teharaWon={id:level.id,stars:st};const c=document.createElement('div');c.className='confetti';c.innerHTML=Array.from({length:30},(_,i)=>`<i style="--x:${(i%2?1:-1)*(40+i*11)}px;--r:${i*43}deg;--delay:${i%5*.04}s;background:${['#dfb861','#8da47c','#d6d7af','#bc9467'][i%4]}"></i>`).join('');$('#board')?.append(c)}
+ function modal(content,cls=''){focusBefore=document.activeElement;const el=document.createElement('div');el.className='modal-backdrop';el.innerHTML=`<section class="modal ${cls}" role="dialog" aria-modal="true" aria-label="${t('Tehara information','מידע על טהרה')}"><button class="close" aria-label="${t('Close','סגירה')}">×</button>${content}</section>`;app.append(el);el.querySelector('.close').onclick=closeModal;el.addEventListener('click',e=>{if(e.target===el)closeModal()});el.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();closeModal()}if(e.key==='Tab'){const nodes=[...el.querySelectorAll('button,a[href]')];const first=nodes[0],last=nodes.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}}});el.querySelector('.close').focus();document.body.style.overflow='hidden'}
+ function closeModal(){const win=$('.modal.win');$('.modal-backdrop')?.remove();document.body.style.overflow='';if(win){pack=level.pack;navigate('map')}else focusBefore?.focus()}
+ function bind(){document.querySelectorAll('[data-nav]').forEach(b=>b.onclick=()=>navigate(b.dataset.nav));document.querySelectorAll('[data-pack]').forEach(b=>b.onclick=()=>{pack=b.dataset.pack;navigate('map')});document.querySelectorAll('[data-level]').forEach(b=>b.onclick=()=>start(b.dataset.level));$('[data-continue]')?.addEventListener('click',continueGame);$('[data-setting="lang"]').onclick=()=>{lang=lang==='en'?'he':'en';save('tehara.v2.lang',lang);render()};$('[data-setting="sound"]').onclick=()=>{sound=!sound;save('tehara.v2.sound',sound);render();if(sound)audio('tap')};$('[data-restart]')?.addEventListener('click',()=>start(level.id));$('[data-hint]')?.addEventListener('click',()=>{if(busy)return;hints++;message(L(level.hint),'hint')});$('[data-about]')?.addEventListener('click',()=>modal(`<div class="eyebrow">${t('For curious minds & their grown-ups','לסקרנים ולמבוגרים שלהם')}</div><h2>${t('A world worth understanding.','עולם שכדאי להכיר.')}</h2><p>${t('Tehara turns the original “pull the pin” idea into short, untimed puzzles about tumah and taharah. The rules and linked research follow the Rambam where the original brief chose his rulings.','טהרה הופכת את רעיון משחק היתדות לחידות קצרות, ללא שעון, על טומאה וטהרה. הכללים והמחקר המקושר הולכים בעקבות הרמב״ם במקומות שבהם כך נקבע בתכנון המקורי.')}</p><p>${t('Tumah is a halachic status. It does not mean dirt, illness, or wrongdoing. These illustrated scenarios simplify complex laws for learning; the content still needs the planned review by a rav.','טומאה היא מעמד הלכתי. היא אינה לכלוך, מחלה או חטא. התרחישים המאוירים מפשטים הלכות מורכבות לצורך לימוד; התוכן עדיין זקוק לבדיקת הרב שתוכננה.')}</p><p>${t('Progress is saved on this device. No accounts, advertising, analytics, or payments. Sound and Hebrew are available in the top bar. Hints and wrong turns affect stars, but never block progress.','ההתקדמות נשמרת במכשיר הזה. ללא חשבונות, פרסומות, מעקב או תשלומים. אפשר להחליף שפה וצליל למעלה. רמזים וטעויות משפיעים על הכוכבים, אבל לא חוסמים התקדמות.')}</p><a href="https://github.com/Y2JCPA/tehara/blob/codex/tehara-reimagined/docs/GAME_DESIGN.md">${t('Read the original design brief ↗','לתכנון המקורי ↖')}</a>`))}
+ let audioContext;function audio(kind){if(!sound)return;try{audioContext??=new(window.AudioContext||window.webkitAudioContext)();if(audioContext.state==='suspended')audioContext.resume();const notes=kind==='win'?[523,659,784,1047]:kind==='fail'?[330,294]:[620];notes.forEach((f,i)=>{const o=audioContext.createOscillator(),g=audioContext.createGain(),now=audioContext.currentTime+i*.1;o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(.0001,now);g.gain.exponentialRampToValueAtTime(.07,now+.015);g.gain.exponentialRampToValueAtTime(.0001,now+.22);o.connect(g);g.connect(audioContext.destination);o.start(now);o.stop(now+.24)})}catch{}}
+ window.addEventListener('hashchange',()=>{const id=location.hash.match(/^#level=([\w-]+)$/)?.[1];if(id)start(id)});
+ // Read-only diagnostics plus the normal navigation path for end-to-end tests.
+ window.__tehara={startLevel:id=>start(id),info:()=>({level:level?.id,page,state:structuredClone(state),busy,won,fails,hints,progress:{...progress}}),levels:TeharaLevels.map(l=>l.id)};
+ render();const deep=location.hash.match(/^#level=([\w-]+)$/)?.[1];if(deep)start(deep);
+ // Register only the self-contained illustrated shell; no remote assets.
+ if('serviceWorker' in navigator && /^(https?:)$/.test(location.protocol)) navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).catch(()=>{});
+})();
+</script></body></html>
