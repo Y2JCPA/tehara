@@ -36,30 +36,37 @@ W1.pilgrimsPath = api => {
       if (best) choose(best);
     },
     hot() { const h = {}; for (const pa of paths) h[pa.id] = pa.pts[2]; return h; },
-    draw(g, t) {
-      Kit.outdoor(g, t, { seed: 81, far: false });
-      G.hills(g, 280, '#8db88a', 8, 40);
-      G.walls(g, 60, 140, 420, 150);
-      G.platform(g, -10, 300, 560, 680, { seed: 82 });
+    scene: { mode: 'day', seed: 81 },
+    build(K, ctx) {
+      const T3 = K.THREE, G3 = W1.ground(K, { front: 960 }), M = K.MAT;
+      G3.sheet(-300, 300, 1140, 720, M.grass, { thick: 0.3, bevel: 0.05 });
+      // the walls of Yerushalayim beyond the fields
+      const wall = new T3.Group(), cw = K.cityWall(0, 0, 420, 150); wall.add(cw); cw.position.set(-210 / K.U, 150 / K.U, 0); K.scene.add(wall); G3.stand(wall, 270, 292);
       // two marked fields: the left one bare, the right one with trees
-      G.rr(g, 14, 340, 250, 520, 8, G.lin(g, 0, 340, 0, 860, [[0, '#d4b06e'], [1, '#b98f50']]), 2.5, G.C.dirtDark); Kit.furrows(g, 14, 340, 250, 520);
-      G.rr(g, 276, 340, 250, 520, 8, G.lin(g, 0, 340, 0, 860, [[0, '#d4b06e'], [1, '#b98f50']]), 2.5, G.C.dirtDark); Kit.furrows(g, 276, 340, 250, 520);
-      for (const fx of [14, 276]) G.rr(g, fx - 5, 335, 260, 530, 10, null, 7, G.C.lime);
-      G.tree(g, 470, 450, 0.42, 'olive', 4); G.tree(g, 500, 640, 0.4, 'olive', 5); G.tree(g, 300, 840, 0.38, 'olive', 6);
-      for (const pa of paths) {
-        const col = pa.kind === 'trodden' ? '#f0dcb0' : pa.kind === 'light' ? '#d9bf8c' : pa.kind === 'goat' ? '#c9a876' : '#b58a52';
-        Kit.trail(g, pa.pts, pa.kind === 'trodden' ? 38 : pa.kind === 'light' ? 26 : 22, col);
-        for (let i = 1; i < pa.pts.length; i++) {
-          const [a, b] = [pa.pts[i - 1], pa.pts[i]];
-          if (pa.kind === 'trodden') for (let k = 0; k < 1; k += 0.05) G.footprint(g, Kit.lerp(a[0], b[0], k) + ((k * 20 | 0) % 2 ? 7 : -7), Kit.lerp(a[1], b[1], k), 0, 0.5);
-          if (pa.kind === 'light') for (let k = 0.2; k < 1; k += 0.35) G.footprint(g, Kit.lerp(a[0], b[0], k), Kit.lerp(a[1], b[1], k), 0, 0.4);
-          if (pa.kind === 'furrow') for (let k = 0.1; k < 1; k += 0.15) G.line(g, Kit.lerp(a[0], b[0], k) - 9, Kit.lerp(a[1], b[1], k), Kit.lerp(a[0], b[0], k) + 9, Kit.lerp(a[1], b[1], k) - 4, 3, '#6b4a26');
-          if (pa.kind === 'goat') for (let k = 0.15; k < 1; k += 0.3) G.text(g, '‥', Kit.lerp(a[0], b[0], k), Kit.lerp(a[1], b[1], k), { size: 14, color: '#6b4a2b' });
-        }
+      for (const fx of [14, 276]) {
+        G3.sheet(fx, 340, 250, 520, M.field, { lift: 0.1, thick: 0.12, bevel: 0.04 });
+        for (const [x, y, w, h] of [[fx - 9, 331, 268, 8], [fx - 9, 861, 268, 8], [fx - 9, 331, 8, 538], [fx + 251, 331, 8, 538]]) G3.sheet(x, y, w, h, M.lime, { lift: 0.12, thick: 0.03, bevel: 0.02 });
       }
-      // sheep wandering along the busy path in the bare field
-      for (const s of sheep) { const [x, y] = along(paths[1].pts, 1 - s.k); G.ell(g, x, y - 10, 15, 11, '#f5f2ea', 2, '#8a8478'); G.circ(g, x + 13, y - 14, 6, '#4a4038', 0); }
-      G.sign(g, 270, 900, api.L({ en: 'Beit HaPeras', he: 'בית הפרס' }), { w: 110, size: 13, post: false });
+      [[470, 450, 1], [500, 640, 2], [300, 840, 3]].forEach(([x, y, sd]) => G3.stand(K.tree(0, 0, 0.48, 'olive', sd), x, y));
+      // the paths: how worn each one is shows in its width and colour
+      const look = { trodden: [38, 0xf4e2b8], light: [26, 0xd9bf8c], goat: [22, 0xc9a876], furrow: [22, 0xa47a44] };
+      for (const pa of paths) { const [w, c] = look[pa.kind]; G3.ribbon(pa.pts, w, K.std(c, { roughness: 1, map: K.TEX.path, side: T3.DoubleSide }), { lift: 0.24 }); }
+      G3.stand(K.bush(0, 0, 0.7), 20, 900); G3.stand(K.bush(0, 0, 0.7), 520, 910);
+      const flock = sheep.map(() => K.sheep(0.6));
+      this.sync = () => {
+        sheep.forEach((s, i) => { const [x, y] = along(paths[1].pts, 1 - s.k); flock[i].position.copy(G3.at(x, y, 0.2)); flock[i].scale.setScalar(G3.tOf(x, y)); });
+        G3.follow(ctx, [eli]);
+      };
+    },
+    draw(g, t) {
+      for (const pa of paths) for (let i = 1; i < pa.pts.length; i++) {
+        const [a, b] = [pa.pts[i - 1], pa.pts[i]];
+        if (pa.kind === 'trodden') for (let k = i === 1 ? 0.3 : 0; k < 1; k += 0.05) G.footprint(g, Kit.lerp(a[0], b[0], k) + ((k * 20 | 0) % 2 ? 7 : -7), Kit.lerp(a[1], b[1], k), 0, 0.5);
+        if (pa.kind === 'light') for (let k = 0.2; k < 1; k += 0.35) G.footprint(g, Kit.lerp(a[0], b[0], k), Kit.lerp(a[1], b[1], k), 0, 0.4);
+        if (pa.kind === 'furrow') for (let k = 0.1; k < 1; k += 0.15) G.line(g, Kit.lerp(a[0], b[0], k) - 9, Kit.lerp(a[1], b[1], k), Kit.lerp(a[0], b[0], k) + 9, Kit.lerp(a[1], b[1], k) - 4, 3, '#6b4a26');
+        if (pa.kind === 'goat') for (let k = 0.15; k < 1; k += 0.3) G.text(g, '‥', Kit.lerp(a[0], b[0], k), Kit.lerp(a[1], b[1], k), { size: 14, color: '#6b4a2b' });
+      }
+      G.sign(g, 270, 956, api.L({ en: 'Beit HaPeras', he: 'בית הפרס' }), { w: 110, size: 13, post: false });
       eli.draw(g, t); eli.drawBubble(g);
     },
   };

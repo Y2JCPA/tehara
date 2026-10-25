@@ -46,21 +46,39 @@ W1.limeMarks = api => {
     move(p) { if (drag) drag.s = Math.max(0.5, Math.min(2.2, (p.x - drag.cx) / drag.rx)); },
     up() { drag = null; },
     hot() { const h = {}; for (const s of spots) { h[s.id] = handle(s); h[s.id + ':c'] = [s.cx, s.cy]; h[s.id + ':rx'] = [s.rx, 0]; } return h; },
+    scene: { mode: 'day', seed: 51 },
+    build(K, ctx) {
+      const G3 = W1.ground(K, { front: 960 }), M = K.MAT;
+      G3.sheet(-300, 250, 1140, 800, M.grass, { thick: 0.3, bevel: 0.05 });
+      G3.sheet(-300, 840, 1140, 200, M.path, { lift: 0.08 });
+      // the field where a grave was lost
+      G3.sheet(50, 270, 200, 120, M.field, { lift: 0.1, thick: 0.12, bevel: 0.04 });
+      // the walled cemetery everyone knows, with its headstones
+      G3.upright(406, 284, 200, 22, M.stone, { d: 0.35 }); G3.upright(406, 390, 200, 22, M.stone, { d: 0.35 });
+      for (let i = 0; i < 5; i++) G3.upright(334 + i * 36, 356, 22, 44, M.stoneSmooth, { d: 0.14, r: 0.1 });
+      // a tree whose branch reaches over a grave
+      G3.stand(K.tree(0, 0, 0.8, 'terebinth', 3), 470, 660);
+      G3.stand(K.grave(0, 0, 0.55), 400, 590);
+      G3.rod(462, 600, 340, 572, { r: 0.07, lift: 1.25 });
+      const leaves = K.mesh(K.lumpy(0.42, 2, 0.12, 4), M.leaf); K.scene.add(leaves); leaves.position.copy(G3.at(340, 572, 1.45));
+      // a wall with a stone jutting out over a grave
+      G3.upright(75, 650, 110, 60, M.stone, { d: 0.6 });
+      const jut = G3.upright(0, 0, 64, 22, M.stoneSmooth, { d: 0.5 }); jut.position.copy(G3.at(152, 650, 0.0)); jut.position.y += 30 / K.U;
+      G3.stand(K.grave(0, 0, 0.5), 160, 662);
+      // an olive-sized bit [כזית] lying by the road
+      G3.lay(K.bone(0.45), 290, 744, { lift: 0.12, rot: 0.3 });
+      G3.stand(K.bush(0, 0, 0.8), 520, 800); G3.stand(K.bush(0, 0, 0.7), 20, 780);
+      // the lime rings Batya paints
+      const rings = spots.map(s => G3.ring(s.cx, s.cy, s.rx, s.ry, M.lime, { width: 10, lift: 0.16 }));
+      this.sync = () => {
+        spots.forEach((s, i) => { rings[i].visible = s.on; rings[i].userData.place(s.rx * s.s, s.ry * s.s); });
+        G3.follow(ctx, [batya, zev, ...pilgrims]);
+      };
+    },
     draw(g, t) {
-      Kit.outdoor(g, t, { seed: 51, y: 240 });
-      G.platform(g, -10, 250, 560, 720, { seed: 52 });
-      G.platform(g, -10, 840, 560, 140, { top: 'dirt', seed: 53 });
-      G.rr(g, 50, 270, 200, 120, 10, G.lin(g, 0, 270, 0, 390, [[0, '#dcbf7e'], [1, '#c4a060']]), 2.5, G.C.dirtDark); Kit.furrows(g, 50, 270, 200, 120);
-      // the walled cemetery everyone knows
-      G.stoneWall(g, 306, 270, 200, 14, { block: 20 }); G.stoneWall(g, 306, 376, 200, 14, { block: 20 });
-      for (let i = 0; i < 5; i++) G.rr(g, 324 + i * 36, 304, 20, 50, 9, G.lin(g, 0, 304, 0, 354, [[0, '#f2ecdc'], [1, '#bfb49c']]), 2.5, '#8e8168');
-      G.tree(g, 470, 660, 0.8, 'terebinth', 3);
-      G.line(g, 452, 560, 340, 562, 14, G.C.woodDark); G.line(g, 452, 560, 340, 562, 9, G.C.wood); G.circ(g, 340, 548, 32, G.C.leafDark, 0); G.circ(g, 340, 544, 30, G.C.leaf, 0);
-      G.stoneWall(g, 20, 590, 110, 60, { block: 24, seed: 6 }); G.rr(g, 120, 604, 64, 22, 5, G.lin(g, 0, 604, 0, 626, [[0, '#f0e2bf'], [1, '#c9b07a']]), 2.5, G.C.stoneDark);
       for (const s of spots) {
         g.setLineDash([7, 7]); G.ell(g, s.cx, s.cy, s.rx, s.ry, 'rgba(155,93,229,0.14)', 2.5, G.C.purple); g.setLineDash([]);
         if (s.on) {
-          G.ell(g, s.cx, s.cy, s.rx * s.s, s.ry * s.s, null, 10, G.C.lime); G.ell(g, s.cx, s.cy, s.rx * s.s, s.ry * s.s, null, 2, '#bdb59a');
           const [hx, hy] = handle(s); G.circ(g, hx, hy, 15, '#fff', 2.5); G.text(g, '↔', hx, hy, { size: 16 });
         }
         G.tag(g, api.L(s.label), s.cx, s.cy - s.ry - 16, { size: 12 });

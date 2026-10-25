@@ -3,6 +3,80 @@
    Room 2: blow on the ground before each step (Berakhot 19b; Rambam Eruvin 6:17;
    Korban Pesach 6:8). Some white things are harmless twigs, some are bones.
    Air is tight: blow only where you mean to walk. */
+/* A sloping ground for the map-style rooms (1-6 to 1-10).
+   The logic of these rooms is laid out as if seen from above. In 3D the ground
+   is a real slope rising away from the camera, and each logical point goes
+   where the camera's ray through it meets the slope, so taps and labels still
+   line up exactly. Things are scaled by their distance so they keep their
+   logical size. (The camera numbers match CAM_D / CAM_RISE in js3d/r3.js.) */
+W1.ground = (K, { front = 960, tilt = 0.85 } = {}) => {
+  const T3 = K.THREE, U = K.U;
+  const E = new T3.Vector3(270 / U, -480 / U + 7.5, 34);
+  const n = new T3.Vector3(0, Math.sin(tilt), Math.cos(tilt)), k0 = n.dot(K.P(0, front, 0)) - n.dot(E);
+  const flatQ = new T3.Quaternion().setFromAxisAngle(new T3.Vector3(1, 0, 0), -tilt);
+  const tOf = (x, y) => k0 / n.dot(K.P(x, y, 0).sub(E));
+  const at = (x, y, lift = 0) => { const t = tOf(x, y); return E.clone().add(K.P(x, y, 0).sub(E).multiplyScalar(t)).addScaledVector(n, lift); };
+  const G3 = {
+    tOf, at, n, flatQ,
+    // lay an object flat on the slope (its local x/y on the ground); rot is clockwise on screen
+    lay(o, x, y, { lift = 0, rot = 0, s = 1 } = {}) { o.position.copy(at(x, y, lift)); o.quaternion.copy(flatQ); if (rot) o.rotateZ(-rot); o.scale.setScalar(s * tOf(x, y)); return o; },
+    // stand an upright object (a tree, a wall, a sign) on the slope at its foot point
+    // (keeps the object's own scale, so call it once per object)
+    stand(o, x, y, { lift = 0, s = 1 } = {}) { o.position.copy(at(x, y, lift)); o.scale.multiplyScalar(s * tOf(x, y)); return o; },
+    // a slab lying on the slope that covers the logical rectangle exactly (top surface at the ground + lift)
+    sheet(x, y, w, h, mat, { thick = 0.14, bevel = 0.03, lift = 0, cast = false } = {}) {
+      const o = at(x + w / 2, y + h), dY = new T3.Vector3(0, Math.cos(tilt), -Math.sin(tilt));
+      const loc = (px, py) => { const v = at(px, py).sub(o); return new T3.Vector2(v.x, v.dot(dY)); };
+      const sh = new T3.Shape([loc(x, y + h), loc(x + w, y + h), loc(x + w, y), loc(x, y)]);
+      const geo = new T3.ExtrudeGeometry(sh, { depth: thick, bevelEnabled: bevel > 0, bevelThickness: bevel, bevelSize: bevel, bevelSegments: 1 });
+      const pos = geo.attributes.position, nrm = geo.attributes.normal, uv = geo.attributes.uv;
+      for (let i = 0; i < pos.count; i++) { const nz = Math.abs(nrm.getZ(i)); uv.setXY(i, nz > 0.7 ? pos.getX(i) / 2.5 : pos.getX(i) / 2.5 + pos.getZ(i), nz > 0.7 ? pos.getY(i) / 2.5 : pos.getY(i) / 2.5); }
+      const m = K.mesh(geo, mat, 0, 0, -thick, cast, true);
+      const g = new T3.Group(); g.add(m); g.position.copy(o).addScaledVector(n, lift); g.quaternion.copy(flatQ);
+      K.scene.add(g); return g;
+    },
+    // a flat ring (a lime mark) on the ground: centre, radii in px, line width in px
+    ring(x, y, rx, ry, mat, { width = 9, lift = 0.03 } = {}) {
+      const tor = K.mesh(new T3.TorusGeometry(1, width / 2 / Math.max(rx, ry), 6, 48), mat, 0, 0, 0, false, true);
+      tor.scale.set(rx / U, ry / U, 0.5);
+      const g = new T3.Group(); g.add(tor); K.scene.add(g);
+      g.userData.place = (rx2, ry2) => tor.scale.set(rx2 / U, ry2 / U, 0.5);
+      return G3.lay(g, x, y, { lift });
+    },
+    // an upright block (a low wall, a headstone) standing on the slope: w, h in px, d in units
+    upright(x, y, w, h, mat, { d = 0.4, r = 0.03, lift = 0 } = {}) {
+      const m = K.mesh(K.slab(w / U, h / U, d, r, 0.02), mat, -w / U / 2, 0, -d / 2);
+      const g = new T3.Group(); g.add(m); K.scene.add(g); return G3.stand(g, x, y, { lift });
+    },
+    // a round rod between two logical points, lifted above the ground (a branch, a pole)
+    rod(x1, y1, x2, y2, { r = 0.07, lift = 0.5, mat } = {}) {
+      const a = at(x1, y1, lift), b = at(x2, y2, lift), L = a.distanceTo(b);
+      const m = K.mesh(new T3.CylinderGeometry(r * 0.7, r, L, 9), mat || K.MAT.trunk);
+      m.position.copy(a).lerp(b, 0.5); m.quaternion.setFromUnitVectors(new T3.Vector3(0, 1, 0), b.clone().sub(a).normalize());
+      K.scene.add(m); return m;
+    },
+    // a flat ribbon (a path) along logical points, width in px
+    ribbon(pts, width, mat, { lift = 0.05 } = {}) {
+      const pos = [], uv = [], idx = [];
+      pts.forEach((p, i) => {
+        const a = pts[Math.max(0, i - 1)], b = pts[Math.min(pts.length - 1, i + 1)];
+        let dx = b[0] - a[0], dy = b[1] - a[1]; const L = Math.hypot(dx, dy) || 1; dx /= L; dy /= L;
+        for (const sd of [-1, 1]) { const v = at(p[0] - dy * sd * width / 2, p[1] + dx * sd * width / 2, lift); pos.push(v.x, v.y, v.z); uv.push((p[0] + sd * width / 2) / U / 2.5, p[1] / U / 2.5); }
+        if (i) { const k = i * 2; idx.push(k - 2, k - 1, k, k - 1, k + 1, k); }
+      });
+      const geo = new T3.BufferGeometry();
+      geo.setAttribute('position', new T3.Float32BufferAttribute(pos, 3)); geo.setAttribute('uv', new T3.Float32BufferAttribute(uv, 2));
+      geo.setIndex(idx); geo.computeVertexNormals();
+      const m = K.mesh(geo, mat, 0, 0, 0, false, true); K.scene.add(m); return m;
+    },
+    // keep the actors standing on the slope (call from sync)
+    follow(ctx, actors) {
+      for (const a of actors) { const c = ctx.actors.get(a); if (c) { c.group.position.copy(at(a.x, a.y, 0.02)); c.group.scale.multiplyScalar(tOf(a.x, a.y)); } }
+    },
+  };
+  return G3;
+};
+
 W1.cartDrop = api => {
   const tw = new Kit.Tweens();
   const pCart = new Kit.Pin('cart', 104, 400, 312, 400);
@@ -35,14 +109,26 @@ W1.cartDrop = api => {
       }));
     },
     hot() { return { cart: pCart.ring, crate: pCrate.ring, hay: pHay.ring }; },
+    scene: { mode: 'day', seed: 31 },
+    build(K) {
+      const T3 = K.THREE;
+      K.block(-10, 808, 560, 160, {});
+      K.wall(112, 230, 22, 578, {}); K.wall(300, 230, 22, 340, {});
+      // the rock chute from the hay shelf down under the cart
+      K.beam(322, 573, 530, 513, { h: 26, d: 1.1, mat: K.MAT.rock });
+      K.bush(30, 808, 0.8); K.tree(520, 808, 0.75, 'olive', 3);
+      const cr = K.crate(44, 44), hy = K.hay(0.9);
+      // the cart with the leaf blower in it (origin at the bottom of the wheels)
+      const ct = new T3.Group(); ct.add(K.cart(0.85));
+      const bl = K.blower(0.8); bl.position.set(-6 / K.U, 52 / K.U, 0.1); bl.rotation.z = 0.3; ct.add(bl);
+      K.scene.add(ct);
+      this.sync = () => {
+        cr.visible = !crate.gone || crate.y < 900; K.place(cr, crate.x, crate.y - 38, 0.75);
+        hy.visible = hay.y < 990; K.place(hy, hay.x, hay.y - 22, 0.8);
+        K.place(ct, 218, cart.y + 17, 0.1, cart.a);
+      };
+    },
     draw(g, t) {
-      Kit.outdoor(g, t, { seed: 31 });
-      G.platform(g, -10, 808, 560, 160, { seed: 32 });
-      G.stoneWall(g, 112, 230, 22, 578, { block: 22, seed: 2 }); G.stoneWall(g, 300, 230, 22, 340, { block: 22, seed: 3 });
-      G.poly(g, [[322, 560], [520, 500], [520, 526], [322, 586]], G.lin(g, 0, 500, 0, 586, [[0, G.C.rockLight], [1, G.C.rockDark]]), 2.5, G.C.rockDark);
-      if (!crate.gone || crate.y < 900) G.crate(g, crate.x - 22, crate.y - 60, 44, 44);
-      if (hay.y < 990) G.hay(g, hay.x, hay.y, 0.75);
-      g.save(); g.translate(218, cart.y); g.rotate(cart.a); G.cart(g, 0, 0, 0.8); G.blower(g, -6, -38, 0.8, -0.3); g.restore();
       pCart.draw(g); pCrate.draw(g); pHay.draw(g);
       gad.draw(g, t); eli.draw(g, t); gad.drawBubble(g);
     },
@@ -122,22 +208,39 @@ W1.blowerField = api => {
       if (mode === 'blow') { blow(rc[0], rc[1]); api.setButtons(buttons()); } else addPath(rc[0], rc[1]);
     },
     hot() { const h = {}; for (let r = 0; r < F.rows; r++) for (let c = 0; c < F.cols; c++) h['t' + r + '_' + c] = [cx(c), cy(r)]; return h; },
-    draw(g, t) {
-      Kit.outdoor(g, t, { seed: 41, y: 160 });
-      G.platform(g, -10, 120, 560, 76, { seed: 42 });
-      G.sign(g, 270, 186, api.L({ en: 'Beit HaPeras: a grave was plowed here', he: 'בית הפרס: נחרש כאן קבר' }), { w: 290, size: 13, post: false });
-      G.platform(g, -10, 776, 560, 200, { seed: 43 });
-      G.rr(g, F.x0 - 8, F.y0 - 6, F.cols * F.size + 16, F.rows * F.size + 12, 8, '#8a5e33', 2.5, G.C.dirtDark);
+    scene: { mode: 'day', seed: 41 },
+    build(K, ctx) {
+      const T3 = K.THREE, G3 = W1.ground(K, { front: 960 });
+      G3.sheet(-300, 120, 1140, 900, K.MAT.grass, { thick: 0.3, bevel: 0.05 });
+      G3.sheet(F.x0 - 8, F.y0 - 6, F.cols * F.size + 16, F.rows * F.size + 12, K.MAT.earth, { lift: 0.1, thick: 0.2 });
+      const dirt = K.std(0x8a5e33, { roughness: 1, map: K.TEX.earth }), clean = K.std(0xf0d9a8, { roughness: 0.9, map: K.TEX.path }), clod = K.std(0x6e4a28, { roughness: 1 });
+      const cells = {};
       for (let r = 0; r < F.rows; r++) for (let c = 0; c < F.cols; c++) {
         const k = key(r, c), x = F.x0 + c * F.size, y = F.y0 + r * F.size;
-        const rev = revealed.has(k);
-        G.rr(g, x + 2, y + 2, F.size - 4, F.size - 4, 7, rev ? G.lin(g, 0, y, 0, y + F.size, [[0, '#ecd3a2'], [1, '#d7b783']]) : G.lin(g, 0, y, 0, y + F.size, [[0, '#a8794a'], [1, '#8a5e33']]), 2, '#6e4a24');
-        G.rrPath(g, x + 2, y + 2, F.size - 4, F.size - 4, 7); G.texFill(g, 'dirt');
-        if (!rev) { const r2 = G.rng(r * 9 + c); for (let i = 0; i < 5; i++) G.ell(g, x + 10 + r2() * 44, y + 10 + r2() * 44, 3 + r2() * 4, 2.5 + r2() * 3, '#7a5530', 0); }
-        if (rev && bones.has(k)) G.bone(g, x + F.size / 2, y + F.size / 2, 0.62, 0.5, true, t);
-        if (rev && twigs.has(k)) G.twig(g, x + F.size / 2, y + F.size / 2, 0.85, -0.4);
-        if (big.has(k)) G.bone(g, x + F.size / 2, y + F.size / 2, 1.05, -0.3, true, t);
+        const tile = G3.sheet(x + 4, y + 4, F.size - 8, F.size - 8, dirt, { lift: 0.18, thick: 0.1, bevel: 0.04 });
+        const clods = new T3.Group(), rr = Math.sin(r * 9 + c * 7) * 1000;
+        for (let i = 0; i < 5; i++) { const f = n => (Math.sin(rr + i * 3.1 + n) + 1) / 2; const m = K.mesh(K.lumpy(0.05 + f(1) * 0.04, 0, 0.2, i), clod, (f(2) - 0.5) * 0.6, (f(3) - 0.5) * 0.6, 0.02); m.scale.z = 0.6; clods.add(m); }
+        K.scene.add(clods); G3.lay(clods, x + F.size / 2, y + F.size / 2, { lift: 0.2 });
+        let item = null;
+        if (bones.has(k) || big.has(k)) item = G3.lay(K.bone(big.has(k) ? 1.45 : 0.9), x + F.size / 2, y + F.size / 2, { lift: 0.26, rot: big.has(k) ? -0.3 : 0.5 });
+        else if (twigs.has(k)) item = G3.lay(K.twig(1.5), x + F.size / 2, y + F.size / 2, { lift: 0.25, rot: -0.4 });
+        cells[k] = { tile, clods, item };
       }
+      // Eli finishes on the meadow above the field; a few bushes and a tree around it
+      G3.stand(K.tree(0, 0, 0.7, 'olive', 2), 40, 150); G3.stand(K.bush(0, 0, 0.7), 500, 160);
+      G3.stand(K.bush(0, 0, 0.8), 30, 820); G3.stand(K.bush(0, 0, 0.7), 515, 800);
+      this.sync = () => {
+        for (const k in cells) {
+          const cl = cells[k], rev = revealed.has(k);
+          cl.tile.children[0].material = rev ? clean : dirt; cl.clods.visible = !rev;
+          if (cl.item) cl.item.visible = rev;
+        }
+        G3.follow(ctx, [eli]);
+      };
+    },
+    draw(g, t) {
+      G.sign(g, 270, 186, api.L({ en: 'Beit HaPeras: a grave was plowed here', he: 'בית הפרס: נחרש כאן קבר' }), { w: 290, size: 13, post: false });
+      for (const k of revealed) if (isBone(k)) { const [r, c] = k.split(',').map(Number); G.tumahGlow(g, cx(c), cy(r), big.has(k) ? 36 : 24, 1, t); }
       if (path.length) {
         G.path(g, path.map(k => { const [r, c] = k.split(',').map(Number); return [cx(c), cy(r)]; }));
         g.lineWidth = 10; g.strokeStyle = 'rgba(255,255,255,0.85)'; g.lineCap = 'round'; g.lineJoin = 'round'; g.stroke();

@@ -51,29 +51,53 @@ W1.readMarks = api => {
       }
       return h;
     },
+    scene: { mode: 'day', seed: 61 },
+    build(K, ctx) {
+      const T3 = K.THREE, G3 = W1.ground(K, { front: 960 }), M = K.MAT;
+      G3.sheet(-300, 180, 1140, 860, M.grass, { thick: 0.3, bevel: 0.05 });
+      const soil = K.std(0xd9bb7c, { roughness: 1, map: K.TEX.path }), picked = K.std(0xb28ae6, { roughness: 0.7 });
+      const edgeM = K.std(0xf6eedb, { roughness: 1, transparent: true, opacity: 0.6 }), sherd = K.std(0xc9693a, { roughness: 0.8 });
+      const stone = (x, y, cap) => {   // an upright field stone, with a dab (or a spread) of lime on top
+        const gr = new T3.Group();
+        const st = K.mesh(K.lumpy(0.5, 1, 0.12, x + y), M.rock); st.scale.set(32 / K.U, 42 / K.U, 26 / K.U); st.position.y = 18 / K.U; gr.add(st);
+        if (cap) { const c = K.mesh(new T3.CylinderGeometry(1, 1, 0.05, 20), M.lime, 0, 38 / K.U, 0); c.scale.set(cap / K.U, 1, cap * 0.8 / K.U); gr.add(c); }
+        K.scene.add(gr); return G3.stand(gr, x, y);
+      };
+      const tiles = [];
+      for (const f of fields) {
+        G3.sheet(f.x - 6, f.y - 6, S3 + 12, S3 + 12, M.earth, { lift: 0.1, thick: 0.16 });
+        const cells = [], edges = [];
+        for (let c = 0; c < 9; c++) cells.push(G3.sheet(f.x + (c % 3) * TILE + 3, f.y + Math.floor(c / 3) * TILE + 3, TILE - 6, TILE - 6, soil, { lift: 0.18, thick: 0.08, bevel: 0.03 }));
+        for (let e = 0; e < 4; e++) { const [x, y, w, h] = edgeRect(f, e); edges.push(G3.sheet(x, y, w, h, edgeM, { lift: 0.16, thick: 0.05, bevel: 0.01 })); }
+        tiles.push({ f, cells, edges });
+        const midY = f.y + TILE * 1.5;
+        if (f.pattern === 'oneStone') stone(f.x + S3 / 2, f.y + S3 / 2 + 14, 13);
+        if (['twoStonesLimeBetween', 'twoStonesSherdsBetween', 'twoStonesLimeOnTop'].includes(f.pattern)) {
+          for (const sx of [f.x - 24, f.x + S3 + 24]) stone(sx, midY + 18, f.pattern === 'twoStonesLimeOnTop' ? 19 : 10);
+          if (f.pattern === 'twoStonesLimeBetween') G3.sheet(f.x + 4, midY - 7, S3 - 8, 14, M.lime, { lift: 0.28, thick: 0.03, bevel: 0.02 });
+          if (f.pattern === 'twoStonesSherdsBetween') for (let i = 0; i < 5; i++) {
+            const sh = new T3.Shape([new T3.Vector2(-0.1, -0.06), new T3.Vector2(0.06, -0.1), new T3.Vector2(0.11, 0.08), new T3.Vector2(-0.04, 0.09)]);
+            const m = K.mesh(new T3.ExtrudeGeometry(sh, { depth: 0.03, bevelEnabled: false }), sherd); const gp = new T3.Group(); gp.add(m); K.scene.add(gp);
+            G3.lay(gp, f.x + 24 + i * 26, midY + 2, { lift: 0.27, rot: i * 1.3 });
+          }
+        }
+        if (f.pattern === 'fourEdges') {
+          for (const [x, y, w, h] of [[f.x - 22, f.y - 22, S3 + 44, 7], [f.x - 22, f.y + S3 + 15, S3 + 44, 7], [f.x - 22, f.y - 22, 7, S3 + 44], [f.x + S3 + 15, f.y - 22, 7, S3 + 44]]) G3.sheet(x, y, w, h, M.lime, { lift: 0.14, thick: 0.03, bevel: 0.02 });
+        }
+        if (f.pattern === 'oneEdge') G3.sheet(f.x - 22, f.y - 10, 8, S3 + 20, M.lime, { lift: 0.14, thick: 0.03, bevel: 0.02 });
+      }
+      G3.stand(K.bush(0, 0, 0.6), 268, 200); G3.stand(K.bush(0, 0, 0.7), 268, 640); G3.stand(K.bush(0, 0, 0.6), 268, 870);
+      this.sync = () => {
+        for (const { f, cells, edges } of tiles) {
+          cells.forEach((m, c) => { m.children[0].material = f.cells.has(c) ? picked : soil; });
+          edges.forEach((m, e) => { m.children[0].material = f.edges.has(e) ? picked : edgeM; });
+        }
+      };
+    },
     draw(g, t) {
-      Kit.outdoor(g, t, { seed: 61, y: 200 });
-      G.platform(g, -10, 180, 560, 800, { seed: 62 });
       for (const f of fields) {
         G.tag(g, `${api.L(NAME)} ${api.lang === 'he' ? 'אבגדהו'['ABCDEF'.indexOf(f.id)] : f.id}`, f.x + S3 / 2, f.y - 30, { size: 13 });
-        G.rr(g, f.x - 4, f.y - 4, S3 + 8, S3 + 8, 6, '#a77b45', 2, G.C.dirtDark);
-        for (let c = 0; c < 9; c++) {
-          const x = f.x + (c % 3) * TILE, y = f.y + Math.floor(c / 3) * TILE, on = f.cells.has(c);
-          G.rr(g, x + 2, y + 2, TILE - 4, TILE - 4, 5, on ? G.lin(g, 0, y, 0, y + TILE, [[0, '#d6b8f7'], [1, '#b28ae6']]) : G.lin(g, 0, y, 0, y + TILE, [[0, '#e4c88e'], [1, '#cfae6e']]), 2, on ? G.C.purpleDeep : '#9a7a44');
-          if (on) G.text(g, '✕', x + TILE / 2, y + TILE / 2, { size: 16, color: G.C.purpleDeep });
-        }
-        for (let e = 0; e < 4; e++) { const [x, y, w, h] = edgeRect(f, e); const on = f.edges.has(e); G.rr(g, x, y, w, h, 4, on ? '#b28ae6' : 'rgba(255,255,255,0.35)', 1.5, on ? G.C.purpleDeep : 'rgba(80,60,30,0.4)'); }
-        const midY = f.y + TILE * 1.5;
-        const stoneAt = (sx, lime) => { G.ell(g, sx, midY + 4, 15, 20, G.lin(g, 0, midY - 16, 0, midY + 24, [[0, '#cfc8b8'], [1, '#8d8678']]), 2.5, '#5e574b'); if (lime) G.ell(g, sx, midY - 9, 12, 8, G.C.lime, 2, '#bdb59a'); };
-        if (f.pattern === 'oneStone') { G.ell(g, f.x + S3 / 2, f.y + S3 / 2 + 4, 20, 14, G.lin(g, 0, f.y, 0, f.y + S3, [[0, '#cfc8b8'], [1, '#8d8678']]), 2.5, '#5e574b'); G.ell(g, f.x + S3 / 2, f.y + S3 / 2 - 2, 14, 7, G.C.lime, 2, '#bdb59a'); }
-        if (['twoStonesLimeBetween', 'twoStonesSherdsBetween', 'twoStonesLimeOnTop'].includes(f.pattern)) {
-          stoneAt(f.x - 24, true); stoneAt(f.x + S3 + 24, true);
-          if (f.pattern === 'twoStonesLimeBetween') { g.globalAlpha = 0.85; G.rr(g, f.x + 4, midY - 7, S3 - 8, 14, 7, G.C.lime, 0); g.globalAlpha = 1; }
-          if (f.pattern === 'twoStonesSherdsBetween') for (let i = 0; i < 5; i++) G.poly(g, [[f.x + 14 + i * 26, midY + 7], [f.x + 26 + i * 26, midY - 5], [f.x + 32 + i * 26, midY + 8]], G.C.clay, 2, G.C.clayDark);
-          if (f.pattern === 'twoStonesLimeOnTop') { for (const sx of [f.x - 24, f.x + S3 + 24]) G.rr(g, sx - 15, midY - 18, 30, 10, 5, G.C.lime, 2, '#bdb59a'); }
-        }
-        if (f.pattern === 'fourEdges') { G.rr(g, f.x - 18, f.y - 18, S3 + 36, S3 + 36, 8, null, 7, G.C.lime); }
-        if (f.pattern === 'oneEdge') { G.line(g, f.x - 18, f.y - 10, f.x - 18, f.y + S3 + 10, 8, G.C.lime); }
+        for (let c = 0; c < 9; c++) if (f.cells.has(c)) G.text(g, '✕', f.x + (c % 3) * TILE + TILE / 2, f.y + Math.floor(c / 3) * TILE + TILE / 2, { size: 18, color: G.C.purpleDeep });
       }
     },
   };

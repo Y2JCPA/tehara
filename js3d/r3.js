@@ -665,6 +665,14 @@ function init(canvas) {
   renderer.shadowMap.enabled = !LOW; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
+  // metals need something to reflect: a soft sky-over-earth environment, used only by the metal materials
+  const envScene = new THREE.Scene();
+  const sphere = new THREE.SphereGeometry(10, 32, 16), cols = [];
+  for (let i = 0; i < sphere.attributes.position.count; i++) { const y = sphere.attributes.position.getY(i) / 10; const c = new THREE.Color(y > 0 ? 0xcfe6ff : 0x8a6a48).lerp(new THREE.Color(0xfff4dc), Math.max(0, 1 - Math.abs(y) * 3)); cols.push(c.r, c.g, c.b); }
+  sphere.setAttribute('color', new THREE.Float32BufferAttribute(cols, 3));
+  envScene.add(new THREE.Mesh(sphere, new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.BackSide })));
+  const env = new THREE.PMREMGenerator(renderer).fromScene(envScene, 0.04).texture;
+  for (const m of [MAT.metal, MAT.gold, MAT.goldBright]) { m.envMap = env; m.needsUpdate = true; }
   camera = new THREE.PerspectiveCamera(30, W / H, 1, 200);
   setCamera();
   resize();
@@ -743,6 +751,6 @@ function snapshot(build, actors, draw, opts = { mode: 'day', seed: 4, horizon: 7
 
 let readyResolve;
 const ready = new Promise(r => { readyResolve = r; });
-window.R3 = { init, newScene, render, frame, snapshot, ready, P, U, W, H, THREE };
+window.R3 = { init, newScene, render, frame, snapshot, ready, P, U, W, H, THREE, CAM_D, CAM_RISE };
 buildMaterials().then(() => readyResolve());
 window.dispatchEvent(new Event('r3'));

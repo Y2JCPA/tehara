@@ -53,22 +53,37 @@ W1.treesOrNot = (hero = 'eli', purpose = 'pesach') => api => {
       if (Kit.near(p, zev.x, zev.y - 50, 50)) zev.talk(api.L({ en: 'When a field is marked, look for trees! And see which edges are painted.', he: 'כשיש שדה מצוינת, חפשו אילנות! וראו אילו מצרים צבועים.' }), 2800);
     },
     hot() { return { L: [F.L.x + 76, F.L.y + 200], M: [F.M.x + 76, F.M.y + 200], R: [F.R.x + 90, F.R.y + 200], zev: [zev.x, zev.y - 50] }; },
-    draw(g, t) {
-      Kit.outdoor(g, t, { seed: 71, y: 250 });
-      G.platform(g, -10, 270, 560, 700, { seed: 72 });
-      Kit.trail(g, [[0, 310], [540, 310]], 46);
-      G.tag(g, api.L({ en: 'to Yerushalayim ➜', he: 'לירושלים ➜' }), 420, 310, { size: 14 });
+    scene: { mode: 'day', seed: 71 },
+    build(K, ctx) {
+      const G3 = W1.ground(K, { front: 960 }), M = K.MAT;
+      G3.sheet(-300, 270, 1140, 760, M.grass, { thick: 0.3, bevel: 0.05 });
+      G3.sheet(-300, 287, 1140, 46, M.path, { lift: 0.08 });
+      G3.sheet(-300, 800, 1140, 220, M.path, { lift: 0.08 });
       for (const k of ['L', 'M', 'R']) {
         const f = F[k];
-        G.rr(g, f.x, f.y, f.w, f.h, 8, G.lin(g, 0, f.y, 0, f.y + f.h, [[0, '#d4b06e'], [1, '#b98f50']]), 2.5, G.C.dirtDark);
-        Kit.furrows(g, f.x, f.y, f.w, f.h);
-        if (f.kind === 'oneEdge') G.line(g, f.x - 6, f.y - 4, f.x - 6, f.y + f.h + 4, 9, G.C.lime);
-        else G.rr(g, f.x - 6, f.y - 6, f.w + 12, f.h + 12, 10, null, 8, G.C.lime);
-        if (f.kind === 'trees') { G.tree(g, f.x + 46, f.y + 150, 0.48, 'olive', 1); G.tree(g, f.x + 110, f.y + 260, 0.48, 'olive', 2); G.tree(g, f.x + 48, f.y + 370, 0.44, 'olive', 3); }
-        if (pick === k) { const a = 0.6 + Math.sin(t / 200) * 0.3; G.rr(g, f.x - 12, f.y - 12, f.w + 24, f.h + 24, 14, null, 5, `rgba(247,200,68,${a})`); }
+        G3.sheet(f.x, f.y, f.w, f.h, M.field, { lift: 0.1, thick: 0.12, bevel: 0.04 });
+        const strips = f.kind === 'oneEdge' ? [[f.x - 10, f.y - 4, 8, f.h + 8]] : [[f.x - 10, f.y - 10, f.w + 20, 8], [f.x - 10, f.y + f.h + 2, f.w + 20, 8], [f.x - 10, f.y - 10, 8, f.h + 20], [f.x + f.w + 2, f.y - 10, 8, f.h + 20]];
+        for (const [x, y, w, h] of strips) G3.sheet(x, y, w, h, M.lime, { lift: 0.12, thick: 0.03, bevel: 0.02 });
+        if (f.kind === 'trees') [[46, 150, 1], [110, 260, 2], [48, 370, 3]].forEach(([dx, dy, sd]) => G3.stand(K.tree(0, 0, 0.55, 'olive', sd), f.x + dx, f.y + dy));
       }
-      G.platform(g, -10, 800, 560, 180, { top: 'dirt', seed: 73 });
-      if (donkey.on) { G.donkey(g, donkey.x, donkey.y, 0.6, { phase: t / 80 }); Chars.draw(g, hero, donkey.x, donkey.y - 26, { s: 0.75, t }); }
+      G3.stand(K.bush(0, 0, 0.7), 20, 830); G3.stand(K.bush(0, 0, 0.6), 30, 280); G3.stand(K.tree(0, 0, 0.6, 'terebinth', 4), 520, 280);
+      // the strong donkey, and the rider shown on its back
+      const dk = K.donkey({ strong: true }), rider = K.char(hero);
+      rider.update(0, {}); rider.setMood('happy');
+      this.sync = () => {
+        dk.visible = rider.group.visible = donkey.on;
+        if (donkey.on) {
+          const t = G3.tOf(donkey.x, donkey.y + 26);
+          dk.position.copy(G3.at(donkey.x, donkey.y + 26)); dk.scale.setScalar(0.85 * t);
+          rider.group.position.copy(dk.position); rider.group.position.y += 0.6 * t; rider.group.position.z += 0.05;
+          rider.group.scale.setScalar(0.8 * t);
+        }
+        G3.follow(ctx, [eli, zev]);
+      };
+    },
+    draw(g, t) {
+      G.tag(g, api.L({ en: 'to Yerushalayim ➜', he: 'לירושלים ➜' }), 420, 310, { size: 14 });
+      if (pick) { const f = F[pick], a = 0.6 + Math.sin(t / 200) * 0.3; G.rr(g, f.x - 12, f.y - 12, f.w + 24, f.h + 24, 14, null, 5, `rgba(247,200,68,${a})`); }
       zev.draw(g, t); eli.draw(g, t); zev.drawBubble(g);
     },
   };
