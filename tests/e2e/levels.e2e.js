@@ -61,26 +61,31 @@ const SCRIPTS = {
   },
   '1-10': { win: [tap('trodden')], fails: [[tap('busy')], [tap('light')], [tap('furrow')]] },
   'C-1': {
-    win: [tap('door'), wait(700), tap('flap'), wait(700), tap('shelf')],
-    fails: [[tap('shelf')], [tap('flap'), wait(700), tap('shelf')]],
+    win: [tap('door'), wait(700), tap('flapA'), wait(700), tap('shelf')],
+    fails: [[tap('shelf')], [tap('flapA'), wait(700), tap('shelf')], [tap('door'), wait(700), tap('flapA'), wait(700), tap('flapB'), wait(700), tap('shelf')]],
   },
   'C-2': {
-    win: [tap('hatchA'), wait(700), tap('hatchB'), wait(700), tap('j6'), tap('j6'), tap('j6'), tap('j6'), btn('bring')],
-    fails: [[tap('j2'), btn('bring')], [tap('hatchA'), wait(700), tap('j4'), btn('bring')], [tap('hatchA'), wait(700), tap('j3'), btn('bring')]],
+    win: [tap('hatchA'), wait(700), tap('hatchB'), wait(700), tap('j7'), tap('j7'), tap('j7'), tap('j7'), btn('bring')],
+    fails: [[tap('j2'), btn('bring')], [tap('j3'), btn('bring')], [tap('hatchA'), wait(700), tap('j4'), btn('bring')],
+      [tap('hatchA'), wait(700), tap('hatchB'), wait(700), tap('j6'), tap('j6'), tap('j6'), tap('j6'), btn('bring')]],
   },
   'C-3': {
-    win: [['drag', 'i0', [400, 700]], ['drag', 'i1', [400, 700]], ['drag', 'i2', [140, 700]], ['drag', 'i3', [400, 700]],
-      ['drag', 'i4', [140, 700]], ['drag', 'i5', [400, 700]], ['drag', 'i6', [140, 700]], btn('check')],
-    mistakes: [[0, 1, 2, 3, 4, 5, 6].map(i => ['drag', 'i' + i, [140, 700]]).concat([btn('check')])],
+    win: [...[[0, 'leave'], [1, 'leave'], [2, 'take'], [3, 'leave'], [4, 'take'], [5, 'leave'], [6, 'take'], [7, 'leave'], [8, 'take'], [9, 'leave']]
+      .map(([i, z]) => ['drag', 'i' + i, z === 'take' ? [139, 760] : [401, 760]]), btn('check')],
+    mistakes: [[...[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(i => ['drag', 'i' + i, [139, 760]]), btn('check')],
+      [...[[0, 'leave'], [1, 'leave'], [2, 'take'], [3, 'leave'], [4, 'take'], [5, 'leave'], [6, 'take'], [7, 'take'], [8, 'take'], [9, 'leave']]
+        .map(([i, z]) => ['drag', 'i' + i, z === 'take' ? [139, 760] : [401, 760]]), btn('check')]],
   },
   'C-4': {
-    win: [tap('gate'), wait(600), tap('wash'), wait(3600), tap('press')],
-    fails: [[tap('press')], [tap('gate'), wait(600), tap('press')]],
+    win: [tap('gate1'), wait(600), tap('gate2'), wait(600), tap('wash'), wait(3800), tap('press')],
+    fails: [[tap('press')], [tap('gate1'), wait(600), tap('press')], [tap('gate1'), wait(600), tap('gate2'), wait(600), tap('press')]],
   },
   'C-5': {
-    win: [tap('pin'), wait(1000), btn('go'), stage(1), wait(500), tap('road'), wait(1200), btn('go'), stage(2), btn('stones'), stage(3), btn('around'), stage(4), btn('sealed')],
-    fails: [[tap('pin'), wait(1000), btn('go'), stage(1), wait(500), tap('road'), wait(1200), btn('go'), stage(2), btn('blow')]],
-    mistakes: [[tap('pin'), wait(1000), btn('go'), stage(1), wait(500), tap('road'), wait(1200), btn('go'), stage(2), btn('ride'), stage(3), btn('around'), stage(4), btn('cloth')]],
+    win: [tap('boulder'), wait(1500), tap('bridge'), wait(800), tap('route:bridge'), btn('go'), stage(1), wait(500), tap('grave'), wait(1100), btn('go'),
+      stage(2), btn('small'), stage(3), tap('L'), btn('ride'), stage(4), btn('A')],
+    fails: [[tap('boulder'), wait(1500), tap('bridge'), wait(800), tap('route:bridge'), btn('go'), stage(1), wait(500), tap('grave'), wait(1100), btn('go'), stage(2), btn('blow')],
+      [tap('boulder'), wait(1500), tap('bridge'), wait(800), tap('route:bridge'), btn('go'), stage(1), wait(500), tap('grave'), wait(1100), btn('go'), stage(2), btn('small'), stage(3), tap('L'), btn('blow')]],
+    mistakes: [[tap('boulder'), wait(1500), tap('bridge'), wait(800), tap('route:bridge'), btn('go'), stage(1), wait(500), tap('grave'), wait(1100), btn('go'), stage(2), btn('small'), stage(3), tap('R'), btn('walk'), stage(4), btn('B')]],
   },
   'C-6': {
     win: [btn('search'), stage(1), ...[0, 1, 2, 3, 4, 5, 6].map(i => tap('lamp' + i)), ...Array(7).fill(btn('next'))], stars: 3,

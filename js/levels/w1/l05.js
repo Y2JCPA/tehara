@@ -87,7 +87,7 @@ W1.stones = (hero = 'eli', mate = 'miriam', purpose = 'terumah') => api => {
       { id: 'path', label: { en: '✏️ Path', he: '✏️ שביל' }, cls: 'btn-navy', on: mode === 'path', onClick: () => { mode = 'path'; api.setButtons(buttons()); } },
       Kit.go(hop, { en: 'Hop!', he: 'קפצו!' }),
     ];
-    if (inspected) b.push({ id: 'ride', label: { en: '🫏 Ride it', he: '🫏 לרכוב' }, onClick: () => ride(inspected) });
+    if (inspected) b.push({ id: 'ride', label: { en: '🐴 Ride it', he: '🐴 לרכוב' }, onClick: () => ride(inspected) });
     else b.push({ id: 'blow', label: { en: '💨 Blow', he: '💨 לנפח' }, onClick: blow });
     return b;
   }

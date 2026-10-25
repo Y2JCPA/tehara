@@ -112,7 +112,7 @@ W1.pruneTree = (hero = 'eli', prunerKind = 'gad') => api => {
     if (br.grave.cut && cuts === 1) api.bonus();
     eli.walk([[505, 830]], () => { eli.mood = 'happy'; api.complete(); });
   }
-  const btns = () => [Kit.go(goNow), { id: 'board', label: { en: '🪵 Gad holds a board over Eli', he: '🪵 גד מחזיק קרש מעל אלי' }, cls: 'btn-navy', onClick: boardOffer }];
+  const btns = () => [Kit.go(goNow), { id: 'board', label: { en: 'Gad holds a board over Eli', he: 'גד מחזיק קרש מעל אלי' }, cls: 'btn-navy', onClick: boardOffer }];
   function hitBranch(p, b) { const [x, y, r] = b.leaf; return !b.cut && Kit.near(p, x, y, r); }
   return {
     intro: { en: 'This tree grows by a grave. Gad can cut only TWO branches. Which ones? (Tap a branch to cut it.)', he: 'העץ הזה גדל ליד קבר. גד יכול לגזום רק שני ענפים. אילו? (הקישו על ענף כדי לגזום.)' },

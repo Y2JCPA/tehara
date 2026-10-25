@@ -195,3 +195,7 @@ test('the Chanukah jug: sealed with the Kohen Gadol\'s seal, intact and unmoved 
 test('tumah for the community is only pushed aside: search first (Bi\'at HaMikdash 4:15)', () => {
   assert.equal(T.communityTumah().mustSearchFirst, true);
 });
+
+test('a clay vessel isn\'t made tamei by touching its outside (Rambam Kelim 13:1)', () => {
+  assert.equal(T.clayTouchedOutside().tahor, true);
+});

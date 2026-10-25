@@ -215,6 +215,12 @@ const Tumah = (function () {
     return { tahor: false, src: 'Rambam, Tumat Met 21:1' }; // metal: tamei, sealed or not
   }
 
+  // A clay vessel becomes tamei only through its inside (or a zav moving it),
+  // never by being touched on the outside (Rambam Kelim 13:1)
+  function clayTouchedOutside() {
+    return { tahor: true, src: 'Rambam, Kelim 13:1' };
+  }
+
   function itemInOhel({ item, vessel }) {
     const src = 'Mishnah Kelim 10:1; Rambam, Tumat Met 21:1';
     if (NEVER_TAMEI[item]) return { tahor: true, src };
@@ -266,7 +272,7 @@ const Tumah = (function () {
     ohelCover, underSameOhel,
     crossField, markedFieldKind,
     LIME_BAND, limeMark, readMarks, shouldMark, mikveh, coverBlocks,
-    vesselInOhel, itemInOhel,
+    vesselInOhel, itemInOhel, clayTouchedOutside,
     liquidTouches, hands,
     jugIsPure, communityTumah,
   };

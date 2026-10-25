@@ -22,7 +22,7 @@ W1.treesOrNot = (hero = 'eli', purpose = 'pesach') => api => {
     pick = k; api.sfx('tap');
     api.setButtons([
       { id: 'blow', label: { en: '💨 Blow & walk', he: '💨 לנפח וללכת' }, onClick: () => cross('blow') },
-      { id: 'ride', label: { en: '🫏 Strong donkey', he: '🫏 חמור חזק' }, onClick: () => cross('ride') },
+      { id: 'ride', label: { en: '🐴 Strong donkey', he: '🐴 חמור חזק' }, onClick: () => cross('ride') },
       { id: 'walk', label: { en: '🚶 Just walk', he: '🚶 סתם ללכת' }, onClick: () => cross('walk') },
     ]);
   }
