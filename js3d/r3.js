@@ -390,7 +390,7 @@ function makeKit(ctx) {
     stoneBlock(s = 44) { return add(wrap(mesh(slab(s / U, s / U, s / U, 0.06, 0.03), std(0xb5afa4, { roughness: 0.9, map: TEX.lime }), -s / U / 2, -s / U / 2, -s / U / 2))); },
     bone(s = 1) {
       const g = new THREE.Group();
-      g.add(mesh(new THREE.CylinderGeometry(0.045, 0.045, 0.36, 10), MAT.bone)).rotation.z = Math.PI / 2;
+      g.add(rot(mesh(new THREE.CylinderGeometry(0.045, 0.045, 0.36, 10), MAT.bone), 'z', Math.PI / 2));
       for (const sx of [-0.2, 0.2]) for (const sz of [-0.05, 0.05]) g.add(mesh(new THREE.SphereGeometry(0.07, 10, 8), MAT.bone, sx, 0, sz));
       g.scale.setScalar(s); return add(wrap(g));
     },
@@ -416,8 +416,8 @@ function makeKit(ctx) {
       g.add(mesh(new THREE.SphereGeometry(0.09, 8, 6), white, -0.9, -0.02, 0));
       g.scale.setScalar(s); return add(wrap(g));
     },
-    barrel(s = 1) { const g = new THREE.Group(); g.add(mesh(new THREE.CylinderGeometry(0.3, 0.3, 0.8, 18, 1), MAT.plank)); for (const yy of [-0.25, 0.25]) g.add(mesh(new THREE.TorusGeometry(0.31, 0.025, 6, 24), MAT.metal, 0, yy, 0)).rotation.x = Math.PI / 2; g.add(mesh(new THREE.CircleGeometry(0.28, 18), MAT.water, 0, 0.41, 0)).rotation.x = -Math.PI / 2; g.scale.setScalar(s); return add(wrap(g)); },
-    hive(s = 1) { const g = new THREE.Group(); for (let i = 0; i < 4; i++) g.add(mesh(new THREE.TorusGeometry(0.3 - i * 0.06, 0.1, 10, 20), std(0xf2b84b, { roughness: 0.9 }), 0, -i * 0.15, 0)).rotation.x = Math.PI / 2; g.add(mesh(new THREE.CircleGeometry(0.07, 10), MAT.dark, 0, 0.05, 0.36)); g.scale.setScalar(s); return add(wrap(g)); },
+    barrel(s = 1) { const g = new THREE.Group(); g.add(mesh(new THREE.CylinderGeometry(0.3, 0.3, 0.8, 18, 1), MAT.plank)); for (const yy of [-0.25, 0.25]) g.add(rot(mesh(new THREE.TorusGeometry(0.31, 0.025, 6, 24), MAT.metal, 0, yy, 0), 'x', Math.PI / 2)); g.add(rot(mesh(new THREE.CircleGeometry(0.28, 18), MAT.water, 0, 0.41, 0), 'x', -Math.PI / 2)); g.scale.setScalar(s); return add(wrap(g)); },
+    hive(s = 1) { const g = new THREE.Group(); for (let i = 0; i < 4; i++) g.add(rot(mesh(new THREE.TorusGeometry(0.3 - i * 0.06, 0.1, 10, 20), std(0xf2b84b, { roughness: 0.9 }), 0, -i * 0.15, 0), 'x', Math.PI / 2)); g.add(mesh(new THREE.CircleGeometry(0.07, 10), MAT.dark, 0, 0.05, 0.36)); g.scale.setScalar(s); return add(wrap(g)); },
     bee() { const g = new THREE.Group(); const b = mesh(new THREE.SphereGeometry(0.07, 8, 6), std(0xffd23f), 0, 0, 0, false); b.scale.set(1.4, 1, 1); g.add(b); g.add(mesh(new THREE.SphereGeometry(0.05, 6, 4), std(0xffffff, { transparent: true, opacity: 0.7 }), 0, 0.07, 0, false)); return add(g); },
     stepStone(r, wobbly) {
       const g = new THREE.Group();
@@ -432,12 +432,12 @@ function makeKit(ctx) {
       const prof = bowl ? [[0, 0], [0.3, 0.02], [0.42, 0.18], [0.44, 0.3], [0.4, 0.31]] : flask ? [[0, 0], [0.28, 0.04], [0.33, 0.28], [0.25, 0.52], [0.1, 0.6], [0.09, 0.78], [0.12, 0.8]] : [[0, 0], [0.2, 0.02], [0.34, 0.2], [0.36, 0.42], [0.22, 0.68], [0.14, 0.72], [0.16, 0.8]];
       const top = prof[prof.length - 1][1];
       g.add(mesh(new THREE.LatheGeometry(prof.map(([a, b]) => new THREE.Vector2(a, b)), 24), mat));
-      if (bowl && oil) g.add(mesh(new THREE.CircleGeometry(0.4, 20), std(0xe0b030, { roughness: 0.2 }), 0, top - 0.04, 0)).rotation.x = -Math.PI / 2;
+      if (bowl && oil) g.add(rot(mesh(new THREE.CircleGeometry(0.4, 20), std(0xe0b030, { roughness: 0.2 }), 0, top - 0.04, 0), 'x', -Math.PI / 2));
       if (sealed) g.add(mesh(new THREE.SphereGeometry(0.17, 14, 8, 0, Math.PI * 2, 0, Math.PI / 2), std(0x9c7350), 0, top, 0));
       if (loose) { const c = mesh(new THREE.SphereGeometry(0.2, 14, 8, 0, Math.PI * 2, 0, Math.PI / 2), std(0xefe7d2, { roughness: 1 }), 0, top - 0.02, 0); c.scale.set(1.2, 0.6, 1.2); g.add(c); }
       if (seal) {
         const sm = mesh(new THREE.CylinderGeometry(0.09, 0.09, 0.04, 16), std(0xb8322a), 0.0, top - 0.12, 0.15); sm.rotation.x = Math.PI / 2; g.add(sm);
-        if (seal === 'kg') g.add(mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.05, 6), MAT.goldBright, 0, top - 0.12, 0.17)).rotation.x = Math.PI / 2;
+        if (seal === 'kg') g.add(rot(mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.05, 6), MAT.goldBright, 0, top - 0.12, 0.17), 'x', Math.PI / 2));
         if (seal === 'broken') { sm.scale.set(0.6, 1, 1); sm.position.x = -0.05; const sb = mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.04, 6), std(0xb8322a), 0.08, top - 0.16, 0.15); sb.rotation.x = Math.PI / 2; g.add(sb); }
       }
       g.scale.setScalar(s * 0.95); return add(wrap(g));
@@ -454,7 +454,7 @@ function makeKit(ctx) {
       g.scale.setScalar(s); return add(wrap(g));
     },
     blower(s = 1) { const g = new THREE.Group(); g.add(mesh(new THREE.BoxGeometry(0.4, 0.34, 0.3), std(0xe85d3a, { roughness: 0.5 }))); const n = mesh(new THREE.CylinderGeometry(0.08, 0.1, 0.5, 12), std(0xf39a73, { roughness: 0.5 }), 0.42, 0, 0); n.rotation.z = Math.PI / 2; g.add(n); g.scale.setScalar(s); return add(wrap(g)); },
-    bucket(s = 1) { const g = new THREE.Group(); g.add(mesh(new THREE.CylinderGeometry(0.2, 0.16, 0.34, 14), MAT.metal)); g.add(mesh(new THREE.CircleGeometry(0.19, 14), MAT.lime, 0, 0.17, 0)).rotation.x = -Math.PI / 2; g.scale.setScalar(s); return add(wrap(g)); },
+    bucket(s = 1) { const g = new THREE.Group(); g.add(mesh(new THREE.CylinderGeometry(0.2, 0.16, 0.34, 14), MAT.metal)); g.add(rot(mesh(new THREE.CircleGeometry(0.19, 14), MAT.lime, 0, 0.17, 0), 'x', -Math.PI / 2)); g.scale.setScalar(s); return add(wrap(g)); },
     sheep(s = 1) { const g = new THREE.Group(); const b = mesh(lumpy(0.3, 2, 0.12, 3), std(0xf5f2ea, { roughness: 1 }), 0, 0.35, 0); b.scale.set(1.3, 0.9, 0.9); g.add(b); g.add(mesh(new THREE.SphereGeometry(0.13, 10, 8), std(0x3a3028), 0.42, 0.42, 0)); for (const lx of [-0.2, 0.2]) g.add(mesh(new THREE.CylinderGeometry(0.035, 0.035, 0.25, 6), std(0x3a3028), lx, 0.1, 0.1)); g.scale.setScalar(s); return add(wrap(g)); },
     menorah(s = 1) {
       const g = new THREE.Group(), flames = [];
@@ -473,11 +473,11 @@ function makeKit(ctx) {
       g.scale.setScalar(s); return add(wrap(g));
     },
     // a wooden sign board (text is drawn in the 2D overlay)
-    signBoard(x, y, w, h, { post = true } = {}) {
+    signBoard(x, y, w, h, { post = true, z = 0.3 } = {}) {
       const g = new THREE.Group();
       g.add(mesh(new THREE.BoxGeometry(w / U, h / U, 0.08), MAT.plank, 0, 0, 0));
       if (post) g.add(mesh(new THREE.BoxGeometry(0.1, 0.8, 0.1), MAT.wood, 0, -h / U / 2 - 0.4, -0.05));
-      g.position.copy(P(x, y - h / 2, 0.3)); return add(g);
+      g.position.copy(P(x, y - h / 2, z)); return add(g);
     },
     donkey(opts) { return add(wrap(makeDonkey(opts))); },
     char(kind) { const c = makeChar(kind); add(c.group); return c; },
@@ -486,6 +486,7 @@ function makeKit(ctx) {
   };
   return K;
 }
+function rot(m, axis, a) { m.rotation[axis] = a; return m; }
 function wrap(o) { const g = new THREE.Group(); g.add(o); return g; }
 
 // ---------- characters (adapted from Avodah: Beit HaMikdash) ----------

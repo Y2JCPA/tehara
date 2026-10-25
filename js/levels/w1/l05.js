@@ -101,23 +101,92 @@ W1.stones = (hero = 'eli', mate = 'miriam', purpose = 'terumah') => api => {
       for (const s of stones) if (Kit.near(p, s.x, s.y, 32)) { mode === 'test' ? test(s) : addPath(s); return; }
     },
     hot() { const h = {}; for (const a of animals) h['animal:' + a.id] = [a.x, a.y - 20 * a.s / 0.6]; for (const s of stones) h['s' + s.i] = [s.x, s.y]; return h; },
+    scene: { mode: 'day', seed: 21 },
+    build(K, ctx) {
+      const T3 = K.THREE, U = K.U;
+      // things standing over the sloped field would throw their shadows far down it, so they don't cast any there
+      const shade = (o, on) => { if (o.userData.cast !== on) { o.userData.cast = on; o.traverse(m => { m.castShadow = on; }); } };
+      // The field lies back like a slope, so we look down on it: depth z at logical row y.
+      const zAt = y => -(810 - y) / U;
+      const on = (x, y, lift = 0) => { const z = zAt(y) + lift; const [ux, uy] = W1.unproj(x, y, z); return K.P(ux, uy, z); };
+      // (the slope bends a little so every point lands on its logical spot, so it's built from strips)
+      const quad = (x1, y1, x2, y2, mat, lift = 0, ru = 1, rv = 1, n = 24) => {
+        const pos = [], uv = [], idx = [];
+        for (let i = 0; i <= n; i++) {
+          const y = y1 + (y2 - y1) * i / n, a = on(x1, y, lift), b = on(x2, y, lift);
+          pos.push(a.x, a.y, a.z, b.x, b.y, b.z); uv.push(0, rv * (1 - i / n), ru, rv * (1 - i / n));
+          if (i) { const k = i * 2; idx.push(k - 2, k, k - 1, k - 1, k, k + 1); }
+        }
+        const gm = new T3.BufferGeometry();
+        gm.setAttribute('position', new T3.Float32BufferAttribute(pos, 3)); gm.setAttribute('uv', new T3.Float32BufferAttribute(uv, 2));
+        gm.setIndex(idx); gm.computeVertexNormals();
+        const m = new T3.Mesh(gm, mat); m.receiveShadow = true; K.scene.add(m); return m;
+      };
+      quad(40, 250, 500, 812, K.MAT.field, 0, 4, 6);
+      quad(-10, 160, 550, 252, K.MAT.grass, 0.01, 6, 1);
+      const river = K.std(0x4aa8de, { roughness: 0.1, metalness: 0.1 });
+      quad(-10, 250, 40, 812, river, -0.05); quad(500, 250, 550, 812, river, -0.05);
+      for (const [x, y] of [[20, 180], [520, 185], [90, 175], [460, 172]]) { const b = K.bush(0, 0, 1); b.position.copy(on(x, y)); }
+      // the sign on the far side
+      const k = (34 - zAt(228)) / 34, sg = K.mesh(new T3.BoxGeometry(290 / U * k, 33 / U * k, 0.1), K.std(0xe8b979, { roughness: 0.8 }));
+      sg.position.copy(on(270, 227.5, 0.3)); K.scene.add(sg);
+      // the near bank: a grassy slope that comes toward us, where everyone waits
+      const nb = new T3.BufferGeometry(), pts = [K.P(-10, 812, -0.1), K.P(550, 812, -0.1), K.P(550, 1000, 0.95), K.P(-10, 1000, 0.95)];
+      nb.setAttribute('position', new T3.Float32BufferAttribute(pts.flatMap(p => [p.x, p.y, p.z]), 3));
+      nb.setAttribute('uv', new T3.Float32BufferAttribute([0, 0, 6, 0, 6, 2, 0, 2], 2)); nb.setIndex([0, 3, 1, 1, 3, 2]); nb.computeVertexNormals();
+      const nbm = new T3.Mesh(nb, K.MAT.grass); nbm.receiveShadow = true; K.scene.add(nbm);
+      const zBank = y => y > 812 ? (y - 812) / (188 / 1.05) + 0.0 : 0.05;
+      // the stones: wobbly ones sit up on little pebbles
+      const stoneM = K.std(0xddd6c8, { roughness: 0.85, map: K.TEX.lime }), dirtM = K.std(0x6e4a26, { roughness: 1 }), pebM = K.std(0x5f5548, { roughness: 0.9 });
+      const st = stones.map(s => {
+        const r = (s.solid ? 27 : 29) / U, o = K.stepStone(s.solid ? 27 : 29, !s.solid), g0 = o.children[0];
+        g0.scale.setScalar(1.25);
+        g0.children[0].material = stoneM;
+        if (s.solid) { const ring = K.mesh(new T3.CylinderGeometry(r * 1.12, r * 1.2, 0.05, 24), dirtM, 0, -0.08, 0, false); g0.add(ring); }
+        else for (const sx of [-1, 1]) g0.add(K.mesh(new T3.SphereGeometry(0.09, 8, 6), pebM, sx * r * 0.62, -0.12, r * 0.55));
+        o.position.copy(on(s.x, s.y, s.solid ? 0.02 : 0.12)); o.rotation.x = Math.PI / 4;
+        return o;
+      });
+      // the animals, and the two riders for when Eli and Miriam ride one
+      const dk = animals.map(a => {
+        const d = K.donkey({ strong: a.strong, color: new T3.Color(a.color).getHex(), s: a.s * 0.95 });
+        const dung = [0, 1].map(i => { const m = K.mesh(new T3.SphereGeometry(0.08, 8, 6), K.std(0x6b4a26)); m.position.set(-0.75 - i * 0.12, 0.06, 0.1 * i); d.children[0].add(m); return m; });
+        return { d, dung };
+      });
+      const riders = [K.char(hero), K.char(mate)];
+      riders.forEach(r => { r.group.visible = false; });
+      this.sync = (t, dt) => {
+        for (const a of [eli, mate1]) a.z = zBank(a.y);
+        if (ctx) for (const [a, c] of ctx.actors) shade(c.group, a.y >= 812);
+        stones.forEach((s, i) => { st[i].children[0].rotation.z = -s.wob; });
+        animals.forEach((a, i) => {
+          const { d, dung } = dk[i];
+          d.visible = true;
+          K.place(d, a.x, a.y, zBank(a.y) + 0.05); shade(d, a.y >= 812);
+          const face = riding === a ? 1 : a.id === 'big' ? 1 : -1;
+          d.rotation.y = face > 0 ? -0.5 : -Math.PI + 0.5;
+          const sh = a.shake > 0 || riding === a;
+          const legs = d.children[0].userData.legs;
+          legs.forEach((l, j) => { l.rotation.x = sh && !a.strong ? Math.sin(t / 40 + j * 1.7) * 0.35 : 0; l.rotation.z = sh && !a.strong ? Math.sin(t / 55 + j) * 0.2 : 0; });
+          d.position.x += sh && !a.strong ? Math.sin(t / 30) * 0.02 : 0;
+          dung.forEach(m => { m.visible = (a.plop || 0) > 0; m.scale.setScalar(Math.max(0.01, a.plop || 0)); });
+        });
+        riders.forEach((r, j) => {
+          r.group.visible = !!riding;
+          if (!riding) return;
+          const sc = riding.s / 0.6;
+          r.group.scale.setScalar(1.1 * 0.5 * sc); shade(r.group, riding.y >= 812);
+          r.group.position.copy(K.P(riding.x - 8 + j * 24, riding.y - 44 * sc, zBank(riding.y) + 0.1 + j * 0.15));
+          r.update(dt || 0.016, {});
+        });
+      };
+    },
     draw(g, t) {
-      Kit.outdoor(g, t, { seed: 21, y: 230 });
-      G.platform(g, -10, 160, 560, 90, { seed: 22 });
-      G.river(g, -10, 250, 50, 560, t); G.river(g, 500, 250, 50, 560, t);
-      G.rr(g, 40, 250, 460, 560, 0, G.lin(g, 0, 250, 0, 810, [[0, '#c49560'], [1, '#a27243']]), 2.5, G.C.dirtDark);
-      G.rrPath(g, 40, 250, 460, 560, 0); G.texFill(g, 'dirt'); Kit.furrows(g, 40, 250, 460, 560);
-      G.platform(g, -10, 818, 560, 160, { seed: 23 });
-      G.sign(g, 270, 244, api.L({ en: 'Beit HaPeras: a grave was plowed here', he: 'בית הפרס: נחרש כאן קבר' }), { w: 290, size: 13, post: false });
+      G.text(g, api.L({ en: 'Beit HaPeras: a grave was plowed here', he: 'בית הפרס: נחרש כאן קבר' }), 270, 229.5, { size: 13, color: '#3b2210' });
       if (path.length) { G.path(g, [[START.x, START.y], ...path.map(s => [s.x, s.y])]); g.setLineDash([10, 8]); g.lineWidth = 5; g.strokeStyle = '#fff'; g.stroke(); g.setLineDash([]); }
-      for (const s of stones) G.stoneTile(g, s.x, s.y, s.solid ? 27 : 29, { wobbly: !s.solid, wob: s.wob, tested: s.tested });
+      for (const s of stones) if (s.tested) { const r = s.solid ? 27 : 29; G.circ(g, s.x + r * 0.8, s.y - r * 0.6, 11, s.solid ? G.C.green : G.C.red, 2, '#fff'); G.text(g, s.solid ? '✓' : '✗', s.x + r * 0.8, s.y - r * 0.6, { size: 14, color: '#fff' }); }
       for (const s of path) G.circ(g, s.x, s.y, 6, G.C.gold, 2);
-      for (const a of animals) {
-        if (riding === a) continue;
-        G.donkey(g, a.x, a.y, a.s, { strong: a.strong, color: a.color, phase: a.shake > 0 ? t / 50 : 0, plop: a.plop || 0, dir: a.id === 'big' ? 1 : -1 });
-        if (inspected === a) G.circ(g, a.x, a.y - 10, 50 * a.s / 0.6, null, 3, G.C.gold);
-      }
-      if (riding) { G.donkey(g, riding.x, riding.y, riding.s, { strong: riding.strong, color: riding.color, phase: t / 70, plop: riding.plop || 0 }); Chars.draw(g, hero, riding.x - 4, riding.y - 30 * riding.s / 0.6, { s: 0.7 * riding.s / 0.6, t }); Chars.draw(g, mate, riding.x + 18, riding.y - 28 * riding.s / 0.6, { s: 0.65 * riding.s / 0.6, t }); }
+      for (const a of animals) if (inspected === a && riding !== a) G.circ(g, a.x, a.y - 10, 50 * a.s / 0.6, null, 3, G.C.gold);
       mate1.draw(g, t); eli.draw(g, t); eli.drawBubble(g);
     },
   };

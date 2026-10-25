@@ -62,22 +62,46 @@ CH.search = api => {
       }
     },
     hot() { const h = { hatchA: hA.ring, hatchB: hB.ring }; for (const j of jugs) h[j.id] = [j.x, j.y - 26]; return h; },
-    draw(g, t) {
-      CH.temple(g, t, { floor: 900, seed: 13 });
-      G.tag(g, api.L({ en: 'Storerooms under the Heichal', he: 'מחסנים תחת ההיכל' }), 270, 128, { size: 14 });
+    scene: { mode: 'indoor' },
+    build(K) {
+      const T3 = K.THREE, M = K.MAT;
+      K.room({ floor: 900, seed: 13, lamps: false });
+      // the storerooms: dark plastered cellars cut into the stone, one under the other
+      const plaster = K.std(0x8a6a48, { roughness: 1, map: K.TEX.lime });
+      const front = { mat: M.stone, z0: -0.7, z1: 0.8 };
+      K.wall(-10, 0, 560, 150, front);
+      K.wall(-10, 150, 34, 760, front); K.wall(516, 150, 34, 760, front);
       rooms.forEach((r, i) => {
-        G.rr(g, 24, r.y, 492, r.h, 8, G.lin(g, 0, r.y, 0, r.y + r.h, [[0, '#7a5e3e'], [1, '#4e3a24']]), 3, '#2e1f10');
-        G.rr(g, 24, r.y + r.h - 14, 492, 14, 0, '#5a4630', 0);
-        if (i < 2) G.rr(g, 410, r.y + r.h - 4, 100, 12, 3, (i === 0 ? hA : hB).out ? '#140d07' : G.C.woodDark, 2.5, '#2e1f10');
-        if (i > 0 && open[i]) G.ladder(g, 460, r.y - 12, r.y + r.h - 14, { w: 26 });
+        K.recess(24, r.y, 492, r.h, { z: -1.6, mat: plaster });
+        for (const [x, w] of [[24, 14], [502, 14]]) K.wall(x, r.y, w, r.h, { mat: plaster, z0: -1.6, z1: -0.7 });
+        K.wall(24, r.y, 492, 12, { mat: M.plank, z0: -1.6, z1: 0.4 });          // ceiling beams
+        K.wall(24, r.y + r.h - 14, 492, i < 2 ? 34 : 70, { mat: M.floor, z0: -1.6, z1: 0.8 });   // floor
       });
+      // the hatches down to the next room, and the ladders under them
+      const hatch = [0, 1].map(i => { const r = rooms[i]; K.recess(410, r.y + r.h - 6, 100, 16, { z: 0.82, mat: M.dark }); return K.wall(408, r.y + r.h - 8, 104, 14, { mat: M.plank, z0: -1.4, z1: 0.95 }); });
+      const ladders = [1, 2].map(i => K.ladder(460, rooms[i].y - 12, rooms[i].y + rooms[i].h - 14, { w: 26, z: 0.2 }));
+      // the jugs, and the stones hiding the two niches
+      const objs = jugs.map(j => {
+        const o = j.smashed ? CH.shards(K, j.x, j.y) : K.place(CH.jar3d(K, j.look, 1.15), j.x, j.y, -0.2);
+        const hide = [];
+        if (j.hidden) for (let k = 0; k < j.hidden; k++) hide.push(K.wall(j.x - 48 + k * 30, j.y - 66 + (k % 2) * 20, 42, 66, { mat: K.std(0xcdbb92, { roughness: 0.9, map: K.TEX.lime }), z0: 0.1, z1: 0.7 }));
+        return { j, o, hide };
+      });
+      // Yehuda's lamp lights the room where you tap
+      const lamp = new T3.PointLight(0xffc070, 9, 7, 1.4); K.scene.add(lamp);
+      this.sync = () => {
+        hatch[0].visible = !hA.out; hatch[1].visible = !hB.out;
+        ladders[0].visible = open[1]; ladders[1].visible = open[2];
+        for (const { j, o, hide } of objs) { o.visible = open[j.room]; hide.forEach((h, k) => { h.visible = open[j.room] && k < j.hidden; }); if (!j.smashed) K.place(o, j.x, j.y, -0.2); }
+        lamp.position.copy(K.P(light.x, light.y - 40, 1.2));
+      };
+    },
+    draw(g, t) {
+      G.tag(g, api.L({ en: 'Storerooms under the Heichal', he: 'מחסנים תחת ההיכל' }), 270, 128, { size: 14 });
       for (const j of jugs) {
         if (!open[j.room]) continue;
         if (j.drag) for (let k = 0; k < 5; k++) G.line(g, j.x + 34 + k * 16, j.y + 2 + (k % 2) * 4, j.x + 46 + k * 16, j.y + 2 + (k % 2) * 4, 3, 'rgba(250,230,190,0.75)');
         if (!j.drag && !j.smashed) for (let k = 0; k < 6; k++) G.circ(g, j.x - 30 + k * 12, j.y + 4, 1.5, 'rgba(250,230,190,0.35)', 0);
-        if (j.smashed) { G.poly(g, [[j.x - 26, j.y], [j.x - 10, j.y - 26], [j.x, j.y]], G.C.clay, 2.5); G.poly(g, [[j.x + 4, j.y], [j.x + 18, j.y - 18], [j.x + 28, j.y]], G.C.clay, 2.5); }
-        else G.jar(g, j.x, j.y, 0.85, j.look);
-        if (j.hidden) for (let k = 0; k < j.hidden; k++) G.rr(g, j.x - 48 + k * 30, j.y - 66 + (k % 2) * 20, 42, 66, 6, G.lin(g, 0, j.y - 66, 0, j.y, [[0, '#cdbb92'], [1, '#9c8a62']]), 2.5, '#6b5a3a');
         if (sel === j) G.circ(g, j.x, j.y - 24, 46, null, 4, G.C.gold);
       }
       g.save(); g.beginPath(); g.rect(0, 0, 540, 960);

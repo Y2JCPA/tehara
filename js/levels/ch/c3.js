@@ -57,19 +57,32 @@ CH.sealed = api => {
     move(p) { if (drag) { drag.x = p.x - off[0]; drag.y = p.y - off[1]; } },
     up(p) { if (!drag) return; const z = Object.keys(zones).find(k => Kit.inRect(p, zones[k].x, zones[k].y, zones[k].w, zones[k].h)); drag.place = z || null; drag = null; api.sfx('tap'); layout(); },
     hot() { const h = { take: [139, 760], leave: [401, 760] }; for (const it of items) h['i' + it.i] = [it.x, it.y - 22]; return h; },
-    draw(g, t) {
-      Kit.outdoor(g, t, { seed: 91, y: 200 });
-      G.platform(g, -10, 340, 560, 640, { seed: 92 });
-      G.cave(g, 24, 200, 160, 140, { closed: false });
-      G.tag(g, api.L({ en: 'Burial cave', he: 'מערת קבורה' }), 104, 186, { size: 12 });
-      for (const ry of [440, 550]) G.rr(g, 6, ry, 528, 14, 4, G.lin(g, 0, ry, 0, ry + 14, [[0, G.C.woodLight], [1, G.C.wood]]), 2.5, G.C.woodDark);
+    scene: { mode: 'day', seed: 91 },
+    build(K) {
+      const M = K.MAT;
+      K.block(-10, 340, 560, 28, { z1: 0.15 });
+      K.wall(-10, 368, 560, 612, { mat: M.stone, z0: -1.4, z1: -0.35 });
+      K.cave(24, 200, 160, 140, { closed: false });
+      K.bush(330, 340, 0.8); K.tree(420, 340, 0.7, 'olive', 5);
+      // the two shelves the things were found on, and the two sorting crates
+      for (const ry of [438, 548]) K.wall(6, ry, 528, 14, { mat: M.plank, z0: -0.35, z1: 0.45 });
       for (const z of ['take', 'leave']) {
         const Z = zones[z];
-        G.rr(g, Z.x, Z.y, Z.w, Z.h, 16, z === 'take' ? 'rgba(51,184,100,0.22)' : 'rgba(110,100,90,0.22)', 2.5, z === 'take' ? '#2a8a4a' : '#6e645a');
+        K.wall(Z.x, Z.y, Z.w, Z.h, { mat: z === 'take' ? M.plank : K.std(0x9a9088, { map: K.TEX.lime, roughness: 0.9 }), z0: -0.6, z1: -0.4 });
+        for (const ry of [708, 800]) K.wall(Z.x + 4, ry, Z.w - 8, 10, { mat: M.wood, z0: -0.4, z1: 0.4 });
+        K.wall(Z.x, Z.y + Z.h - 12, Z.w, 14, { mat: M.wood, z0: -0.4, z1: 0.45 });
+      }
+      const objs = items.map(it => it.cup ? CH.metalize(K, K.cup('stone', 1.7)) : it.loneLadle ? CH.metalize(K, K.ladle(1.1)) : CH.jar3d(K, it.look, 1.08));
+      this.sync = () => items.forEach((it, i) => K.place(objs[i], it.x, it.y + 8, it === drag ? 0.3 : 0));
+    },
+    draw(g, t) {
+      G.tag(g, api.L({ en: 'Burial cave', he: 'מערת קבורה' }), 104, 186, { size: 12 });
+      for (const z of ['take', 'leave']) {
+        const Z = zones[z];
+        G.rr(g, Z.x, Z.y, Z.w, Z.h, 16, z === 'take' ? 'rgba(51,184,100,0.16)' : 'rgba(110,100,90,0.16)', 2.5, z === 'take' ? '#2a8a4a' : '#6e645a');
         G.tag(g, api.L(z === 'take' ? { en: 'To the Mikdash ✓', he: 'למקדש ✓' } : { en: 'Leave here ✗', he: 'להשאיר ✗' }), Z.x + Z.w / 2, Z.y + 26, { size: 15 });
       }
-      for (const it of items) if (it !== drag) drawItem(g, it);
-      if (drag) drawItem(g, drag);
+      for (const it of items) if (it.inside) { G.circ(g, it.x + 26, it.y - 58, 15, '#fff', 2); if (it.inside === 'ladle') G.ladle(g, it.x + 26, it.y - 53, 0.32); else G.cup(g, it.x + 26, it.y - 52, 0.42, 'clay'); }
       helper.draw(g, t); yehuda.draw(g, t);
     },
   };

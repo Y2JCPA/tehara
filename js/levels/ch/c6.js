@@ -4,11 +4,13 @@
 CH.whatToDo = CH.choice({
   intro: { en: 'All the oil the Greeks touched is impure [טמא], and the whole people is impure too. What should we do?', he: 'כל השמן שנגעו בו היוונים טמא, וגם כל העם טמא. מה נעשה?' },
   actors: [{ kind: 'kohen', x: 390, y: 860, opts: { dir: -1 } }, { kind: 'yehuda', x: 170, y: 860 }],
-  draw(g, t) {
-    CH.temple(g, t, { floor: 860, seed: 19 });
-    G.menorah(g, 270, 560, 1.05, [], t);
-    for (const x of [44, 92, 452, 500]) G.jar(g, x, 850, 0.75, { material: 'clay', seal: 'broken' });
+  scene: { mode: 'indoor' },
+  build(K) {
+    CH.temple3d(K, { floor: 860, seed: 19 });
+    CH.menorahStand(K, 270, 574, 1.05);
+    for (const x of [44, 92, 452, 500]) K.place(CH.jar3d(K, { material: 'clay', seal: 'broken' }, 0.95), x, 856, 0.3);
   },
+  draw() {},
   options: [
     { id: 'impure', soft: true, label: { en: 'Use the impure oil', he: 'להשתמש בשמן הטמא' }, result: api => { const r = api.T.communityTumah(); return { ok: !r.mustSearchFirst, msg: { en: 'Not so fast! For the whole community, tumah is only pushed aside [דחויה] when there is no other way. First we must search for a pure way.', he: 'לא כל כך מהר! טומאה דחויה בציבור רק במקום שאי אפשר. קודם צריך לחפש דרך טהורה.' } }; } },
     { id: 'search', label: { en: 'Search for pure oil first', he: 'קודם לחפש שמן טהור' }, result: () => ({ ok: true, msg: { en: 'They searched, and found the one sealed jug!', he: 'בדקו, ומצאו את הפך האחד החתום!' } }) },
@@ -32,11 +34,22 @@ CH.nights = api => {
     update(dt) { yehuda.update(dt); kohen.update(dt); },
     down(p) { for (let i = 0; i < 7; i++) if (Kit.near(p, LX[i], LY, 26) && !lit[i]) { lit[i] = 1; api.sfx('tap'); return; } },
     hot() { const h = {}; for (let i = 0; i < 7; i++) h['lamp' + i] = [LX[i], LY]; return h; },
+    scene: { mode: 'indoor' },
+    build(K) {
+      CH.temple3d(K, { floor: 860, seed: 23 });
+      K.scene.traverse(o => { if (o.isLight) o.intensity *= 0.3; });     // night in the Mikdash
+      const men = CH.menorahStand(K, 270, 597, 1.02);
+      const glow = K.light(270, 440, { color: 0xffb050, power: 0, dist: 9, z: 0.8 });
+      // the little jug on a stone stand
+      K.wall(420, 760, 80, 100, { mat: K.MAT.stoneSmooth, z0: -1.5, z1: -0.5 });
+      K.place(CH.jar3d(K, { material: 'clay', seal: 'kg' }, 1.2), 460, 760, -1.0);
+      this.sync = () => {
+        men.userData.flames.forEach(([f, gl], i) => { f.visible = gl.visible = !!lit[i]; });
+        glow.intensity = lit.reduce((a, b) => a + b, 0) * 1.4;
+      };
+    },
     draw(g, t) {
-      CH.temple(g, t, { floor: 860, seed: 23, dim: 0.35 });
-      G.menorah(g, 270, 600, 1, lit, t);
       for (let i = 0; i < 7; i++) if (!lit[i]) G.sparkle(g, LX[i] + 12, LY - 14, t + i * 300, 0.8);
-      G.jar(g, 460, 760, 1, { material: 'clay', seal: 'kg' });
       G.rr(g, 500, 640, 18, 120, 9, '#fff', 2.5); G.rr(g, 503, 643, 12, 114, 6, G.lin(g, 0, 643, 0, 757, [[0, '#ffe08a'], [1, '#d9a520']]), 0);
       G.star(g, 509 + Math.sin(t / 200) * 3, 628, 8, '#fff6b0', true);
       G.rr(g, 30, 140, 236, 74, 14, 'rgba(255,250,240,0.94)', 2.5);

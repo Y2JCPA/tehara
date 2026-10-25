@@ -4,13 +4,20 @@
 CH.runHaperas = CH.choice({
   intro: { en: 'Day 3. A Beit HaPeras [בית הפרס] blocks the road. How should Yehuda carry the oil for the Mikdash across?', he: 'יום ג. בית הפרס חוסם את הדרך. איך יעביר יהודה את השמן למקדש?' },
   actors: [{ kind: 'yehuda', x: 200, y: 900 }, { kind: 'helper', x: 260, y: 900 }],
+  scene: { mode: 'day', seed: 111 },
+  build(K) {
+    const M = K.MAT;
+    K.block(-10, 270, 560, 34, { z1: 0.7 });
+    K.block(-10, 304, 560, 600, { top: 'none', z0: -1.8, z1: -0.7 });
+    K.wall(40, 300, 460, 480, { mat: M.field, z0: -0.7, z1: 0.4 });
+    for (const [x, y, w] of [[150, 720, 0], [240, 620, 1], [170, 500, 0], [260, 390, 1]]) K.place(K.stepStone(40, !!w), x, y, 0.55);
+    K.block(-10, 900, 560, 80, { top: 'path' });
+    K.bush(30, 900, 0.8); K.tree(520, 270, 0.7, 'olive', 9);
+    const d1 = K.place(K.donkey({ strong: false, color: 0x9a8270, s: 1.0 }), 400, 900, 0.1); d1.rotation.y = -0.5;
+    const d2 = K.place(K.donkey({ strong: true, s: 0.66 }), 500, 860, -0.4); d2.rotation.y = -0.5;
+    K.block(450, 860, 100, 40, { face: 'earth', top: 'grass', z0: -1.2, z1: -0.1 });
+  },
   draw(g, t, api) {
-    Kit.outdoor(g, t, { seed: 111, y: 260 });
-    G.platform(g, -10, 270, 560, 700, { seed: 112 });
-    G.rr(g, 40, 300, 460, 480, 6, G.lin(g, 0, 300, 0, 780, [[0, '#c49560'], [1, '#a27243']]), 2.5, G.C.dirtDark); Kit.furrows(g, 40, 300, 460, 480);
-    for (const [x, y, w] of [[150, 720, 0], [240, 620, 1], [170, 500, 0], [260, 390, 1]]) G.stoneTile(g, x, y, 28, { wobbly: !!w });
-    G.donkey(g, 400, 900, 0.72, { color: '#7a6250', strong: false });
-    G.donkey(g, 500, 860, 0.5, { strong: true });
     G.sign(g, 270, 296, api.L({ en: 'Beit HaPeras: a grave was plowed here', he: 'בית הפרס: נחרש כאן קבר' }), { w: 290, size: 13, post: false });
   },
   options: [
@@ -23,17 +30,27 @@ CH.runHaperas = CH.choice({
 CH.runArrive = CH.choice({
   intro: { en: 'Day 8. Three jars of new oil reached the Mikdash. Which one may go to the Menorah? Read the tags!', he: 'יום ח. שלושה כדים של שמן חדש הגיעו למקדש. איזה מהם מותר למנורה? קראו את התוויות!' },
   actors: [{ kind: 'kohen', x: 420, y: 690, opts: { dir: -1 } }, { kind: 'yehuda', x: 120, y: 690 }],
+  scene: { mode: 'indoor' },
+  build(K) {
+    const M = K.MAT;
+    CH.temple3d(K, { floor: 860 });
+    // a raised floor to stand on, the Menorah on its stone, and a bench for the jars
+    K.block(-10, 690, 560, 70, { face: 'stone', top: 'stone', z0: -2.2, z1: 0.2 });
+    K.wall(222, 486, 96, 204, { mat: M.stoneSmooth, z0: -1.6, z1: -0.6 });
+    const men = K.place(K.menorah(1.08), 270, 486, -1.1);
+    for (const [f, gl] of men.children[0].userData.flames) { f.visible = true; gl.visible = true; }
+    K.light(270, 330, { power: 6, dist: 7, z: -0.4 });
+    K.wall(20, 770, 500, 20, { mat: M.stoneSmooth, z0: 0.15, z1: 0.95 });
+    K.place(CH.jar3d(K, { material: 'clay', sealed: true }, 1.2), 100, 770, 0.55);
+    K.place(CH.jar3d(K, { material: 'clay', loose: true }, 1.2), 270, 770, 0.55);
+    K.place(CH.jar3d(K, { material: 'metal', flask: true, sealed: true }, 1.2), 440, 770, 0.55);
+  },
   draw(g, t, api) {
-    CH.temple(g, t, { floor: 860 });
-    G.menorah(g, 270, 470, 0.9, [1, 1, 1, 1, 1, 1, 1], t);
     const card = (x, title, lines) => {
       G.rr(g, x - 82, 792, 164, 64, 10, 'rgba(255,250,238,0.95)', 2, 'rgba(59,42,32,0.6)');
       G.text(g, title, x, 806, { size: 13 });
       lines.forEach((l, i) => G.text(g, api.L(l), x, 824 + i * 15, { size: 11, bold: false }));
     };
-    G.jar(g, 100, 770, 0.9, { material: 'clay', sealed: true });
-    G.jar(g, 270, 770, 0.9, { material: 'clay', loose: true });
-    G.jar(g, 440, 770, 0.9, { material: 'metal', flask: true, sealed: true });
     card(100, api.L({ en: 'Jar A', he: 'כד א' }), [{ en: 'Clay, sealed tight.', he: 'חרס, צמיד פתיל.' }, { en: 'Carried by someone tamei met.', he: 'נשא אותו טמא מת.' }]);
     card(270, api.L({ en: 'Jar B', he: 'כד ב' }), [{ en: 'Clay, cloth tied on top.', he: 'חרס, בד קשור מלמעלה.' }, { en: 'Rested in a tomb\'s doorway.', he: 'נח בפתח קבר.' }]);
     card(440, api.L({ en: 'Jar C', he: 'כד ג' }), [{ en: 'Metal flask, sealed.', he: 'מתכת, סגור.' }, { en: 'Rested in a tomb\'s doorway.', he: 'נח בפתח קבר.' }]);

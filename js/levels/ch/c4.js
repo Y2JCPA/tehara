@@ -59,27 +59,47 @@ CH.press = api => {
       if (Kit.near(p, 470, 816, 46)) wash();
     },
     hot() { return { press: p0.ring, gate1: g1.ring, gate2: g2.ring, wash: [470, 816] }; },
+    scene: { mode: 'day', seed: 101 },
+    build(K) {
+      const T3 = K.THREE, M = K.MAT;
+      K.wall(-10, 300, 560, 580, { mat: M.stone, z0: -1.6, z1: -0.45 });
+      K.block(-10, 880, 560, 100, { face: 'stone', top: 'stone' });
+      K.tree(40, 300, 0.8, 'olive', 3); K.tree(500, 300, 0.75, 'olive', 7);
+      // the olive press: a stone basin full of crushed olives, under a long beam
+      K.wall(180, 200, 180, 100, { mat: M.rock, z0: -0.9, z1: 0.3 });
+      K.wall(196, 214, 148, 60, { mat: K.std(0xb59a2a, { roughness: 0.6, map: K.TEX.rock }), z0: -0.6, z1: 0.32 });
+      K.beam(150, 188, 400, 168, { h: 16, d: 0.35, z: 0.45, mat: M.wood });
+      K.scene.add(K.mesh(new T3.CylinderGeometry(0.06, 0.06, 1.4, 8), M.wood, 400 / K.U, -230 / K.U, 0.45));
+      // the stone channels
+      for (const k of ['left', 'puddle', 'mouse']) {
+        const pts = R[k];
+        for (let i = 1; i < pts.length; i++) K.beam(pts[i - 1][0], pts[i - 1][1], pts[i][0], pts[i][1], { h: 22, d: 0.55, z: -0.25, mat: K.std(0x8e7f66, { roughness: 0.9, map: K.TEX.lime }) });
+        for (const [x, y] of pts.slice(1, -1)) { const j = K.mesh(new T3.CylinderGeometry(11 / K.U, 11 / K.U, 0.55, 16), K.std(0x8e7f66, { roughness: 0.9, map: K.TEX.lime })); j.rotation.x = Math.PI / 2; j.position.copy(K.P(x, y, -0.25)); K.scene.add(j); }
+      }
+      // the two gates on hinges
+      const gate = (x, y) => { const h = new T3.Group(); h.position.copy(K.P(x, y, 0.12)); const b = K.mesh(new T3.BoxGeometry(10 / K.U, 56 / K.U, 0.5), M.plank); b.position.y = -28 / K.U; h.add(b); K.scene.add(h); return h; };
+      const G1 = gate(270, 400), G2 = gate(390, 480);
+      // the decoys: a "second" loaf, an impure puddle, a dead mouse on a shelf above the channel
+      K.place(K.loaf(1.3), 150, 586, 0.15);
+      const pud = K.mesh(new T3.CylinderGeometry(1, 1, 0.06, 28), M.water); pud.rotation.x = Math.PI / 2; pud.scale.set(30 / K.U, 1, 14 / K.U); pud.position.copy(K.P(470, 650, 0.1)); K.scene.add(pud);
+      K.wall(310, 590, 90, 10, { mat: M.plank, z0: -0.4, z1: 0.45 });
+      for (const lx of [316, 394]) K.beam(lx, 600, lx, 622, { h: 5, d: 0.08, z: 0.3, mat: M.wood });
+      K.place(K.mouse(0.85), 356, 590, 0);
+      // the jar for the Menorah's oil, and the washing basin with a stone cup
+      const jars = [CH.jar3d(K, {}, 1.25), CH.jar3d(K, { oil: true }, 1.25)];
+      jars.forEach(j => K.place(j, 270, 852, 0));
+      K.wall(440, 820, 60, 26, { mat: K.std(0xb7c0c8, { metalness: 0.4, roughness: 0.35 }), z0: -0.2, z1: 0.4 });
+      K.place(CH.metalize(K, K.cup('stone', 1.2)), 470, 820, 0.1);
+      this.sync = () => {
+        G1.rotation.z = -(gate1 === 'left' ? 0.7 : -0.7);
+        G2.rotation.z = -(gate2 === 'puddle' ? -0.2 : 0.75);
+        jars[0].visible = !flow; jars[1].visible = !!flow;
+      };
+    },
     draw(g, t) {
-      Kit.outdoor(g, t, { seed: 101, y: 200 });
-      G.stoneWall(g, 0, 300, 540, 580, { block: 44, seed: 17 });
-      G.rr(g, -4, 880, 548, 90, 0, G.lin(g, 0, 880, 0, 960, [[0, '#e6d3a6'], [1, '#bfa572']]), 2.5, G.C.mortar);
-      // press
-      G.rr(g, 180, 200, 180, 100, 14, G.lin(g, 0, 200, 0, 300, [[0, G.C.rockLight], [1, G.C.rockDark]]), 2.5, G.C.rockDark);
-      G.rr(g, 196, 214, 148, 60, 10, G.lin(g, 0, 214, 0, 274, [[0, '#f2d36b'], [1, '#c99a20']]), 0);
-      G.line(g, 150, 188, 400, 168, 18, G.C.woodDark); G.line(g, 150, 188, 400, 168, 12, G.C.wood);
       G.tag(g, api.L({ en: 'Olive press', he: 'בית הבד' }), 270, 150, { size: 14 });
-      for (const k of ['left', 'puddle', 'mouse']) { G.path(g, R[k]); g.lineWidth = 24; g.strokeStyle = '#4f4436'; g.lineJoin = 'round'; g.lineCap = 'round'; g.stroke(); g.lineWidth = 16; g.strokeStyle = '#8e7f66'; g.stroke(); }
-      // gates
-      g.save(); g.translate(270, 400); g.rotate(gate1 === 'left' ? 0.7 : -0.7); G.rr(g, -5, 0, 10, 56, 3, G.C.wood, 2.5, G.C.woodDark); g.restore();
-      g.save(); g.translate(390, 480); g.rotate(gate2 === 'puddle' ? -0.2 : 0.75); G.rr(g, -5, 0, 10, 56, 3, G.C.wood, 2.5, G.C.woodDark); g.restore();
-      // hazards
-      G.loaf(g, 150, 580, 0.8); G.badge(g, 178, 556, 2);
-      G.ell(g, 470, 650, 30, 14, G.lin(g, 0, 636, 0, 664, [[0, G.C.waterLight], [1, G.C.water]]), 2, G.C.waterDark); G.badge(g, 500, 630, 1);
-      G.rr(g, 310, 590, 90, 10, 2, G.C.woodLight, 2, G.C.woodDark); G.line(g, 316, 600, 316, 620, 3, G.C.woodDark); G.line(g, 394, 600, 394, 620, 3, G.C.woodDark); G.deadMouse(g, 356, 580, 0.8);
-      // flowing oil
+      G.badge(g, 178, 556, 2); G.badge(g, 500, 630, 1);
       if (flow) { const pts = along(R[flow.route], flow.k); G.path(g, pts); g.lineWidth = 10; g.strokeStyle = '#f2c94c'; g.lineCap = 'round'; g.lineJoin = 'round'; g.stroke(); if (flow.level === 1) { const e = pts[pts.length - 1]; G.tumahGlow(g, e[0], e[1], 50, 1, t); G.badge(g, e[0] + 22, e[1] - 22, 1); } }
-      G.jar(g, 270, 852, 1.05, { oil: !!flow });
-      G.rr(g, 440, 820, 60, 26, 8, G.lin(g, 0, 820, 0, 846, [[0, '#cfd6dd'], [1, '#7b8794']]), 2.5, '#3f4852'); G.cup(g, 470, 814, 0.55, 'stone');
       G.tag(g, api.L({ en: 'Wash', he: 'נטילה' }), 470, 776, { size: 12 });
       for (const p of [p0, g1, g2]) p.draw(g);
       yehuda.draw(g, t); worker.draw(g, t);

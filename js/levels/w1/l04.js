@@ -33,22 +33,42 @@ W1.gardenerShed = api => {
       }
     },
     hot() { return { board: pBoard.ring, barrel: pBarrel.ring, door: pDoor.ring }; },
+    scene: { mode: 'day', seed: 12 },
+    build(K) {
+      const T3 = K.THREE, U = K.U;
+      W1.meadow(K, 600);
+      K.block(-10, 668, 560, 300);
+      // the shed, cut away so we can see Gad inside
+      K.wall(100, 400, 300, 258, { mat: K.std(0x5a4128, { roughness: 1, map: K.MAT.plank.map }), z0: -1.6, z1: -1.3 });
+      K.wall(80, 380, 20, 288, { z0: -1.6, z1: 0.5 }); K.wall(400, 380, 20, 180, { z0: -1.6, z1: 0.5 });
+      K.wall(80, 380, 340, 20, { z0: -1.6, z1: 0.5 });
+      const roof = new T3.Shape(); [[60, 382], [440, 382], [400, 320], [100, 320]].forEach(([x, y], i) => i ? roof.lineTo(x / U, -y / U) : roof.moveTo(x / U, -y / U)); roof.closePath();
+      const rm = K.mesh(new T3.ExtrudeGeometry(roof, { depth: 1.95, bevelEnabled: true, bevelThickness: 0.04, bevelSize: 0.04, bevelSegments: 1 }), K.std(0x9a6a46, { roughness: 0.9 })); rm.position.z = -1.75; K.scene.add(rm);
+      K.place(K.crate(56, 58), 148, 629, -0.8); K.place(K.crate(40, 38), 196, 639, -0.3);
+      const pot = K.cup('clay', 1.1); K.place(pot, 150, 600, -0.8); K.place(K.bush(150, 590, 0.7), 150, 594, -0.8);
+      const doorH = new T3.Group(); doorH.position.copy(K.P(404, 560, 0.3));
+      const dm = K.mesh(new T3.BoxGeometry(18 / U, 100 / U, 0.7), K.MAT.plank); dm.position.set(9 / U, -50 / U, 0); doorH.add(dm); K.scene.add(doorH);
+      // the barrel, the board under it, the string and the hive
+      const brl = K.barrel(1.15);
+      const bd = K.plank(120, 12, 0.8);
+      const strg = K.mesh(new T3.CylinderGeometry(0.015, 0.015, 58 / U, 6), K.std(0x6b4a22), 0, 0, 0); strg.position.copy(K.P(470, 411, 0.2)); K.scene.add(strg);
+      const hive = K.hive(1.15); K.place(hive, 470, 446, 0.2);
+      const wetM = K.std(0xa77a32, { roughness: 0.4 });
+      const bee = n => Array.from({ length: n }, () => K.bee());
+      const calm = bee(3), angry = bee(10);
+      const drops = Array.from({ length: 10 }, () => { const d = K.mesh(new T3.SphereGeometry(0.07, 8, 6), K.MAT.water); K.scene.add(d); return d; });
+      let wetDone = false;
+      this.sync = (t) => {
+        doorH.rotation.y = door.a * 1.4;
+        bd.visible = !board.gone || board.y < 500; K.place(bd, 470, 432 + board.y, 0.15, 0.35);
+        brl.visible = barrel.vis; K.place(brl, 470, barrel.y, 0.2, barrel.a);
+        if (wet && !wetDone) { wetDone = true; hive.traverse(o => { if (o.isMesh && o.material.color && o.material.color.getHex() === 0xf2b84b) o.material = wetM; }); }
+        calm.forEach((b, i) => { b.visible = !wet; K.place(b, 470 + Math.sin(t / 300 + i * 2) * 28, 460 + Math.cos(t / 260 + i) * 14, 0.6); });
+        angry.forEach((b, i) => { b.visible = bees > 0; K.place(b, 380 + Math.sin(t / 120 + i) * 70, 590 + Math.cos(t / 150 + i * 1.3) * 50, 0.7); });
+        drops.forEach((d, i) => { d.visible = splash > 0; if (splash > 0) d.position.copy(K.P((wasted ? 500 : 455) + Math.sin(i * 7) * 26 + (wasted ? i * 4 : 0), 430 + (1.2 - splash) * 70 + i * 6, 0.5)); });
+      };
+    },
     draw(g, t) {
-      Kit.outdoor(g, t, { seed: 12 });
-      G.platform(g, -10, 668, 560, 300, { seed: 6 });
-      G.stoneWall(g, 80, 380, 340, 288, { block: 30, seed: 4 });
-      G.rr(g, 100, 400, 300, 258, 6, G.lin(g, 0, 400, 0, 658, [[0, '#6a4d30'], [1, '#3e2c1a']]), 2.5, '#2e1f10');
-      G.poly(g, [[60, 382], [440, 382], [400, 320], [100, 320]], G.lin(g, 0, 320, 0, 382, [[0, '#b0805a'], [1, '#7a5034']]), 2.5, '#4e3020');
-      G.crate(g, 120, 600, 56, 58); G.crate(g, 176, 620, 40, 38); G.text(g, '🪴', 150, 588, { size: 26 });
-      g.save(); g.translate(404, 560); g.scale(1 - door.a * 0.85, 1); G.rr(g, 0, 0, 18, 100, 3, G.lin(g, 0, 0, 18, 0, [[0, G.C.woodLight], [1, G.C.woodDark]]), 2.5, G.C.woodDark); g.restore();
-      // board that would carry the water away from the hive
-      if (!board.gone || board.y < 500) { g.save(); g.translate(0, board.y); G.plank(g, 470, 432, 120, 0.35, 12); g.restore(); }
-      if (barrel.vis) { g.save(); g.translate(470, barrel.y); g.rotate(barrel.a); G.barrel(g, 0, 0, 0.9); g.restore(); }
-      if (splash > 0) for (let i = 0; i < 10; i++) G.circ(g, (wasted ? 500 : 455) + Math.sin(i * 7) * 26 + (wasted ? i * 4 : 0), 430 + (1.2 - splash) * 70 + i * 6, 5, G.C.water, 2, G.C.waterDark);
-      G.line(g, 470, 382, 470, 440, 3, '#6b4a22');
-      G.hive(g, 470, 480, 1, wet);
-      if (!wet) for (let i = 0; i < 3; i++) G.bee(g, 470 + Math.sin(t / 300 + i * 2) * 28, 460 + Math.cos(t / 260 + i) * 14);
-      if (bees > 0) for (let i = 0; i < 10; i++) G.bee(g, 380 + Math.sin(t / 120 + i) * 70, 590 + Math.cos(t / 150 + i * 1.3) * 50);
       pBoard.draw(g); pBarrel.draw(g); pDoor.draw(g);
       gad.draw(g, t); gad.drawBubble(g);
     },
@@ -120,30 +140,51 @@ W1.pruneTree = (hero = 'eli', prunerKind = 'gad') => api => {
     update(dt) { tw.update(dt); eli.update(dt); pruner.update(dt); },
     down(p) { for (const k of ['rope', 'twigs', 'road', 'grave']) if (hitBranch(p, br[k])) { cut(k); return; } },
     hot() { const h = {}; for (const k in br) h[k] = br[k].leaf.slice(0, 2); return h; },
-    draw(g, t) {
-      Kit.outdoor(g, t, { seed: 14 });
-      G.platform(g, -10, 838, 560, 140, { top: 'dirt', seed: 15 });
-      G.platform(g, -10, 560, 310, 280, { seed: 16 });
-      G.grave(g, 84, 566, 1);
-      if (Kit.revealed(api, 'tree') && roadTamei()) G.ohelTint(g, [[300, 470], [520, 470], [530, 838], [290, 838]]);
-      // pole for the rope
-      G.rr(g, 516, 600, 12, 238, 3, G.lin(g, 516, 0, 528, 0, [[0, G.C.woodLight], [1, G.C.woodDark]]), 2.5, G.C.woodDark);
-      // trunk
-      g.beginPath(); g.moveTo(186, 562); g.bezierCurveTo(192, 500, 186, 450, 192, 400); g.lineTo(210, 400); g.bezierCurveTo(214, 450, 208, 500, 216, 562); g.closePath();
-      G.fillStroke(g, G.lin(g, 186, 0, 216, 0, [[0, G.C.woodLight], [1, G.C.woodDark]]), 2.5, G.C.woodDark);
+    scene: { mode: 'day', seed: 14 },
+    build(K) {
+      const T3 = K.THREE, U = K.U;
+      W1.meadow(K, 560);
+      K.block(-10, 838, 560, 140, { top: 'path' });
+      K.block(-10, 560, 310, 280);
+      K.grave(84, 566, 1);
+      K.wall(516, 600, 12, 238, { mat: K.MAT.wood, z0: -0.1, z1: 0.1 });
+      // the trunk
+      const tr = K.mesh(new T3.CylinderGeometry(9 / U, 15 / U, 162 / U, 12), K.MAT.trunk); tr.position.copy(K.P(201, 481, 0)); K.scene.add(tr);
+      // the branches: each is a group we can drop when it's cut
+      const parts = {};
       for (const k of ['grave', 'road', 'twigs', 'rope']) {
-        const b = br[k]; if (b.cut >= 1) continue;
-        g.save(); g.globalAlpha = 1 - b.cut; const dy = b.cut * 300;
-        if (k === 'rope') { G.rope(g, 206, 470 + dy, 522, 640 + dy, 30); }
-        else {
-          const w = b.kind === 'thin' ? 4 : 12;
-          G.line(g, 201, 410 + dy, b.to[0], b.to[1] + dy, w + 4, G.C.woodDark); G.line(g, 201, 410 + dy, b.to[0], b.to[1] + dy, w, G.C.wood);
+        const b = br[k], grp = new T3.Group(); K.scene.add(grp); parts[k] = grp;
+        const mats = [];
+        const own = m => { const c = m.clone(); c.transparent = true; c.userData.own = true; mats.push(c); return c; };
+        const limb = (x1, y1, x2, y2, r) => { const L = Math.hypot(x2 - x1, y2 - y1) / U; const m = K.mesh(new T3.CylinderGeometry(r * 0.7, r, L, 8), own(K.MAT.trunk)); m.position.copy(K.P((x1 + x2) / 2, (y1 + y2) / 2, 0)); m.rotation.z = Math.atan2(x2 - x1, y2 - y1); grp.add(m); };
+        if (k === 'rope') {
+          const a = K.P(206, 470, 0.1), c = K.P(522, 640, 0.1), m = a.clone().lerp(c, 0.5); m.y -= 30 / U;
+          grp.add(K.mesh(new T3.TubeGeometry(new T3.QuadraticBezierCurve3(a, m, c), 24, 0.03, 6), own(K.std(0xc8a36a, { roughness: 1 }))));
+        } else {
+          const thin = b.kind === 'thin';
+          limb(201, 410, b.to[0], b.to[1], thin ? 0.04 : 0.1);
           const [lx, ly, r] = b.leaf;
-          if (b.kind === 'thin') { for (let i = 0; i < 9; i++) { const a = i * 0.7; G.line(g, b.to[0], b.to[1] + dy, lx + Math.cos(a) * r, ly + dy + Math.sin(a) * r * 0.7, 2, G.C.woodDark); G.ell(g, lx + Math.cos(a) * r, ly + dy + Math.sin(a) * r * 0.7, 6, 3.5, G.C.leafLight, 1, G.C.leafDark); } }
-          else { G.circ(g, lx, ly + 4 + dy, r, G.C.leafDark, 0); g.beginPath(); g.arc(lx, ly + dy, r, 0, 7); g.fillStyle = G.rad(g, lx - r * 0.3, ly + dy - r * 0.4, 4, r * 1.1, [[0, G.C.leafLight], [0.6, G.C.leaf], [1, G.C.leafDark]]); g.fill(); }
+          if (thin) for (let i = 0; i < 9; i++) {
+            const a = i * 0.7, ex = lx + Math.cos(a) * r, ey = ly + Math.sin(a) * r * 0.7;
+            limb(b.to[0], b.to[1], ex, ey, 0.02);
+            const lf = K.mesh(new T3.SphereGeometry(0.09, 8, 6), own(K.MAT.leaf)); lf.scale.set(1, 0.6, 0.6); lf.position.copy(K.P(ex, ey, 0)); grp.add(lf);
+          } else {
+            const crown = K.mesh(K.lumpy(r / U, 2, 0.1, lx), own(K.MAT.leaf)); crown.scale.set(1, 0.85, 0.75); crown.position.copy(K.P(lx, ly, 0)); grp.add(crown);
+            for (let i = 0; i < 3; i++) { const p = K.mesh(K.lumpy(r * 0.5 / U, 1, 0.12, i + lx), own(i ? K.MAT.leafDark : K.MAT.leaf)); p.position.copy(K.P(lx + (i - 1) * r * 0.55, ly + r * 0.3 - i * 6, 0.25)); grp.add(p); }
+          }
         }
-        g.restore();
+        grp.userData.mats = mats;
       }
+      this.sync = () => {
+        for (const k in parts) {
+          const c = br[k].cut, grp = parts[k];
+          grp.visible = c < 1; grp.position.y = -c * 300 / U;
+          for (const m of grp.userData.mats) m.opacity = 1 - c;
+        }
+      };
+    },
+    draw(g, t) {
+      if (Kit.revealed(api, 'tree') && roadTamei()) G.ohelTint(g, [[300, 470], [520, 470], [530, 838], [290, 838]]);
       G.tag(g, api.L({ en: `✂ ${cuts} cut${cuts === 1 ? '' : 's'} left`, he: `✂ נשארו ${cuts}` }), 440, 150, { size: 15 });
       G.tag(g, api.L({ en: 'The road', he: 'הדרך' }), 400, 900, { size: 15 });
       pruner.draw(g, t); eli.draw(g, t); eli.drawBubble(g); pruner.drawBubble(g);

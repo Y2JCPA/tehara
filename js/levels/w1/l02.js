@@ -3,6 +3,31 @@
    bridge, and a burial cave. Only a met spreads tumah under a roof, so the
    covered bridge is safe; touching the mouse is allowed for a Kohen.
    Room 2: two pools (rainwater vs drawn water), then wait for three stars. */
+// a burial cave in a rock outcrop, its doorway closed by a rolling stone (golel); (x, y, w, h) is its box
+W1.cave3d = (K, x, y, w, h, { closed = true, seed = 9 } = {}) => {
+  const T3 = K.THREE, U = K.U, g = new T3.Group();
+  const hill = K.mesh(K.lumpy(1, 2, 0.08, seed), K.MAT.rock); hill.scale.set(w / U * 0.55, h / U * 0.6, 0.8);
+  hill.position.set(w / U / 2, -h * 0.47 / U, -0.55); g.add(hill);
+  const r = h * 0.3 / U;
+  g.add(K.mesh(new T3.CircleGeometry(r, 24, 0, Math.PI), K.MAT.dark, w / U / 2 - r * 0.4, -h / U + r * 0.9, 0.3, false));
+  g.add(K.mesh(new T3.PlaneGeometry(r * 2, r * 0.9), K.MAT.dark, w / U / 2 - r * 0.4, -h / U + r * 0.45, 0.3, false));
+  if (closed) { const st = K.mesh(new T3.CylinderGeometry(r * 1.02, r * 1.02, 0.18, 28), K.MAT.rock, w / U / 2 + r * 0.55, -h / U + r * 1.02, 0.42); st.rotation.x = Math.PI / 2; g.add(st); }
+  g.position.copy(K.P(x, y)); K.scene.add(g); return g;
+};
+
+// a far-off meadow behind the scene whose top edge appears at logical y (fills the gap under the far hills)
+W1.meadow = (K, y, { z = -6, color = 0x7fb35a } = {}) => {
+  const T3 = K.THREE, U = K.U, H = 960 / U, eye = -H / 2 + 7.5, sc = (34 - z) / 34;
+  const top = eye + (-y / U - eye) * sc, bot = eye + (-1000 / U - eye) * sc;
+  const m = new T3.Mesh(new T3.PlaneGeometry(40, top - bot), K.std(color, { roughness: 1 }));
+  m.position.set(540 / U / 2, (top + bot) / 2, z); m.receiveShadow = true; K.scene.add(m);
+  return m;
+};
+
+
+// where to put something at depth z so that it appears at logical (x, y) on screen
+W1.unproj = (x, y, z) => { const k = (34 - z) / 34; return [270 + (x - 270) * k, -45 + (y + 45) * k]; };
+
 W1.barn = api => {
   const T = api.T, tw = new Kit.Tweens();
   const eli = new Chars.Actor('eli', 60, 568);
@@ -59,29 +84,45 @@ W1.barn = api => {
       routes.hit(p);
     },
     hot() { return { stick: pStick.ring, door: pDoor.ring, cave: [70, 230], ...routes.hot() }; },
+    scene: { mode: 'day', seed: 5 },
+    build(K) {
+      const T3 = K.THREE, U = K.U;
+      // the burial cave up on a rock ledge, the two banks and the ravine between them
+      K.block(-10, 290, 160, 30, { face: 'rock' });
+      W1.cave3d(K, 6, 160, 140, 130);
+      K.block(-10, 568, 160, 400);
+      K.block(390, 568, 160, 400);
+      K.recess(150, 568, 240, 700, { z: -2.2 });
+      // the covered bridge, with stairs at each end
+      K.stairs(150, 420, 5, { stepW: 14, stepH: 29, dir: -1, thick: 16 });
+      K.stairs(390, 420, 5, { stepW: 12, stepH: 29, dir: 1, thick: 16 });
+      K.wall(150, 410, 240, 18, { mat: K.MAT.plank, z0: -0.7, z1: 0.6 });
+      K.wall(150, 334, 240, 76, { mat: K.std(0x4a3220, { roughness: 1 }), z0: -0.9, z1: -0.7 });
+      const roof = new T3.Shape(); roof.moveTo(-10 / U, 0); roof.lineTo(250 / U, 0); roof.lineTo(230 / U, 30 / U); roof.lineTo(10 / U, 30 / U); roof.closePath();
+      const rm = K.mesh(new T3.ExtrudeGeometry(roof, { depth: 1.7, bevelEnabled: false }), K.std(0xb85c34, { roughness: 0.85 }));
+      rm.position.copy(K.P(150, 334, -0.95)); K.scene.add(rm);
+      for (const px of [154, 386]) K.wall(px - 5, 330, 10, 82, { mat: K.MAT.wood, z0: 0.3, z1: 0.6 });
+      // the dead fox on its shelf inside the bridge
+      K.wall(290, 384, 70, 8, { mat: K.MAT.plank, z0: -0.85, z1: -0.2 });
+      const fox = K.fox(0.62); fox.rotation.y = 0; K.place(fox, 326, 374, -0.5);
+      // the bridge door, hinged on the left
+      const doorH = new T3.Group(); doorH.position.copy(K.P(158, 330, 0.35));
+      const dm = K.mesh(new T3.BoxGeometry(14 / U, 82 / U, 0.6), K.MAT.plank); dm.position.set(7 / U, -41 / U, 0); doorH.add(dm); K.scene.add(doorH);
+      // the barn, with the donkey in its doorway
+      K.house(420, 430, 112, 138, { door: false });
+      K.recess(448, 500, 56, 68, { z: 0.22, mat: K.MAT.dark });
+      const dk = K.donkey({ s: 0.48 }); K.place(dk, 480, 566, 0.35); dk.rotation.y = -Math.PI + 0.5;
+      // the low beam with the dead mouse, and the stick that hangs over it
+      K.place(K.plank(250, 16, 0.9), 270, 576, 0.05);
+      const ms = K.mouse(1.4);
+      const stickH = new T3.Group(); const sm = K.mesh(new T3.CylinderGeometry(6 / U, 6 / U, 80 / U, 10), K.MAT.wood); sm.position.y = -40 / U; stickH.add(sm); K.scene.add(stickH);
+      this.sync = () => {
+        doorH.rotation.y = door.open * 1.4;
+        ms.visible = mouse.y < 950; K.place(ms, mouse.x, mouse.y + 8, 0.25, mouse.a);
+        K.place(stickH, stick.x, stick.y, 0.3, stick.a);
+      };
+    },
     draw(g, t) {
-      Kit.outdoor(g, t, { seed: 5, y: 300 });
-      G.cave(g, 6, 160, 140, 130, { closed: true });
-      G.platform(g, -10, 568, 160, 400, { seed: 11 });
-      G.platform(g, 390, 568, 160, 400, { seed: 12 });
-      G.chasm(g, 150, 568, 240, 400);
-      G.platform(g, -10, 290, 160, 30, { face: 'rock', seed: 13 });
-      // covered bridge high up, with stairs at each end
-      G.stairs(g, 150, 420, 5, { stepW: 14, stepH: 29, dir: -1, thick: 16 });
-      G.stairs(g, 390, 420, 5, { stepW: 12, stepH: 29, dir: 1, thick: 16 });
-      G.rr(g, 150, 410, 240, 18, 3, G.lin(g, 0, 410, 0, 428, [[0, G.C.woodLight], [1, G.C.wood]]), 2.5, G.C.woodDark);
-      G.rr(g, 150, 330, 240, 82, 4, 'rgba(60,40,20,0.55)', 0);
-      G.poly(g, [[140, 334], [400, 334], [380, 304], [160, 304]], G.lin(g, 0, 304, 0, 334, [[0, '#c56a3e'], [1, '#8f4424']]), 2.5, '#5e2a14');
-      for (const px of [154, 386]) G.rr(g, px - 5, 330, 10, 82, 2, G.C.wood, 2, G.C.woodDark);
-      G.rr(g, 290, 384, 70, 8, 2, G.C.woodLight, 2, G.C.woodDark); G.deadFox(g, 326, 376, 0.62);
-      g.save(); g.translate(158, 330); g.scale(1 - door.open * 0.85, 1); G.rr(g, 0, 0, 14, 82, 3, G.lin(g, 0, 0, 14, 0, [[0, G.C.woodLight], [1, G.C.woodDark]]), 2.5, G.C.woodDark); g.restore();
-      // barn
-      G.house(g, 420, 430, 112, 138, { door: false });
-      G.rr(g, 448, 500, 56, 68, 4, '#2c2016', 2.5, G.C.woodDark); G.donkey(g, 476, 560, 0.42, { dir: -1 });
-      // beam with the mouse, and the hanging stick
-      G.plank(g, 270, 576, 250, 0, 16);
-      if (mouse.y < 950) { g.save(); g.translate(mouse.x, mouse.y); g.rotate(mouse.a); G.deadMouse(g, 0, 0, 0.9); g.restore(); }
-      g.save(); g.translate(stick.x, stick.y); g.rotate(stick.a); G.rr(g, -6, 0, 12, 80, 6, G.lin(g, -6, 0, 6, 0, [[0, G.C.woodLight], [1, G.C.woodDark]]), 2.5, G.C.woodDark); g.restore();
       routes.draw(g, t);
       pStick.draw(g); pDoor.draw(g);
       eli.draw(g, t); eli.drawBubble(g);
@@ -141,29 +182,68 @@ W1.dinner = api => {
     },
     up() { dragging = false; },
     hot() { return { rain: [110, 730], bucket: [255, 730], plate: [414, 660], dial: [Kit.lerp(track.x1, track.x2, v), track.y], dialEnd: [track.x2, track.y] }; },
-    draw(g, t) {
-      G.sky(g, 'day', t);
-      if (v > 0.3) { g.globalAlpha = Math.min(1, (v - 0.3) / 0.35); G.sky(g, 'sunset', t); g.globalAlpha = 1; }
-      if (v > 0.65) { g.globalAlpha = Math.min(1, (v - 0.65) / 0.3); G.sky(g, 'night', t, stars()); g.globalAlpha = 1; }
-      G.distance(g, t, { seed: 3, y: 420, night: v > 0.7 });
-      G.platform(g, -10, 708, 560, 300, { seed: 21 });
-      // the mikveh house: two pools, a rain gutter feeding one, buckets feeding the other
-      G.stoneWall(g, 20, 470, 320, 238, { block: 30, seed: 11 });
-      G.poly(g, [[10, 474], [350, 474], [330, 440], [30, 440]], G.lin(g, 0, 440, 0, 474, [[0, '#d8c39a'], [1, '#a8925f']]), 2.5, G.C.mortar);
-      G.tag(g, api.L({ en: 'Mikveh', he: 'מקווה' }), 180, 500, { size: 15 });
+    scene: { mode: 'day', seed: 3 },
+    build(K) {
+      const T3 = K.THREE, U = K.U;
+      W1.meadow(K, 560);
+      // the ground, cut away for the two pools
+      K.block(-10, 708, 50, 300); K.block(180, 708, 10, 300, { top: 'stone' }); K.block(320, 708, 230, 300);
+      K.block(40, 780, 140, 230, { face: 'rock', top: 'none' }); K.block(190, 780, 130, 230, { face: 'rock', top: 'none' });
+      // the mikveh house behind them
+      K.wall(20, 470, 320, 238, { z0: -2.0, z1: -1.2 });
+      K.wall(10, 440, 340, 34, { mat: K.MAT.plaster, z0: -2.1, z1: -0.9 });
+      const waterM = K.std(0x4aa8de, { transparent: true, opacity: 0.62, roughness: 0.08, metalness: 0.1 });
       for (const k of ['rain', 'bucket']) {
-        const P = pools[k];
-        G.rr(g, P.x, 690, P.w, 90, 8, G.lin(g, 0, 690, 0, 780, [[0, G.C.waterLight], [1, G.C.waterDark]]), 3, k === 'bucket' ? '#9aa7b3' : G.C.mortar);
-        if (k === 'bucket') { G.rr(g, P.x - 4, 684, P.w + 8, 10, 4, '#e9eef2', 2, '#9aa7b3'); for (let i = 0; i < 3; i++) G.circ(g, P.x + 20 + i * 45, 688, 3, G.C.gold, 0); }
+        const P0 = pools[k];
+        K.recess(P0.x, 690, P0.w, 90, { z: -1.15, mat: K.MAT.stone });
+        const w = K.mesh(new T3.BoxGeometry(P0.w / U, 78 / U, 1.9), waterM, 0, 0, 0, false, true);
+        w.position.copy(K.P(P0.x + P0.w / 2, 741, -0.2)); K.scene.add(w);
+        if (k === 'bucket') {   // a fancy polished rim with gold studs
+          K.wall(P0.x - 4, 684, P0.w + 8, 10, { mat: K.std(0xe9eef2, { roughness: 0.3 }), z0: 0.6, z1: 0.8 });
+          for (let i = 0; i < 3; i++) { const st = K.mesh(new T3.SphereGeometry(0.05, 10, 8), K.MAT.goldBright); st.position.copy(K.P(P0.x + 20 + i * 45, 688, 0.85)); K.scene.add(st); }
+        } else K.wall(P0.x - 4, 686, P0.w + 8, 8, { mat: K.MAT.stoneSmooth, z0: 0.6, z1: 0.8 });
       }
-      // gutter from the roof down into the rain pool
-      G.line(g, 30, 450, 30, 560, 8, '#7a6a52'); G.line(g, 30, 560, 100, 640, 8, '#7a6a52'); G.line(g, 30, 450, 30, 560, 4, '#a89a82'); G.line(g, 30, 560, 100, 640, 4, '#a89a82');
-      // a servant with buckets at the fancy pool
-      Chars.draw(g, 'helper', 250, 660, { s: 0.7, hold: 'bucket', t });
-      // table with terumah
-      G.rr(g, 350, 676, 130, 14, 4, G.C.woodLight, 2.5, G.C.woodDark); G.line(g, 366, 690, 366, 708, 4, G.C.woodDark); G.line(g, 464, 690, 464, 708, 4, G.C.woodDark);
-      G.ell(g, 414, 670, 38, 9, '#fff', 2.5, '#999'); G.ell(g, 414, 670, 32, 6, null, 2, G.C.gold);
-      G.loaf(g, 414, 663, 0.75);
+      // the rain gutter from the roof into the rain pool
+      const pipe = K.std(0x8a7a62, { roughness: 0.6, metalness: 0.3 });
+      K.beam(30, 450, 30, 560, { h: 9, d: 0.14, z: -0.9, mat: pipe }); K.beam(30, 560, 100, 640, { h: 9, d: 0.14, z: -0.9, mat: pipe });
+      K.beam(100, 640, 100, 690, { h: 7, d: 0.12, z: -0.9, mat: pipe });
+      // a servant pouring buckets into the fancy pool
+      const hp = K.char('helper'); hp.group.scale.setScalar(0.8);
+      const bk = K.bucket(0.8); K.scene.remove(bk); hp.setHeld(bk);
+      K.place(hp.group, 250, 690, -1.0);
+      // the table with the terumah
+      K.wall(350, 676, 130, 14, { mat: K.MAT.plank, z0: -0.4, z1: 0.4 });
+      for (const lx of [364, 462]) K.wall(lx, 690, 6, 18, { mat: K.MAT.wood, z0: -0.1, z1: 0.1 });
+      const plate = K.mesh(new T3.CylinderGeometry(38 / U, 30 / U, 0.05, 28), K.std(0xffffff, { roughness: 0.4 }));
+      plate.position.copy(K.P(414, 672, 0)); K.scene.add(plate);
+      K.place(K.loaf(0.75), 414, 670, 0);
+      // evening: the sky darkens and the light goes warm, then blue
+      const hemi = [], suns = [], bgs = [], clouds = [];
+      K.scene.traverse(o => { if (o.isHemisphereLight) hemi.push([o, o.intensity]); if (o.isDirectionalLight) suns.push([o, o.intensity]); if (o.isMesh && o.material.isMeshBasicMaterial) bgs.push(o.material); if (o.isMesh && o.material.emissiveIntensity > 0.3) { o.material = o.material.clone(); o.material.userData.own = true; clouds.push(o.material); } });
+      const sky0 = K.scene.background;
+      const cDay = new T3.Color(0x8fd0f6), cSun = new T3.Color(0xe5876e), cNight = new T3.Color(0x1f2c66), c = new T3.Color(), dim = new T3.Color();
+      this.sync = (t, dt) => {
+        hp.update(dt || 0.016, {});
+        if (v < 0.05) { K.scene.background = sky0; } else {
+          if (v < 0.6) c.copy(cDay).lerp(cSun, Math.min(1, (v - 0.05) / 0.5)); else c.copy(cSun).lerp(cNight, Math.min(1, (v - 0.6) / 0.35));
+          K.scene.background = c;
+        }
+        const k = 1 - 0.75 * Math.max(0, Math.min(1, (v - 0.3) / 0.6));
+        for (const [l, i0] of hemi) l.intensity = i0 * (0.45 + 0.55 * k);
+        for (const [l, i0] of suns) { l.intensity = i0 * k; l.color.setHex(v > 0.65 ? 0xaab8ff : v > 0.3 ? 0xffb080 : 0xfff1d6); }
+        dim.setScalar(0.2 + 0.8 * k); for (const m of bgs) m.color.copy(dim);
+        for (const m of clouds) m.emissiveIntensity = 0.35 * k;
+      };
+    },
+    draw(g, t) {
+      if (v > 0.65) {   // night: stars, and the three that count
+        g.save(); g.globalAlpha = Math.min(1, (v - 0.65) / 0.3); const r = G.rng(4); g.fillStyle = 'rgba(255,255,255,0.7)';
+        for (let i = 0; i < 40; i++) { const sz = r() * 1.6 + 0.6; g.fillRect(r() * 540, r() * 380, sz, sz); }
+        const pts = [[120, 90], [300, 64], [440, 120]];
+        for (let i = 0; i < Math.min(stars(), 3); i++) G.star(g, pts[i][0], pts[i][1], 11, '#fff3a0', true);
+        g.restore();
+      }
+      G.tag(g, api.L({ en: 'Mikveh', he: 'מקווה' }), 180, 500, { size: 15 });
       if (stars() >= 2) G.sparkle(g, 440, 640, t);
       G.tag(g, api.L({ en: 'Terumah', he: 'תרומה' }), 414, 618, { size: 13 });
       miriam.draw(g, t); eli.draw(g, t); eli.drawBubble(g); miriam.drawBubble(g);

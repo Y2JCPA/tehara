@@ -23,7 +23,10 @@ CH.temple3d = (K, { floor = 860, seed = 5, lamps = true } = {}) => K.room({ floo
 // The Kohen Gadol's seal has a gold star; a broken one is cracked in two.
 CH.jar3d = (K, look = {}, s = 1) => {
   const T3 = K.THREE, { seal, ...rest } = look;
-  const o = K.jar(rest, s);
+  const o = CH.metalize(K, K.jar(rest, s));
+  if (rest.oil && !rest.bowl && !rest.sealed && !rest.loose && !seal) {   // oil shining in the open mouth
+    const d = K.mesh(new T3.CircleGeometry(0.15, 16), K.std(0xe8b830, { roughness: 0.15, metalness: 0.2 }), 0, 0.77 * 0.95 * s, 0); d.rotation.x = -Math.PI / 2; d.scale.setScalar(s * 0.95); o.add(d);
+  }
   if (!seal) return o;
   const top = (rest.bowl ? 0.31 : 0.8) * 0.95 * s, y = top - 0.14 * s, z = 0.2 * s;
   const wax = K.std(0xc0302a, { roughness: 0.4 }), cord = K.std(0x7a5a32, { roughness: 1 });
@@ -39,6 +42,27 @@ CH.jar3d = (K, look = {}, s = 1) => {
     o.add(K.mesh(new T3.ExtrudeGeometry(st, { depth: 0.03 * s, bevelEnabled: false }), K.MAT.goldBright, 0, y, z + 0.03 * s));
   }
   return o;
+};
+
+// Fully metallic materials look black without an environment map, so CH
+// vessels use a brushed-metal look that reads well under plain lights.
+// (Open bowls and jars are also made two-sided, so you can see into them.)
+CH.metalize = (K, o) => {
+  const T3 = K.THREE, two = { side: T3.DoubleSide };
+  const swap = new Map([
+    [K.MAT.metal, K.std(0xd5dde4, { metalness: 0.45, roughness: 0.32, side: T3.DoubleSide })],
+    [K.MAT.clay, K.std(0xc9693a, { roughness: 0.8, ...two })],
+    [K.MAT.stoneVessel, K.std(0xd9d2c4, { roughness: 0.75, ...two })],
+  ]);
+  o.traverse(c => { if (c.isMesh && swap.has(c.material)) c.material = swap.get(c.material); });
+  return o;
+};
+
+// the Menorah standing on a stone block, base at logical (x, y); returns its group (userData.flames)
+CH.menorahStand = (K, x, y, s = 1) => {
+  K.wall(x - 56, y, 112, 860 - y, { mat: K.MAT.stoneSmooth, z0: -0.8, z1: 0.75 });
+  const m = K.place(K.menorah(s), x, y, 0);
+  return m.children[0];
 };
 
 // broken pottery lying on the floor
