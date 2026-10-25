@@ -1,11 +1,17 @@
 {
-  "name": "Tehara: puzzles of tumah and taharah",
+  "name": "Tehara · The road to Jerusalem",
   "short_name": "Tehara",
-  "description": "A puzzle game for kids about the laws of tumah and taharah, based on the Mishnah, the Gemara and the Rambam.",
+  "description": "An illustrated puzzle adventure about tumah and taharah.",
   "start_url": "./",
   "display": "standalone",
-  "orientation": "portrait",
-  "background_color": "#ecdcb6",
-  "theme_color": "#2f6f9f",
-  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+  "background_color": "#f7f4eb",
+  "theme_color": "#244e42",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
 }
