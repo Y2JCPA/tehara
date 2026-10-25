@@ -1,0 +1,2 @@
+tests/e2e/fail-*.png
+node_modules/

@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>Tehara</title>
+<meta name="description" content="A puzzle game for kids about the laws of tumah and taharah, based on the Mishnah, the Gemara and the Rambam.">
+<meta name="theme-color" content="#2f6f9f">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;700;800&family=Suez+One&display=swap">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="app">
+
+  <!-- ============ TITLE ============ -->
+  <section id="scr-title" class="screen">
+    <div class="title-top">
+      <button class="chip" id="t-lang" type="button"></button>
+      <button class="chip" id="t-sound" type="button"></button>
+    </div>
+    <canvas id="title-art" width="540" height="520" aria-hidden="true"></canvas>
+    <h1 class="logo"><span class="logo-main" data-t="title"></span><span class="logo-he">טהרה</span></h1>
+    <p class="tagline" data-t="tagline"></p>
+    <button class="btn btn-gold btn-big" id="t-play" type="button" data-t="play"></button>
+    <p class="credits" data-t="credits"></p>
+  </section>
+
+  <!-- ============ MAP ============ -->
+  <section id="scr-map" class="screen screen-scroll" hidden>
+    <header class="bar">
+      <button class="chip" id="m-back" type="button" data-t="back"></button>
+      <span class="bar-title" data-t="title"></span>
+      <button class="chip" id="m-lang" type="button"></button>
+    </header>
+    <div id="worlds"></div>
+    <p class="stars-line" data-t="starsLine"></p>
+  </section>
+
+  <!-- ============ GAME ============ -->
+  <section id="scr-game" class="screen" hidden>
+    <header class="bar game-bar">
+      <button class="chip" id="g-map" type="button" data-t="map"></button>
+      <span class="bar-title" id="g-title"></span>
+      <button class="chip" id="g-hint" type="button" data-t="hint"></button>
+      <button class="chip icon" id="g-restart" type="button" aria-label="Restart">↻</button>
+    </header>
+    <div class="stage-wrap" id="stage-wrap">
+      <canvas id="game"></canvas>
+      <div id="toast" role="status" aria-live="polite"></div>
+    </div>
+    <div class="action-bar" id="actions"></div>
+  </section>
+
+  <!-- ============ WHY? CARD ============ -->
+  <div id="why" class="overlay" hidden>
+    <div class="why-card">
+      <div class="why-stars" id="why-stars"></div>
+      <h2 class="why-title"><span data-t="why"></span> <span id="why-level"></span></h2>
+      <div class="why-text" id="why-text"></div>
+      <h3 data-t="sources"></h3>
+      <ul class="why-sources" id="why-sources"></ul>
+      <div class="why-actions">
+        <button class="btn btn-navy" id="why-replay" type="button" data-t="replay"></button>
+        <button class="btn btn-gold" id="why-next" type="button" data-t="next"></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="js/i18n.js"></script>
+<script src="js/engine/tumah.js"></script>
+<script src="js/gfx.js"></script>
+<script src="js/chars.js"></script>
+<script src="js/game.js"></script>
+<script src="js/levels/kit.js"></script>
+<script src="js/levels/world1.js"></script>
+<script src="js/levels/chanukah.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

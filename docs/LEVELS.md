@@ -13,7 +13,7 @@ Every rule below traces to a source that was read on Sefaria (Rambam's Sefer Tah
 # Part A: shared rules
 
 ## A1. The hero
-**Eli** (אלי), a young Kohen (כהן), about bar-mitzvah age, from a village in the Galil. In World 1 he travels up to Yerushalayim to bring the Korban Pesach (קרבן פסח) with his family. Bright red-brown hair, white linen tunic, a small travel bag. He walks by himself when the path is clear, and stops and waits when it isn't.
+**Eli** (אלי), a young Kohen (כהן), about bar-mitzvah age, from a village in the Galil. In World 1 he travels up to Yerushalayim to bring the Korban Pesach (קרבן פסח) with his family. Bright red-brown hair, a white linen tunic and a white linen cap, like a Kohen. (The real priestly garments [בגדי כהונה] are worn only in the Mikdash, on the day of service and never with the avnet outside the Avodah (Rambam, Klei HaMikdash 8:11-12; Yoma 69a), so on the road he wears everyday white clothes in the same style.) He walks by himself when the path is clear, and stops and waits when it isn't.
 
 Supporting cast:
 - **Gardener Gad** (גד הגנן), a Yisrael with a big straw hat and a leaf blower.
@@ -36,7 +36,7 @@ Supporting cast:
 ## A4. Win, fail, stars
 - **Win:** Eli reaches the goal tahor. He waves and confetti falls.
 - **Fail:** Eli glows purple and the scene **rewinds one second** with a soft "whoosh". No screaming, no "you died". A one-line hint explains *which rule* was broken (e.g. "A barley-sized bone [עצם כשעורה] makes you tamei if you move it!").
-- **Stars:** ★ for finishing, ★★ for finishing without a hint, ★★★ for the "clever" solution where a level has one. The ★★★ solution is never just "faster". It always uses a deeper rule.
+- **Stars:** ★ for finishing with a hint, ★★ for finishing without a hint, ★★★ for no hint and no mistakes. Where a level has a "clever" solution (like knocking the mouse away in 1-2), ★★★ also needs that solution. It is never just "faster". It always uses a deeper rule.
 - **Becoming tamei is not always failure.** In some levels Eli *may* become tamei (e.g. from a sheretz) and the level is still won. The game says so clearly: tumah is a status, not a sin.
 
 ## A5. Design guard-rails for every level
@@ -219,7 +219,7 @@ It's Nisan. Eli's family sets out from the Galil to bring the Korban Pesach in Y
 **New mechanics:** the leaf blower (aim + hold); drawing a path on tiles.
 
 **Layout** (two rooms):
-- **Room 1, Gad's cart:** Gad's leaf blower is in his cart, and the cart is stuck. A pin holds back a pile of hay; another holds a ramp up. Pull the hay pin first or the ramp collapses. Gad hands **Eli** the blower: *"You check the ground yourself; that's how the Sages said to do it."*
+- **Room 1, Gad's cart:** Gad's leaf blower is in his cart, up high on a golden pin. Another pin holds back a pile of hay on a ledge. Pull the hay pin first so the hay makes a soft landing, then the cart pin. If the cart drops first, it crashes. Gad hands **Eli** the blower: *"You check the ground yourself; that's how the Sages said to do it."*
 - **Room 2, the field:**
   - Another plowed-grave Beit HaPeras. This one has no stones and no donkey; Miriam and the terumah went around the long way.
   - Eli is on his way to bring the **Korban Pesach** (it's the 13th of Nisan), and this is the only way to get there in time.
@@ -324,10 +324,10 @@ D is the twist: the mark is never put far from the tumah, so marks on all four s
 - A crossroads with two marked fields.
   - The left field has olive trees.
   - The right field is bare.
-- The road continues on the far side of the right field.
-- A third option: a long detour along the river. Pull pins to lower a ferry raft, and time it with the current.
+- The road to Yerushalayim continues on the far side of both fields.
+- Tap a field, then choose: 💨 blow and walk, 🫏 ride the strong donkey, or 🚶 just walk.
 
-**Solution:** the bare field is a lost-grave field, so don't cross it. Either cross the **left** field with the blower (as in 1-6), or take the river ferry.
+**Solution:** the bare field is a lost-grave field, so don't cross it. Cross the **left** field with the blower (as in 1-6) or on the strong donkey.
 
 **Fail:**
 - Using the blower in the bare field → nothing is revealed, and Grandpa Zevulun calls out: *"No trees: a whole grave was lost here! Blowing won't help. The grave spreads tumah by ohel [אהל]."*
@@ -368,9 +368,7 @@ D is the twist: the mark is never put far from the tumah, so marks on all four s
 
 ## Chanukah Pack: The Sealed Jug (פך השמן)
 
-It's Kislev, in the days of the Chashmona'im. The Greek army has been driven out of Yerushalayim, but they left the Beit HaMikdash in a mess, and the oil they touched is all tamei. Eli and his friends help the Kohanim get the Mikdash ready and find pure oil for the Menorah.
-
-*(Same Eli, a different time. Kids won't mind, but see question 2 at the end.)*
+It's Kislev, in the days of the Chashmona'im. The Greek army has been driven out of Yerushalayim, but they left the Beit HaMikdash in a mess, and the oil they touched is all tamei. **Yehuda** (יהודה), a young Kohen with dark curly hair, helps the older Kohanim get the Mikdash ready and find pure oil for the Menorah.
 
 | # | Level | New mechanic | Main rule |
 |---|---|---|---|
@@ -417,8 +415,7 @@ It's Kislev, in the days of the Chashmona'im. The Greek army has been driven out
   - smashed;
   - open, with no seal;
   - sealed, but the seal is broken;
-  - sealed, but a drag mark in the dust shows it was moved;
-  - sealed with an ordinary seal.
+  - sealed, but a drag mark in the dust shows it was moved.
 - One jug sits buried in a niche behind loose stones in the lowest room.
 
 **Play:**
@@ -446,7 +443,7 @@ It's Kislev, in the days of the Chashmona'im. The Greek army has been driven out
 
 **New mechanic:** sorting items onto "Take to the Mikdash" / "Leave" shelves.
 
-**Story:** a flashback. Before the war, a family hid their things from the Greeks in an old burial cave, a place the soldiers avoided. A Yisrael helper goes in to bring the things out; Eli, a Kohen, stays outside and sorts.
+**Story:** a flashback. Before the war, a family hid their things from the Greeks in an old burial cave, a place the soldiers avoided. A Yisrael helper goes in to bring the things out; Yehuda, a Kohen, stays outside and sorts.
 
 **Items:**
 | Item | Result | Why |
@@ -465,7 +462,7 @@ It's Kislev, in the days of the Chashmona'im. The Greek army has been driven out
 >
 > *"וְכֹל כְּלִי פָתוּחַ אֲשֶׁר אֵין־צָמִיד פָּתִיל עָלָיו טָמֵא הוּא"* (Bamidbar 19:15) · *"אֵלּוּ כֵלִים מַצִּילִין בְּצָמִיד פָּתִיל... כְּלֵי אֲבָנִים... כְּלֵי חֶרֶס... עַל הַכֹּל מַצִּילִין, חוּץ מִכְּלֵי חֶרֶס, שֶׁאֵינוֹ מַצִּיל אֶלָּא עַל הָאֳכָלִים וְעַל הַמַּשְׁקִין וְעַל כְּלֵי חָרֶס"* (Mishnah Kelim 10:1) · Rambam, Tumat Met 21:1
 
-**Guard-rail:** Eli never enters the cave. It's shown from outside, with the items carried out to him.
+**Guard-rail:** Yehuda never enters the cave. It's shown from outside, with the items carried out to him.
 
 ---
 
@@ -676,10 +673,10 @@ Each idea: the rule it teaches, then the puzzle, then sources. Ideas marked ✦ 
 
 ---
 
-# Questions to settle before building
+# Decisions
 
-1. **The English bracket style.** Is *"impure [טמא]"* (Hebrew letters in brackets) what you meant, or transliteration, e.g. *"impure [tamei]"*, or both, e.g. *"impure [טמא, tamei]"*?
-2. **Chanukah hero.** Use Eli again, or a different young Kohen of the Chashmona'im's time (e.g. "Yochanan")?
-3. **Cast names.** Eli, Gad the gardener, Grandpa Zevulun, Miriam and Batya: keep, or change?
-4. **Difficulty.** World 1 starts very gently (one pin) and reaches 1-6/1-9 in about ten minutes. Is that the right pace for a 7-year-old?
-5. **More level ideas you have in mind?** Especially for Terumah, Bikurim or other holidays.
+1. **English bracket style:** Hebrew letters in brackets, e.g. *"impure [טמא]"*.
+2. **Chanukah hero:** Yehuda, a new young Kohen of the Chashmona'im's time.
+3. **Cast names:** kept. Eli wears white Kohen-style clothes.
+4. **Difficulty:** this pace is fine for now. Harder paths and levels come later.
+5. **Next:** build these 16 levels first to prove the gameplay, then add more from Part C.

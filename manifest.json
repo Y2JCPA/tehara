@@ -1,0 +1,11 @@
+{
+  "name": "Tehara: puzzles of tumah and taharah",
+  "short_name": "Tehara",
+  "description": "A puzzle game for kids about the laws of tumah and taharah, based on the Mishnah, the Gemara and the Rambam.",
+  "start_url": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ecdcb6",
+  "theme_color": "#2f6f9f",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}

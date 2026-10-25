@@ -1,6 +1,6 @@
 # Tehara: Game Design Plan (draft for discussion)
 
-**Status:** research done, design draft. Nothing is built yet.
+**Status:** version 1 is built: World 1 and the Chanukah pack (16 levels).
 **Level designs:** [`LEVELS.md`](LEVELS.md).
 **Research behind this plan:**
 - [`research/01-game-formats.md`](research/01-game-formats.md): the ad-style puzzle games we are modeling on.
@@ -242,10 +242,10 @@ These are covered in detail at the end of research files 02 and 03:
 |---|---|
 | Age | 7 and up, adults included. Written at a 12-year-old level, with a Learning mode for more depth |
 | Language | Hebrew and English versions. The English version puts Hebrew terms in brackets, e.g. "impure [טמא]" |
-| Name and hero | **Tehara**. The hero is a young Kohen, Eli |
+| Name and hero | **Tehara**. The hero is a young Kohen, Eli, in white Kohen-style clothes. The Chanukah hero is Yehuda |
 | Platform | Web game like our others (GitHub Pages, installable) |
 | Halachic review | The user has someone who will play-test and check the levels |
 | Leaf blower | Either version is fine. The level designs use "the gardener hands Eli the blower" |
 | Version 1 | World 1 plus the Chanukah pack |
 | Art | Bright cartoon, with Jerusalem stone for backgrounds and outdoor walls |
-| Process | Design many levels in detail **before** building any. See [`LEVELS.md`](LEVELS.md) |
+| Process | Design many levels in detail **before** building any. See [`LEVELS.md`](LEVELS.md). Then build those 16 to prove the gameplay, and add more after |
