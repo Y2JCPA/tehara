@@ -113,6 +113,7 @@ const Chars = (function () {
     constructor(kind, x, y, opts = {}) {
       Object.assign(this, { kind, x, y, dir: 1, phase: 0, mood: 'idle', s: 1, path: [], speed: 150, glow: null, badge: null, hold: null, visible: true }, opts);
       this.onArrive = null; this.say = null; this.sayUntil = 0;
+      if (typeof Live !== 'undefined') Live.actors.push(this);
     }
     walk(pts, onArrive, speed) { this.path = pts.slice(); this.onArrive = onArrive || null; if (speed) this.speed = speed; }
     get walking() { return this.path.length > 0; }
@@ -131,11 +132,16 @@ const Chars = (function () {
     talk(textStr, ms = 2400) { this.say = textStr; this.sayUntil = performance.now() + ms; }
     draw(g, t) {
       if (!this.visible) return;
+      if (window.R3 && Game.scene3d) {   // the body is in 3D; draw only the glow and the badge
+        if (this.glow) G.tumahGlow(g, this.x, this.y - 56 * this.s, 70 * this.s, this.glow, t);
+        if (this.badge != null) G.badge(g, this.x + 28 * this.s, this.y - 124 * this.s, this.badge);
+        return;
+      }
       draw(g, this.kind, this.x, this.y, { dir: this.dir, phase: this.phase, mood: this.mood, s: this.s, walking: this.walking, hold: this.hold, glow: this.glow, t });
       if (this.badge != null) G.badge(g, this.x + 24 * this.s, this.y - 108 * this.s, this.badge);
     }
     drawBubble(g) {
-      if (this.say && performance.now() < this.sayUntil) G.bubble(g, this.x, this.y - 112 * this.s, this.say, { size: 15 });
+      if (this.say && performance.now() < this.sayUntil) G.bubble(g, this.x, this.y - (Game.scene3d ? 130 : 112) * this.s, this.say, { size: 15 });
     }
   }
 

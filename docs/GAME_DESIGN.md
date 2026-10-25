@@ -1,6 +1,6 @@
 # Tehara: Game Design Plan (draft for discussion)
 
-**Status:** version 1 is built: World 1 and the Chanukah pack (16 levels).
+**Status:** version 1 is built: World 1 and the Chanukah pack (16 levels), drawn as 3D dioramas (three.js) with a 2D overlay for labels and tumah glows.
 **Level designs:** [`LEVELS.md`](LEVELS.md).
 **Research behind this plan:**
 - [`research/01-game-formats.md`](research/01-game-formats.md): the ad-style puzzle games we are modeling on.

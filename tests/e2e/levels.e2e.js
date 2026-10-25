@@ -112,8 +112,9 @@ async function run() {
       const errs = [];
       page.on('pageerror', e => errs.push(e.message));
       try {
-        await page.goto(`http://localhost:${PORT}/#level=${id}`);
-        await page.waitForTimeout(700);
+        await page.goto(`http://localhost:${PORT}/?gfx=low#level=${id}`);
+        await page.waitForFunction(() => window.__tehara, null, { timeout: 15000 });
+        await page.waitForTimeout(500);
         await page.evaluate(() => { window.__teharaWon = null; });
         for (const st of steps) await doStep(page, st);
         if (expect === 'win') {

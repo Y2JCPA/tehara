@@ -41,6 +41,24 @@
     const t = performance.now();
     g.clearRect(0, 0, 540, 520);
     g.save(); g.beginPath(); g.arc(270, 270, 250, 0, Math.PI * 2); g.clip();
+    // the 3D picture: the room's frame rows 330..850 are cut out into the circle
+    const actors = [
+      { kind: 'gad', x: 140, y: 790, s: 1.1, hold: 'blower', mood: 'happy', dir: 1 },
+      { kind: 'eli', x: 280, y: 806, s: 1.45, mood: 'happy', dir: 1 },
+      { kind: 'miriam', x: 410, y: 790, s: 1.1, mood: 'idle', dir: -1 },
+    ];
+    const did = window.R3 && R3.snapshot(K => {
+      K.cityWall(260, 640, 280, 150);
+      K.house(30, 700, 110, 90);
+      K.tree(70, 800, 0.95, 'olive', 2); K.tree(500, 800, 0.8, 'terebinth', 5);
+      K.block(-20, 790, 580, 200, { top: 'grass' });
+      K.bush(200, 790, 0.8); K.bush(470, 790, 0.7);
+    }, actors, src => { const k = src.width / 540; g.drawImage(src, 0, 330 * k, 540 * k, 520 * k, 0, 0, 540, 520); });
+    if (did) {
+      g.restore();
+      g.beginPath(); g.arc(270, 270, 250, 0, Math.PI * 2); g.lineWidth = 6; g.strokeStyle = G.C.ink; g.stroke();
+      return;
+    }
     G.sky(g, 'day', t);
     G.distance(g, t, { seed: 4, y: 330 });
     G.walls(g, 290, 250, 220, 120);
@@ -131,7 +149,10 @@
   $('#why-next').addEventListener('click', () => { const i = LEVELS.indexOf(current); startLevel(LEVELS[i + 1].id); });
   $('#why').addEventListener('click', e => { if (e.target.id === 'why') { $('#why').hidden = true; renderMap(); show('scr-map'); } });
 
-  Game.init($('#game'));
+  // r3.js is a module, so it runs after this script: wait for it (and its
+  // textures) before starting, but don't hang if WebGL isn't there.
+  function boot() {
+  Game.init($('#game'), window.R3 ? $('#game3d') : null);
   I18N.setLang(I18N.lang);
   applyText();
   drawTitle();
@@ -143,6 +164,13 @@
 
   // hooks for the browser tests
   window.__tehara = { startLevel, info: () => Game.testInfo(), levels: LEVELS.map(l => l.id) };
+
+  }
+  let booted = false;
+  const once = () => { if (!booted) { booted = true; boot(); } };
+  const waitR3 = () => window.R3 ? R3.ready.then(once, once) : window.addEventListener('r3', () => R3.ready.then(once, once), { once: true });
+  waitR3();
+  setTimeout(() => { if (!booted && !window.R3) once(); }, 6000);
 
   if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
 })();

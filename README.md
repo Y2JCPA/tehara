@@ -21,6 +21,7 @@ tools/serve.sh          # or: python3 -m http.server 8000
 - Levels unlock one at a time. For play-testing, open `http://localhost:8000/?unlock=all` to unlock everything.
 - Jump straight to a level with `#level=1-6` (or `C-3`, etc.).
 - Progress, language and sound are saved in the browser.
+- The rooms are drawn in 3D with WebGL. On an old phone, add `?gfx=low` (no shadows, half resolution).
 
 ## Tests
 
@@ -30,11 +31,13 @@ node tests/e2e/levels.e2e.js         # plays every level in a real browser (need
 ONLY=1-6 node tests/e2e/levels.e2e.js
 ```
 
-The browser test plays each level's solution and checks that it wins, and plays the wrong moves and checks that they fail.
+The browser test plays each level's solution and checks that it wins, and plays the wrong moves and checks that they fail. It runs with `?gfx=low`, because headless Chromium draws WebGL in software.
 
 ## How it's built
 
-Plain HTML, CSS and JavaScript with no build step. Everything is drawn on a 540×960 canvas.
+Plain HTML, CSS and JavaScript with no build step, plus [three.js](https://threejs.org) (in `vendor/`, MIT licence) for the 3D.
+
+Each room is a small 3D diorama, lit by a sun with soft shadows, with textures painted in code (no image files). The camera looks at it from the front and a little above, using an off-axis projection, so the front plane of the diorama lines up exactly with the game's 540×960 logical canvas. The level logic, tap targets and tests all work in those 2D coordinates. A 2D canvas on top draws labels, tumah glows and effects, and takes the taps.
 
 | Path | What it is |
 |---|---|
@@ -42,8 +45,9 @@ Plain HTML, CSS and JavaScript with no build step. Everything is drawn on a 540�
 | `js/levels/w1/`, `js/levels/ch/` | The levels, one file each: its rooms, hints, decoys and Why? card |
 | `js/levels/world1.js`, `js/levels/chanukah.js` | The level lists and helpers shared by a pack |
 | `js/levels/kit.js` | Shared pieces: golden pins, tweens, paths |
-| `js/gfx.js`, `js/chars.js` | The storybook art and characters, drawn in code (textured rock and Jerusalem stone, stairs, ladders, tombs) |
-| `tools/showcase.html` | A page that shows the whole drawing kit, for working on the art |
+| `js3d/r3.js` | **The 3D renderer and kit.** Camera, lights, materials, and builders for everything in a room: cut-away earth and rock, real stone stairs, ladders, tombs with rolling stones, Jerusalem-stone walls, trees, jars, donkeys, the menorah, and the characters (adapted from the Avodah: Beit HaMikdash game). Each room's `build(K)` uses it |
+| `js3d/textures.js` | Procedural textures: Jerusalem stone, floors, wood, linen |
+| `js/gfx.js`, `js/chars.js` | 2D drawing for the overlay: labels, speech bubbles, tumah glows, badges |
 | `js/game.js` | The level runtime: rooms, fail and rewind, stars, sounds |
 | `js/app.js`, `js/i18n.js` | Screens, progress, English and Hebrew |
 

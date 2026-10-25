@@ -50,7 +50,10 @@
       <button class="chip icon" id="g-restart" type="button" aria-label="Restart">↻</button>
     </header>
     <div class="stage-wrap" id="stage-wrap">
-      <canvas id="game"></canvas>
+      <div class="board" id="board">
+        <canvas id="game3d"></canvas>
+        <canvas id="game"></canvas>
+      </div>
       <div id="toast" role="status" aria-live="polite"></div>
     </div>
     <div class="action-bar" id="actions"></div>
@@ -97,5 +100,6 @@
 <script src="js/levels/ch/c5.js"></script>
 <script src="js/levels/ch/c6.js"></script>
 <script src="js/app.js"></script>
+<script type="module" src="js3d/r3.js"></script>
 </body>
 </html>

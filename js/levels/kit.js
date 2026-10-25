@@ -10,7 +10,7 @@ const Kit = (function () {
   // ---------- a golden pin you tap to pull out ----------
   // (x1,y1) is the ring end; (x2,y2) the tip.
   class Pin {
-    constructor(id, x1, y1, x2, y2) { Object.assign(this, { id, x1, y1, x2, y2, t: 0, pulling: false, out: false, onOut: null }); }
+    constructor(id, x1, y1, x2, y2) { Object.assign(this, { id, x1, y1, x2, y2, t: 0, pulling: false, out: false, onOut: null }); Live.pins.push(this); }
     get ring() {
       const dx = this.x1 - this.x2, dy = this.y1 - this.y2, L = Math.hypot(dx, dy);
       return [this.x1 + dx / L * 16, this.y1 + dy / L * 16];
@@ -22,7 +22,7 @@ const Kit = (function () {
       this.t = Math.min(1, this.t + dt * 2.6);
       if (this.t >= 1) { this.pulling = false; this.out = true; const cb = this.onOut; this.onOut = null; cb && cb(); }
     }
-    draw(g) { if (this.t < 1) G.pin(g, this.x1, this.y1, this.x2, this.y2, ease(this.t)); }
+    draw(g) { if (Game.scene3d) return; if (this.t < 1) G.pin(g, this.x1, this.y1, this.x2, this.y2, ease(this.t)); }
   }
 
   // ---------- simple tweens ----------

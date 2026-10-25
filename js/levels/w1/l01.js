@@ -61,38 +61,54 @@ W1.threeWays = (hero = 'eli') => api => {
       routes.hit(p);
     },
     hot() { return { bridge: pBridge.ring, boulder: pRock.ring, ...routes.hot() }; },
+    scene: { mode: 'day', seed: 2 },
+    build(K) {
+      // the hill on the left, cut away to show the ladder shaft, the stairwell and the burial cave
+      K.block(-10, 300, 156, 400, { face: 'rock' });
+      K.block(-10, 700, 24, 140, { face: 'rock', top: 'none' });
+      K.block(194, 300, 42, 540, { face: 'rock' });
+      K.block(362, 300, 38, 540, { face: 'rock' });
+      K.block(214, 700, 22, 140, { face: 'rock', top: 'none' });
+      K.recess(146, 300, 48, 410);
+      K.recess(236, 300, 126, 540, { z: -1.2, mat: K.MAT.rock });
+      K.recess(14, 700, 200, 140);
+      K.recess(400, 300, 70, 540, { z: -2.2 });
+      // the cave's ceiling and its burial niche, with a skull and a bone
+      K.block(14, 690, 132, 14, { face: 'rock', top: 'none', z0: -1.8, z1: 0.7 });
+      K.recess(26, 760, 74, 52, { z: -1.5, mat: K.MAT.dark });
+      K.place(K.skull(0.7), 48, 790, -1.2);
+      K.place(K.bone(0.9), 78, 802, -1.2, 0.2);
+      K.ladder(170, 300, 840, { w: 30 });
+      K.stairs(362, 300, 6, { stepW: 21, stepH: 30, dir: -1 });
+      K.stairs(236, 480, 6, { stepW: 21, stepH: 30, dir: 1 });
+      K.stairs(362, 660, 6, { stepW: 21, stepH: 30, dir: -1 });
+      // the tomb on top, with steps cut up and over its roof
+      K.tomb(290, 300, 1);
+      K.stairs(236, 212, 4, { stepW: 9, stepH: 22, dir: -1, thick: 12, z0: 0.25, z1: 0.95 });
+      K.stairs(344, 212, 4, { stepW: 9, stepH: 22, dir: 1, thick: 12, z0: 0.25, z1: 0.95 });
+      K.wall(234, 206, 112, 12, { mat: K.MAT.stoneSmooth, z0: 0.25, z1: 0.95 });
+      // the far cliff, the road and the house
+      K.block(470, 300, 80, 540, { face: 'rock' });
+      K.ladder(506, 300, 840, { w: 26 });
+      K.block(-10, 840, 560, 140, { top: 'path' });
+      K.house(0, 200, 90, 100);
+      K.bush(30, 840, 0.9); K.bush(520, 300, 0.7);
+      // the bridge (hinged at 400,300) and the boulder
+      const hinge = new K.THREE.Group(); hinge.position.copy(K.P(400, 300, 0.1));
+      const pl = K.plank(72, 14); hinge.add(pl); pl.position.set(36 / K.U, 0, 0);
+      K.scene.add(hinge);
+      const hub = K.mesh(new K.THREE.CylinderGeometry(0.09, 0.09, 1.1, 14), K.MAT.gold); hub.rotation.x = Math.PI / 2; hinge.add(hub);
+      const rock = K.boulder(27);
+      this.sync = () => {
+        hinge.rotation.z = -bridge.a; pl.visible = !bridge.broken;
+        rock.visible = !boulder.gone; K.place(rock, boulder.x, boulder.y, 0.2, boulder.a);
+      };
+    },
     draw(g, t) {
-      Kit.outdoor(g, t, { seed: 2, y: 300 });
-      G.platform(g, -10, 300, 410, 560, { face: 'rock', seed: 4 });
-      // burial cave at the bottom left, reached by the ladder shaft
-      G.rr(g, 14, 700, 200, 140, 18, G.lin(g, 0, 700, 0, 840, [[0, '#2c2016'], [1, '#140d07']]), 3, '#5e4c36');
-      G.rr(g, 146, 300, 48, 410, 6, G.lin(g, 146, 0, 194, 0, [[0, '#2c2016'], [0.5, '#3a2b1c'], [1, '#140d07']]), 2.5, '#5e4c36');
-      G.rr(g, 26, 760, 74, 52, 8, '#0b0704', 2, '#5e4c36');
-      G.skull(g, 48, 790, 0.6); G.bone(g, 78, 800, 0.6, 0.2);
       if (Kit.revealed(api, 'cave')) G.ohelTint(g, [[14, 700], [214, 700], [214, 840], [14, 840]]);
-      G.ladder(g, 170, 300, 840, { w: 30 });
-      // the stair path: down through the rock in three flights
-      G.stairs(g, 362, 300, 6, { stepW: 21, stepH: 30, dir: -1 });
-      G.stairs(g, 236, 480, 6, { stepW: 21, stepH: 30, dir: 1 });
-      G.stairs(g, 362, 660, 6, { stepW: 21, stepH: 30, dir: -1 });
-      // a rock outcrop on top with a tomb cut into it; steps go up and over its roof
-      G.tomb(g, 290, 300, 1);
       if (Kit.revealed(api, 'tomb')) G.tumahGlow(g, 290, 250, 90, 'tm', t);
-      G.stairs(g, 236, 212, 4, { stepW: 9, stepH: 22, dir: -1, thick: 12 });
-      G.stairs(g, 344, 212, 4, { stepW: 9, stepH: 22, dir: 1, thick: 12 });
-      G.rr(g, 234, 206, 112, 10, 3, G.lin(g, 0, 206, 0, 216, [[0, '#fffbef'], [1, '#e6d3a6']]), 2, '#8a7148');
-      // road, ravine and far cliff
-      G.chasm(g, 400, 300, 70, 540);
-      G.platform(g, 470, 300, 80, 560, { face: 'rock', seed: 7, top: 'grass' });
-      G.ladder(g, 506, 300, 840, { w: 26 });
-      G.platform(g, -10, 840, 560, 140, { top: 'dirt', seed: 9 });
       G.tag(g, api.L({ en: 'The road', he: 'הדרך' }), 270, 900, { size: 16 });
-      G.house(g, 0, 200, 90, 100);
       routes.draw(g, t);
-      // bridge
-      if (!bridge.broken) { g.save(); g.translate(400, 300); g.rotate(bridge.a); G.plank(g, 35, -7, 72, 0, 14); g.restore(); }
-      G.circ(g, 400, 300, 6, G.C.goldDark, 2);
-      if (!boulder.gone) { g.save(); g.translate(boulder.x, boulder.y); g.rotate(boulder.a); G.rock(g, 0, 22, 54, 46, 5); g.restore(); }
       pBridge.draw(g); pRock.draw(g);
       eli.draw(g, t); eli.drawBubble(g);
     },

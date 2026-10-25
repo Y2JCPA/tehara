@@ -43,22 +43,36 @@ CH.altarStones = api => {
       if (pShelf.hit(p)) pShelf.pull(() => release());
     },
     hot() { return { shelf: pShelf.ring, flapA: pA.ring, flapB: pB.ring, door: pDoor.ring }; },
+    scene: { mode: 'indoor' },
+    build(K) {
+      CH.temple3d(K, { floor: 860, seed: 7 });
+      const T3 = K.THREE;
+      // the shelf and the ramps
+      K.wall(40, 330, 222, 18, { mat: K.MAT.plank, z0: -0.4, z1: 0.6 });
+      for (const [x1, y1, x2, y2] of [[262, 340, 336, 520], [338, 540, 470, 836], [330, 650, 220, 790], [338, 660, 440, 780]]) K.beam(x1, y1, x2, y2, { h: 14, d: 0.9, z: 0.05 });
+      // the two flaps, each on a hinge
+      const flap = (x, y, len, a0) => { const h = new T3.Group(); h.position.copy(K.P(x, y, 0.15)); const b = K.mesh(new T3.BoxGeometry(12 / K.U, len / K.U, 0.95), K.MAT.wood); b.position.y = -len / K.U / 2; h.add(b); h.userData.a0 = a0; K.scene.add(h); return h; };
+      const fA = flap(336, 520, 92, -0.5), fB = flap(334, 640, 80, 0.55);
+      // the chamber of the Beit HaMoked, with its door
+      K.wall(18, 694, 222, 14, { mat: K.MAT.stoneSmooth, z0: -1.4, z1: 0.8 });
+      K.recess(24, 708, 210, 152, { z: -1.6, mat: K.MAT.dark });
+      for (const px of [18, 226]) K.wall(px, 708, 14, 152, { mat: K.MAT.stone, z0: -1.4, z1: 0.8 });
+      const doorH = new T3.Group(); doorH.position.copy(K.P(224, 712, 0.3)); const dm = K.mesh(new T3.BoxGeometry(14 / K.U, 148 / K.U, 0.9), K.MAT.plank); dm.position.set(7 / K.U, -74 / K.U, 0); doorH.add(dm); K.scene.add(doorH);
+      // the new altar: fresh whole white stones
+      for (let i = 0; i < 3; i++) K.wall(412 + i * 36, 830, 30, 26, { mat: K.MAT.lime, z0: -0.3, z1: 0.5 });
+      // the old defiled stones
+      const st = stones.map(() => K.stoneBlock(44));
+      this.sync = () => {
+        fA.rotation.z = -(fA.userData.a0 + flapA.a); fA.visible = flapA.a < 1.4;
+        fB.rotation.z = -(fB.userData.a0 + flapB.a); fB.visible = flapB.a > -1.4;
+        doorH.rotation.y = door.open * 1.4;
+        stones.forEach((s, i) => K.place(st[i], s.x, s.y, 0.45, s.a));
+      };
+    },
     draw(g, t) {
-      CH.temple(g, t, { floor: 860, seed: 7 });
-      const ramp = (x1, y1, x2, y2) => { G.line(g, x1, y1, x2, y2, 16, G.C.woodDark); G.line(g, x1, y1, x2, y2, 11, G.C.woodLight); };
-      G.rr(g, 40, 330, 222, 18, 3, G.lin(g, 0, 330, 0, 348, [[0, G.C.woodLight], [1, G.C.wood]]), 2.5, G.C.woodDark);
-      ramp(262, 340, 336, 520); ramp(338, 540, 470, 836); ramp(330, 650, 220, 790); ramp(338, 660, 440, 780);
-      if (flapA.a < 1.4) { g.save(); g.translate(336, 520); g.rotate(-0.5 + flapA.a); G.rr(g, -6, 0, 12, 92, 3, G.C.wood, 2.5, G.C.woodDark); g.restore(); }
-      if (flapB.a > -1.4) { g.save(); g.translate(334, 640); g.rotate(0.55 + flapB.a); G.rr(g, -6, 0, 12, 80, 3, G.C.wood, 2.5, G.C.woodDark); g.restore(); }
-      // chamber
-      G.rr(g, 24, 700, 210, 160, 6, G.lin(g, 0, 700, 0, 860, [[0, '#3a2a1a'], [1, '#1c130a']]), 3, G.C.mortar);
       G.tag(g, api.L({ en: 'Chamber of the Beit HaMoked', he: 'לשכה בבית המוקד' }), 128, 684, { size: 12 });
-      g.save(); g.translate(224, 712); g.scale(1 - door.open * 0.85, 1); G.rr(g, 0, 0, 14, 148, 3, G.lin(g, 0, 0, 14, 0, [[0, G.C.woodLight], [1, G.C.woodDark]]), 2.5, G.C.woodDark); g.restore();
-      // the new altar site
-      g.setLineDash([10, 8]); G.rr(g, 400, 800, 130, 60, 4, 'rgba(255,255,255,0.3)', 3, '#c0392b'); g.setLineDash([]);
-      for (let i = 0; i < 3; i++) G.rr(g, 412 + i * 36, 830, 30, 26, 3, G.lin(g, 0, 830, 0, 856, [[0, '#fffaf0'], [1, '#ddd2b8']]), 2, '#a89a7a');
+      g.setLineDash([10, 8]); G.rr(g, 400, 800, 130, 60, 4, null, 3, '#c0392b'); g.setLineDash([]);
       G.tag(g, api.L({ en: 'New Mizbeach', he: 'מזבח חדש' }), 465, 784, { size: 12 });
-      for (const s of stones) { g.save(); g.translate(s.x, s.y); g.rotate(s.a); G.rr(g, -22, -22, 44, 44, 6, G.lin(g, -22, -22, 22, 22, [[0, '#c4bfb4'], [1, '#7f7a70']]), 2.5, '#4f4a40'); G.line(g, -12, -14, 4, 2, 2.5, '#4f4a40'); G.line(g, 4, 2, 0, 16, 2.5, '#4f4a40'); g.restore(); }
       for (const p of [pShelf, pA, pB, pDoor]) p.draw(g);
       elder.draw(g, t); yehuda.draw(g, t);
     },

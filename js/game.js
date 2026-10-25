@@ -9,15 +9,18 @@
    ============================================ */
 const Game = (function () {
   const W = 540, H = 960;
-  let canvas, g, dpr = 1;
+  let canvas, g, dpr = 1, cv3 = null, ctx3 = null;
   let level = null, stageIdx = 0, stage = null, hooks = {};
   let raf = 0, last = 0, locked = false, fade = 0, fadeDir = 0, onFadeMid = null;
   let confetti = [];
   let gen = 0;                       // which room is current; timers from an old room are ignored
   const run = { hint: false, fails: 0, bonusNeeded: false, bonus: false, state: {} };
 
-  function init(cv) {
-    canvas = cv; g = canvas.getContext('2d');
+  // The room is drawn in 3D (js3d/r3.js) on a WebGL canvas under the 2D one;
+  // the 2D canvas on top draws labels, glows and effects, and takes the taps.
+  function init(cv, cvGL) {
+    canvas = cv; g = canvas.getContext('2d'); cv3 = cvGL;
+    if (cv3 && window.R3 && !R3.init(cv3)) cv3 = null;
     const p = e => toLogical(e);
     canvas.addEventListener('pointerdown', e => { e.preventDefault(); canvas.setPointerCapture && canvas.setPointerCapture(e.pointerId); if (!locked && stage && stage.down) stage.down(p(e)); });
     canvas.addEventListener('pointermove', e => { if (!locked && stage && stage.move) stage.move(p(e)); });
@@ -73,7 +76,15 @@ const Game = (function () {
   function buildStage() {
     const factory = level.stages[stageIdx];
     const roomApi = Object.create(api); roomApi._gen = ++gen;
+    Live.actors = []; Live.pins = [];
+    if (ctx3) ctx3.dispose();
+    ctx3 = null;
     stage = factory(roomApi);
+    stage.actors = Live.actors; stage.pins = Live.pins;
+    if (window.R3 && cv3 && stage.build) {
+      ctx3 = R3.newScene(stage.scene || {});
+      stage.build(ctx3.K, ctx3);
+    }
     roomApi.setButtons(stage.buttons || []);
     if (stage.intro) roomApi.say(stage.intro, 'info', 3600);
   }
@@ -84,7 +95,7 @@ const Game = (function () {
     buildStage();
     cancelAnimationFrame(raf); last = performance.now(); raf = requestAnimationFrame(loop);
   }
-  function stop() { cancelAnimationFrame(raf); stage = null; level = null; gen++; fadeDir = 0; fade = 0; onFadeMid = null; }
+  function stop() { cancelAnimationFrame(raf); if (ctx3) ctx3.dispose(); ctx3 = null; stage = null; level = null; gen++; fadeDir = 0; fade = 0; onFadeMid = null; }
   function restart() { if (!level) return; const lv = level; start(lv, hooks); }
 
   function hint() {
@@ -109,7 +120,13 @@ const Game = (function () {
   }
 
   function loop(now) {
-    const dt = Math.min(0.05, (now - last) / 1000); last = now;
+    // the game runs in real time even when frames are slow: big gaps are split into small steps
+    let left = Math.min(0.5, (now - last) / 1000); last = now;
+    while (left > 0) { const dt = Math.min(0.04, left); left -= dt; step(dt, now); }
+    render(now);
+    raf = requestAnimationFrame(loop);
+  }
+  function step(dt, now) {
     if (stage && stage.update) stage.update(dt, now);
     for (const c of confetti) { c.vy += 900 * dt; c.x += c.vx * dt; c.y += c.vy * dt; c.a += dt * 8; }
     confetti = confetti.filter(c => c.y < H + 40);
@@ -118,13 +135,23 @@ const Game = (function () {
       if (fadeDir > 0 && fade >= 1) { fade = 1; fadeDir = -1; const m = onFadeMid; onFadeMid = null; m && m(); }
       if (fadeDir < 0 && fade <= 0) { fade = 0; fadeDir = 0; }
     }
-    render(now);
-    raf = requestAnimationFrame(loop);
   }
 
+  let lastNow = 0;
   function render(now) {
+    if (ctx3) {
+      const dt = Math.min(0.05, (now - (lastNow || now)) / 1000);
+      R3.frame(ctx3, stage.actors, stage.pins, dt, now);
+      if (stage.sync) stage.sync(now, dt);
+      R3.render(ctx3);
+    }
+    lastNow = now;
     g.setTransform(dpr, 0, 0, dpr, 0, 0);
     g.clearRect(0, 0, W, H);
+    if (stage && stage.build && !ctx3) {   // no WebGL: say so instead of an empty room
+      g.fillStyle = '#dff4ff'; g.fillRect(0, 0, W, H);
+      G.text(g, I18N.lang === 'he' ? 'המשחק צריך דפדפן עם תלת־ממד (WebGL)' : 'This game needs a browser with 3D (WebGL)', W / 2, H / 2, { size: 18 });
+    }
     if (stage && stage.draw) { g.save(); stage.draw(g, now); g.restore(); }
     for (const c of confetti) { g.save(); g.translate(c.x, c.y); g.rotate(c.a); g.fillStyle = c.c; g.fillRect(-5, -3, 10, 6); g.restore(); }
     if (fade > 0) { g.fillStyle = `rgba(255,250,235,${fade})`; g.fillRect(0, 0, W, H); }
@@ -138,8 +165,11 @@ const Game = (function () {
     };
   }
 
-  return { init, start, stop, restart, hint, api, testInfo, W, H };
+  return { init, start, stop, restart, hint, api, testInfo, W, H, get scene3d() { return ctx3; } };
 })();
+
+// actors and pins made by the current room (the 3D view keeps a model for each)
+const Live = { actors: [], pins: [] };
 
 // ---------- tiny synth sounds (no files) ----------
 const Sound = (function () {
