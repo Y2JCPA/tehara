@@ -35,6 +35,8 @@ const I18N = (function () {
       credits: 'Rules follow the Rambam\'s Sefer Taharah, the Mishnah and the Gemara. Every level has its sources.',
       resetProgress: 'Reset progress',
       confirmReset: 'Erase all stars?',
+      unlockAll: 'For parents and testers: unlock all levels',
+      lockAgain: 'Lock levels again',
     },
     he: {
       title: 'טהרה',
@@ -66,6 +68,8 @@ const I18N = (function () {
       credits: 'הדינים לפי ספר טהרה לרמב"ם, המשנה והגמרא. לכל שלב מקורות.',
       resetProgress: 'איפוס התקדמות',
       confirmReset: 'למחוק את כל הכוכבים?',
+      unlockAll: 'להורים ולבודקים: לפתוח את כל השלבים',
+      lockAgain: 'לנעול שוב את השלבים',
     },
   };
   let lang = 'en';

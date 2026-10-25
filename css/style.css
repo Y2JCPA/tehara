@@ -136,3 +136,5 @@ html[lang="he"] .logo-he { display: none; }
 .why-actions { display: flex; gap: 10px; justify-content: center; margin-top: 16px; }
 
 @media (max-height: 640px) { :root { --bar-h: 48px; --act-h: 64px; } }
+
+.link-btn { background: none; border: 0; font: 600 13px "Rubik", sans-serif; color: var(--navy); text-decoration: underline; cursor: pointer; padding: 4px 8px 16px; }

@@ -8,7 +8,8 @@
     { id: 'w1', cls: 'w1', title: 'world1', sub: 'world1Sub', levels: WORLD1 },
     { id: 'ch', cls: 'ch', title: 'chanukah', sub: 'chanukahSub', levels: CHANUKAH },
   ];
-  const unlockAll = /[?&]unlock=all\b/.test(location.search);
+  let unlockAll = /[?&]unlock=all\b/.test(location.search);
+  try { if (localStorage.getItem('tehara.unlockAll') === '1') unlockAll = true; } catch (e) {}
 
   // ---------- progress ----------
   let progress = {};
@@ -24,6 +25,7 @@
     document.querySelectorAll('[data-t]').forEach(el => { el.textContent = I18N.t(el.dataset.t); });
     $('#t-lang').textContent = I18N.t('language'); $('#m-lang').textContent = I18N.t('language');
     $('#t-sound').textContent = (Sound.on ? '🔊 ' : '🔇 ') + I18N.t('sound');
+    $('#m-unlock').textContent = I18N.t(unlockAll ? 'lockAgain' : 'unlockAll');
   }
   function toggleLang() { I18N.setLang(I18N.lang === 'en' ? 'he' : 'en'); applyText(); renderMap(); drawTitle(); }
 
@@ -117,6 +119,11 @@
   $('#m-lang').addEventListener('click', toggleLang);
   $('#t-sound').addEventListener('click', () => { Sound.toggle(); applyText(); });
   $('#m-back').addEventListener('click', () => show('scr-title'));
+  $('#m-unlock').addEventListener('click', () => {
+    unlockAll = !unlockAll;
+    try { localStorage.setItem('tehara.unlockAll', unlockAll ? '1' : '0'); } catch (e) {}
+    applyText(); renderMap();
+  });
   $('#g-map').addEventListener('click', () => { renderMap(); show('scr-map'); });
   $('#g-hint').addEventListener('click', () => Game.hint());
   $('#g-restart').addEventListener('click', () => Game.restart());
