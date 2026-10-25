@@ -107,7 +107,7 @@ CH.search = api => {
       g.save(); g.beginPath(); g.rect(0, 0, 540, 960);
       for (let i = 0; i < 3; i++) if (open[i]) { const r = rooms[i]; g.rect(24, r.y, 492, r.h); }
       g.fillStyle = 'rgba(8,6,14,0.86)'; g.fill('evenodd'); g.restore();
-      g.fillStyle = G.rad(g, light.x, light.y, 40, 280, [[0, 'rgba(255,220,140,0)'], [1, 'rgba(14,8,2,0.62)']]); g.fillRect(0, 140, 540, 760);
+      g.fillStyle = G.rad(g, light.x, light.y, 40, 280, [[0, 'rgba(255,220,140,0)'], [1, 'rgba(14,8,2,0.4)']]); g.fillRect(0, 140, 540, 760);
       hA.draw(g); if (open[1]) hB.draw(g);
       yehuda.draw(g, t);
     },
