@@ -1,6 +1,7 @@
 # Tehara: Game Design Plan (draft for discussion)
 
 **Status:** research done, design draft. Nothing is built yet.
+**Level designs:** [`LEVELS.md`](LEVELS.md).
 **Research behind this plan:**
 - [`research/01-game-formats.md`](research/01-game-formats.md): the ad-style puzzle games we are modeling on.
 - [`research/02-halacha-tumah-levels.md`](research/02-halacha-tumah-levels.md): the "rules engine". Avot, Rishon/Sheni/Shlishi/Revi'i, chullin/terumah/kodesh, liquids, hechsher, vessels, mikveh, doubts. Includes a full transmission table.
@@ -235,13 +236,16 @@ These are covered in detail at the end of research files 02 and 03:
 
 ---
 
-## 11. Questions for you
+## 11. Decisions so far
 
-1. **Age range.** I've assumed about 7–12, with a "Learning mode" for older kids and adults. Right?
-2. **Language.** English with Hebrew terms (Tumah, Rishon, Ohel...) and Hebrew source quotes? Or a full Hebrew version too?
-3. **Name and hero.** "Tehara" as the title? Should the hero be a young Kohen (I used "Eli" as a placeholder)? Should there be a second playable character, such as a Yisrael or a sister, for levels where the rules differ?
-4. **Platform.** A web game like our others, playable on phones and installable, OK?
-5. **Halachic reviewer.** Is there a rav who could review the rules engine and the Why? cards before we publish?
-6. **The leaf blower.** Is the "gardener hands the Kohen the blower" version OK? Or do you want the gardener blowing ahead, with a note that it's our inference?
-7. **Scope for version 1.** Start with World 1 (The Kohen's Road) plus the Chanukah pack, since Chanukah is coming up?
-8. **Art direction.** Bright, simple cartoon like the How To Loot screenshots? Or a different feel, e.g. warm Yerushalayim-stone colors?
+| Question | Decision |
+|---|---|
+| Age | 7 and up, adults included. Written at a 12-year-old level, with a Learning mode for more depth |
+| Language | Hebrew and English versions. The English version puts Hebrew terms in brackets, e.g. "impure [טמא]" |
+| Name and hero | **Tehara**. The hero is a young Kohen, Eli |
+| Platform | Web game like our others (GitHub Pages, installable) |
+| Halachic review | The user has someone who will play-test and check the levels |
+| Leaf blower | Either version is fine. The level designs use "the gardener hands Eli the blower" |
+| Version 1 | World 1 plus the Chanukah pack |
+| Art | Bright cartoon, with Jerusalem stone for backgrounds and outdoor walls |
+| Process | Design many levels in detail **before** building any. See [`LEVELS.md`](LEVELS.md) |

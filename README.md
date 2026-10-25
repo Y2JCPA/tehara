@@ -7,6 +7,7 @@ It plays like the "pull the pin" / "save the hero" puzzle games: a young Kohen w
 **Status:** planning. Nothing is built yet.
 
 - [Game design plan](docs/GAME_DESIGN.md)
+- [Level designs](docs/LEVELS.md)
 - Research:
   - [Ad-style puzzle game formats](docs/research/01-game-formats.md)
   - [Tumah levels: the rules engine](docs/research/02-halacha-tumah-levels.md)
