@@ -689,8 +689,12 @@ async function sealCloseup() {
   await speak('eli', "Someone moved it. Recently. Can I rely on a jug that's been moved?");
 }
 async function takeCup() {
+  if (!S.tags.cup) {
+    await lines(['levi', "Ledger first! Nothing leaves this storeroom until it's written down."], ['eli', 'Even a cup?'], ['levi', 'Especially a cup. Cups are sneaky.']);
+    return;
+  }
   S.cupTaken = true; S.inv.push('stone cup'); OBJ.cup.group.visible = false; renderStatus();
-  await lines(['eli', 'One stone cup. Whatever happens next, this cup will still be tahor.'], ['levi', "Write it in the ledger first! Regulations."]);
+  await lines(['eli', 'One stone cup. Whatever happens next, this cup will still be tahor.'], ['levi', "Signed out. Bring it back. Eventually."]);
 }
 
 async function checkTag(id, t) {
