@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>The Last Jug</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,500;0,700;1,500;1,700&family=Alegreya+Sans:wght@400;500;700&family=Frank+Ruhl+Libre:wght@500;700&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<!--APP START-->
+<div id="stage"></div>
+<div id="veil"></div>
+<div id="labels"></div>
+
+<header id="top">
+  <div class="place">
+    <div class="eyebrow">The Last Jug · test scene</div>
+    <h1>Beit Shemaniya <span class="he">לשכת בית שמניה</span></h1>
+    <div id="objective">Enter the oil chamber</div>
+  </div>
+  <div class="tools">
+    <button class="tool" id="btn-tumah" type="button" aria-pressed="false"><span class="dot"></span>Tumah view</button>
+    <button class="tool" id="btn-notebook" type="button">Notebook</button>
+  </div>
+</header>
+
+<aside id="status" aria-live="polite"></aside>
+<div id="caption" aria-hidden="true"></div>
+<div id="menu" hidden></div>
+<div id="toast" role="status"></div>
+
+<section id="dlg" hidden aria-live="polite">
+  <div class="portrait"></div>
+  <div class="body">
+    <div class="duel" hidden></div>
+    <div class="who"></div>
+    <div class="text"></div>
+    <div class="choices"></div>
+    <button class="next" type="button">Continue ▸</button>
+  </div>
+</section>
+
+<div id="modal" hidden></div>
+<!--APP END-->
+<script type="module" src="game.js"></script>
+</body>
+</html>

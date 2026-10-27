@@ -1,6 +1,6 @@
 # Tehara: The Last Jug (פך השמן): design draft for the new direction
 
-**Status:** draft, third pass. Nothing is built yet on this branch. Once it's built, this becomes the main game; the current puzzles (`index.html`) and the 3D version (`legacy.html`) stay reachable from a menu.
+**Status:** draft, third pass. One test scene is built (`oil/`, see §7); the rest isn't yet. Once it's built, this becomes the main game; the current puzzles (`index.html`) and the 3D version (`legacy.html`) stay reachable from a menu.
 
 **Decided so far**
 - **Story:** Eli, a young Kohen, finds the one jug of pure oil in the Beit HaMikdash after the Chanukah battles and carries it to the menorah. Yehuda HaMaccabi is tamei met from the fighting, so he sends Eli.
@@ -230,7 +230,9 @@ That's a style that suits code, because it's about simple shapes and good lighti
 
 **Why this should go better than the last 3D attempt:** last time there were no style rules or references, lots of small objects, and a moving camera. This time the reference is fixed (*Lara Croft GO*), the rules above are fixed, and we judge one room before building more.
 
-**Next step: one test scene.** Beit Shemaniya (scene 11): the oil chamber with the big jugs, Eli, tap to walk, tap a jug for Eli's comment, a short exchange with one character, and the tumah view. If the look isn't right, we change the style before any more scenes exist. If code-built art still isn't good enough, the fallback is to keep the same gameplay and swap in purchased or generated art.
+**Test scene (built):** [`oil/`](../oil/) is a playable version of scene 11 with a storekeeper, Yoezer the Levi, standing in for the full Act II cast. Run `python3 -m http.server` from the repo root and open `/oil/`; `python3 tools/build-oil-artifact.py OUT.html` bundles it into one shareable page. ![The test scene in tumah view](../artifacts/oil-test-scene.png)
+
+**Original plan for the test scene.** Beit Shemaniya (scene 11): the oil chamber with the big jugs, Eli, tap to walk, tap a jug for Eli's comment, a short exchange with one character, and the tumah view. If the look isn't right, we change the style before any more scenes exist. If code-built art still isn't good enough, the fallback is to keep the same gameplay and swap in purchased or generated art.
 
 ---
 
