@@ -336,7 +336,7 @@ SCENES.push({
     thing('goldAltar', ['The golden mizbe’ach', 'מזבח הזהב'], K3.goldBox(0.6, 0.9, 0.6), 1, 2, { look: ['The golden mizbe’ach, for the ketoret.', 'מזבח הזהב, לקטורת.'] });
     const m = K3.menorah(); m.visible = !!fl('built'); ST.menorah = m;
     if (fl('filled')) m.userData.lamps.forEach(l => { l.scale.setScalar(0.9); });
-    addObj('spot', { name: fl('built') ? ['The menorah', 'המנורה'] : ['Where the menorah stood', 'המקום של המנורה'], group: group(m, mesh(new THREE.CylinderGeometry(0.35, 0.35, 0.02, 12), mat('#8a7046'), 0, 0.01, 0, false)), at: [2, 4], tiles: [[2, 4]], anchorY: 2.2, hit: [1.0, 2.0, 1.0],
+    addObj('spot', { name: fl('built') ? ['The menorah', 'המנורה'] : ['Where the menorah stood', 'המקום של המנורה'], group: group(m, mesh(new THREE.CylinderGeometry(0.35, 0.35, 0.02, 12), mat('#8a7046'), 0, 0.01, 0, false)), at: [2, 4, 0, 0, 0.56], tiles: [[2, 4]], anchorY: 2.2, hit: [1.0, 2.0, 1.0],
       actions: () => [A.look(fl('built') ? ['Seven iron spears, made into a menorah.', 'שבעה רמחים מברזל, שנעשו מנורה.'] : ['This is where the menorah stood. The Greeks took it.', 'כאן עמדה המנורה. היוונים לקחו אותה.']),
         A.act('build', ['Make a menorah', 'לעשות מנורה'], buildMenorah, fl('built')),
         A.act('fill', ['Fill the lamps', 'למלא את הנרות'], fillLamps, !fl('built') || fl('filled')),
