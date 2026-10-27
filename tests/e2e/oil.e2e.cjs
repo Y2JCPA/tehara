@@ -25,6 +25,19 @@ const URL = process.env.OIL_URL || 'http://localhost:8765/oil/';
   };
   const check = async () => { if (errors.length) await fail('page error'); };
 
+  // In every scene, once: open the notebook in the middle of a conversation, close it, and
+  // check the conversation is still there (it used to vanish and freeze the game).
+  const notebookChecked = new Set();
+  async function notebookMidConversation() {
+    const s = await st();
+    if (notebookChecked.has(s.scene) || !s.dlg || s.modal) return;
+    notebookChecked.add(s.scene);
+    await page.click('#btn-notebook');
+    if (!(await waitFor(s2 => s2.modal, 5000))) await fail('notebook did not open');
+    await page.locator('#modal .primary').click();
+    if (!(await waitFor(s2 => s2.dlg && !s2.modal, 5000))) await fail('conversation did not come back after closing the notebook');
+  }
+
   // advance dialogue and close cards until the game is idle (or back on the title screen)
   async function settle(limit = 600) {
     for (let i = 0; i < limit; i++) {
@@ -37,6 +50,7 @@ const URL = process.env.OIL_URL || 'http://localhost:8765/oil/';
         else if (await page.locator('#modal .primary').count()) await page.locator('#modal .primary').first().click();
         else await page.locator('#modal [data-v]').first().click();
       } else if (s.dlg) {
+        await notebookMidConversation();
         const ok = page.locator('#dlg .choice[data-ok]');
         if (await ok.count()) await ok.first().click();
         else if (await page.locator('#dlg .choice').count()) await page.locator('#dlg .choice').first().click();
@@ -70,6 +84,22 @@ const URL = process.env.OIL_URL || 'http://localhost:8765/oil/';
     let sol = await page.evaluate(id => window.__oil.solution(id), id);
     if (Array.isArray(sol[0])) sol = sol[visits[id] - 1];
     n++;
+    if (id === 'hub' && visits[id] === 1) {   // restart from the menu in the middle of a conversation: the scene must still respond
+      const [qx, qy] = await page.evaluate(() => window.__oil.screenOf('yochanan'));
+      await page.mouse.click(qx, qy);
+      if (!(await waitFor(s2 => s2.menu, 20000))) await fail('no menu for Yochanan');
+      await page.locator('#menu [data-key="talk"]').click();
+      if (!(await waitFor(s2 => s2.dlg, 5000))) await fail('Yochanan did not talk');
+      await page.click('#btn-menu');
+      if (!(await waitFor(s2 => s2.modal, 5000))) await fail('menu did not open');
+      await page.locator('#modal [data-v="restart"]').click();
+      await waitFor(s2 => s2.scene === 'hub' && !s2.loading, 10000);
+      await settle();
+      const [x, y] = await page.evaluate(() => window.__oil.tileAt(2, 5));
+      await page.mouse.click(x, y);
+      if (!(await waitFor(s2 => s2.walking || (s2.eli[0] === 2 && s2.eli[1] === 5), 5000))) await fail('frozen after restarting the scene from the menu');
+      await settle();
+    }
     if (SHOTS) await page.screenshot({ path: `${SHOTS}/${LANG}-${String(n).padStart(2, '0')}-${id}.png` });
     console.log(`scene ${n}: ${id}${visits[id] > 1 ? ' (visit ' + visits[id] + ')' : ''}`);
     for (const step of sol) {
