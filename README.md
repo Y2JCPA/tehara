@@ -1,19 +1,36 @@
 # Tehara · טהרה
 
-An illustrated puzzle adventure about tumah and taharah. Help Eli reach Jerusalem, then join Yehuda in the search for pure oil. Ages 7+, in English and Hebrew.
+Torah games about tumah and taharah. The main game is **The Last Jug**: after the Chanukah battles, Eli, a young Kohen, has to find the one sealed jug of pure oil in the Mikdash and carry it to the menorah. In English and Hebrew, ages 12 and up.
 
 ## Play
+
+**Live:** https://y2jcpa.github.io/tehara/ (once GitHub Pages is turned on; see below)
+
+Locally:
 
 ```sh
 python3 -m http.server 8000
 # Open http://localhost:8000
 ```
 
-No build, account, server API, or installation is required. All artwork is local SVG. There are no remote font, ad, or analytics requests. After the first visit, the service worker caches the new game for offline play. Source links need an internet connection.
+No build, account or server API is needed to play. The game loads three.js from `vendor/` and its fonts from Google Fonts; everything else is local, with no ads or analytics.
 
-![The rebuilt Tehara home screen](artifacts/home-desktop.png)
+### Turning on the live site
 
-## The rebuilt game
+In the repo, go to **Settings → Pages → Build and deployment**, choose **Deploy from a branch**, then pick `main` and `/ (root)`. GitHub Pages on a private repository needs a paid GitHub plan; otherwise make the repository public first.
+
+## The Last Jug
+
+**The game on the home page.** A point-and-click adventure in low-poly 3D, in English and Hebrew: Eli, a young Kohen, finds the one sealed jug of pure oil after the Chanukah battles and carries it to the menorah. Seventeen scenes, the full ladder of tumah (Av, Rishon, Sheni, Shlishi, Revi'i), and a lot of arguing. Ages 12 and up.
+
+- Design, scene list and sources: [docs/OIL_QUEST.md](docs/OIL_QUEST.md)
+- Source: `oil/src/*.js`. Build with `python3 tools/build-oil.py`, which writes `oil/game.js` and the home page `index.html` (both generated; edit `oil/src/` and `oil/index.html` instead).
+- Test: `node tests/e2e/oil.e2e.cjs en` (or `he`) with the local server running. It plays the whole game through the interface.
+- The **By Jacob Bros · More games** badge shows on the title screen.
+
+The earlier versions are still here: the illustrated puzzles at [classic.html](classic.html) and the 3D dioramas at [legacy.html](legacy.html).
+
+## The classic puzzles (classic.html)
 
 - **10 road puzzles:** bridge tutorial, shared roofs, moving bones, overhanging branches, steady stepping stones, blowing and choosing footsteps, lime markings, a lost grave, immersion and nightfall, and carrying terumah across a plowed-grave field.
 - **6 Chanukah puzzles:** searching first, inspecting the jug, making a tight seal, vessel materials, washing before handling oil, and lighting the seven lamps of the Mikdash menorah.
