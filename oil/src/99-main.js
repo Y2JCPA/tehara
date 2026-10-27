@@ -23,4 +23,4 @@ window.__oil = {
 };
 setLang(LANG);
 requestAnimationFrame(tick);
-titleScreen();
+titleScreen().then(()=>{}).catch(()=>GA?.emit('game_load_error',{error_category:'initialization'}));

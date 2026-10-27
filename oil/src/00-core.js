@@ -5,6 +5,8 @@
    Halachic notes and sources: docs/OIL_QUEST.md and docs/research/. */
 import * as THREE from '../vendor/three/three.module.min.js';
 
+const GA = window.GameAnalytics;
+let analyticsEntry = null;
 // ============================================================ helpers
 const $ = (s, root = document) => root.querySelector(s);
 const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; };
@@ -97,6 +99,7 @@ let renderer;
 try {
   renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 } catch (e) {
+  GA?.emit('game_load_error', {error_category:'webgl'});
   document.body.append(el('div', '', '<div id="nogl"><p>This game needs WebGL, which this browser has turned off. · המשחק צריך WebGL, והדפדפן הזה כיבה אותו.</p></div>'));
   throw e;
 }

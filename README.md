@@ -13,7 +13,7 @@ python3 -m http.server 8000
 # Open http://localhost:8000
 ```
 
-No build, account or server API is needed to play. The game loads three.js from `vendor/` and its fonts from Google Fonts; everything else is local, with no ads or analytics.
+No build, account or server API is needed to play. The game loads three.js from `vendor/` and its fonts from Google Fonts; game assets are local, with no ads. Optional Google Analytics gameplay measurement is described in [docs/ANALYTICS.md](docs/ANALYTICS.md) and [Privacy](privacy.html).
 
 ### Turning on the live site
 

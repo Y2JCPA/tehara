@@ -6,6 +6,8 @@
    Halachic notes and sources: docs/OIL_QUEST.md and docs/research/. */
 import * as THREE from '../vendor/three/three.module.min.js';
 
+const GA = window.GameAnalytics;
+let analyticsEntry = null;
 // ============================================================ helpers
 const $ = (s, root = document) => root.querySelector(s);
 const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; };
@@ -98,6 +100,7 @@ let renderer;
 try {
   renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 } catch (e) {
+  GA?.emit('game_load_error', {error_category:'webgl'});
   document.body.append(el('div', '', '<div id="nogl"><p>This game needs WebGL, which this browser has turned off. · המשחק צריך WebGL, והדפדפן הזה כיבה אותו.</p></div>'));
   throw e;
 }
@@ -1139,17 +1142,21 @@ async function loadScene(id, opts = {}) {
   G.screen = 'game'; renderStatus(); applyStatic();
   if (!opts.quiet) await openModal(() => `<div class="scenecard"><div class="eyebrow">${tx(actLabel(sc))} · ${tx(U.scene)} ${SCENES.indexOf(sc) + 1}</div><h2>${tx(sc.title)}</h2><p class="lede">${tx(sc.blurb)}</p><div class="actions">${btn('go', U.begin, true)}</div></div>`);
   G.loading = false; G.started = true;
+  if (analyticsEntry) { GA?.begin({entry_type:analyticsEntry,language:LANG,game_mode:'last_jug'}); analyticsEntry=null; }
+  GA?.emit('level_start',{level_id:id,chapter:String(sc.act),replay:P.done.includes(id)?'yes':'no'});
   objective();
   if (sc.intro && !(sc.introOnce && fl('seen:' + id))) { flag('seen:' + id); await busy(sc.intro); }
   objective();
 }
 async function complete(next, from) {
+  GA?.complete(G.sc.id,{chapter:String(G.sc.act),replay:P.done.includes(G.sc.id)?'yes':'no'});
   if (!P.done.includes(G.sc.id)) P.done.push(G.sc.id);
   save();
   if (next === 'END') { await theEnd(); return; }
   await loadScene(next, { from: from || G.sc.id, quiet: sceneById(next)?.hub && P.done.includes(next) });
 }
 async function theEnd() {
+  GA?.finish({game_mode:'last_jug'});
   G.started = false;
   const v = await openModal(() => `<div class="splash"><div class="eyebrow">${tx(['The end', 'סוף'])}</div><h2>${tx(['Eight nights', 'שמונה לילות'])}</h2>
     <p class="lede">${tx(['One small jug, enough for one night. It burned for eight, until new pure oil could be pressed and brought.', 'כד קטן אחד, מספיק ללילה אחד. הוא דלק שמונה לילות, עד שאפשר היה לכתוש זיתים ולהביא שמן טהור חדש.'])}</p>
@@ -1161,8 +1168,10 @@ async function theEnd() {
 }
 
 async function titleScreen() {
+  GA?.pause();
   G.screen = 'title'; G.started = false; dropConversation(); renderStatus(); objective();
   if (!G.sc) await loadScene('camp', { backdrop: true });
+  GA?.once('ready','game_ready',{game_mode:'last_jug'});
   applyStatic();
   while (true) {
     const canContinue = P.scene && P.scene !== 'camp' || P.done.length;
@@ -1170,9 +1179,9 @@ async function titleScreen() {
       <p class="lede">${tx(['The battle is over. The Mikdash is a mess. Somewhere in it there may be one jug of oil nobody has touched. Eli, a young Kohen, has to find it and carry it to the menorah without anyone, or anything, getting in the way.', 'הקרב נגמר. המקדש הפוך. אולי יש בו איפשהו כד שמן אחד שאף אחד לא נגע בו. אלי, כהן צעיר, צריך למצוא אותו ולהביא אותו למנורה, בלי שאף אחד, ושום דבר, יפריעו בדרך.'])}</p>
       <p class="note">${tx(['Ages 12 and up. About an hour. Sources are linked throughout; the halacha still needs a rav’s review.', 'מגיל 12. בערך שעה. המקורות מקושרים לאורך כל הדרך; ההלכה עדיין צריכה בדיקה של רב.'])}</p>
       <div class="actions"><button class="btn" type="button" data-lang lang="${isHe() ? 'en' : 'he'}">${tx(U.langBtn)}</button>${canContinue ? btn('chapters', U.chapters) : ''}${canContinue ? btn('continue', U.cont) : ''}${btn('new', U.newGame, !canContinue, true)}</div></div>`);
-    if (v === 'new') { newGame(); await loadScene('camp'); return; }
-    if (v === 'continue') { await loadScene(P.scene || 'camp'); return; }
-    if (v === 'chapters') { const id = await chapters(); if (id) { await jumpTo(id); return; } }
+    if (v === 'new') { analyticsEntry='new'; newGame(); await loadScene('camp'); return; }
+    if (v === 'continue') { analyticsEntry='resume'; await loadScene(P.scene || 'camp'); return; }
+    if (v === 'chapters') { const id = await chapters(); if (id) { analyticsEntry='chapter_select'; await jumpTo(id); return; } }
   }
 }
 function newGame() { const lang = LANG; P = freshProgress(); save(); LANG = lang; }
@@ -2804,4 +2813,4 @@ window.__oil = {
 };
 setLang(LANG);
 requestAnimationFrame(tick);
-titleScreen();
+titleScreen().then(()=>{}).catch(()=>GA?.emit('game_load_error',{error_category:'initialization'}));
