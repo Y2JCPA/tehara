@@ -82,6 +82,8 @@ const PEOPLE = {
   levi: { name: ['Yoezer the Levi', 'יועזר הלוי'], p: portrait({ bg: '#3a2f45', robe: '#6a587c', head: 'wrap', headColor: '#8a6a4a', beard: C.beard, brows: 'bushy' }) },
   shimi: { name: ['Shimi the Levi', 'שמעי הלוי'], p: portrait({ bg: '#2f2a40', robe: '#6a587c', head: 'wrap', headColor: '#8a6a4a', beard: '#6a5a4a' }) },
   keeper1: { name: ['The keeper of the Nikanor Gate', 'שומר שער ניקנור'], p: portrait({ bg: '#2a2438', robe: '#6a587c', head: 'wrap', headColor: '#4a3a5a', beard: C.beard, brows: 'stern' }) },
+  farmer: { name: ['Gidi the ploughman', 'גידי החורש'], p: portrait({ bg: '#3a3222', robe: '#8a7048', head: 'wrap', headColor: '#c9b48a', beard: '#6a4a2e', brows: 'worried' }) },
+  tuvia: { name: ['Tuvia the Kohen', 'טוביה הכהן'], p: portrait({ bg: '#2e3440', robe: C.linen, head: 'turban', beard: '#5a3a22', brows: 'worried' }) },
   keeper2: { name: ['The keeper of the Kohanim’s court', 'שומר עזרת הכהנים'], p: portrait({ bg: '#2a2438', robe: C.linen, head: 'turban', beard: '#9a8a7a', accent: C.sashBlue }) },
 };
 

@@ -8,7 +8,7 @@ function deco(g, c, r, { dx = 0, dz = 0, ry = 0, y = 0, block = true } = {}) {
 }
 const block = tiles => tiles.forEach(t => G.blocked.add(K(...t)));
 function npc(id, cast, c, r, def = {}) {
-  const g = CAST[cast]();
+  const g = def.group || CAST[cast]();
   // every character gets a generous invisible box around them, so they're easy to tap
   return addObj(id, { npc: true, tiles: [[c, r]], at: [c, r, def.dx || 0, def.dz || 0], group: g, anchorY: (g.userData.top || 0.8) + 0.55, name: PEOPLE[id]?.name || PEOPLE[cast]?.name, hit: [0.8, (g.userData.top || 0.8) + 0.35, 0.8], ...def });
 }
@@ -89,6 +89,36 @@ Object.assign(RULES, {
     body: ['At night the officer of the Temple Mount went round every post with torches. A Levi he found asleep he struck with his stick, and he was allowed to burn his clothes.',
       'בלילה היה איש הר הבית מחזר על כל משמר ומשמר ואבוקות דולקות לפניו. לוי שמצא ישן, חובטו במקלו, ורשות היה לו לשרוף את כסותו.'],
     src: [SRC.middot12],
+  },
+  beitPras: {
+    title: ['A ploughed-over grave', 'בית הפרס'],
+    body: ['When a plough goes through a grave, it drags little bits of bone along the furrows. So the Rabbis made the field around it a <em>beit haperas</em>, a hundred amah of furrow: walking through it makes you tamei, because your feet might move a bone the size of a barley grain. It is a rabbinic decree, and it is real tumah. Graves were marked with lime, so that Kohanim would know to keep away.',
+      'כשמחרשה עוברת בקבר, היא גוררת שברי עצמות לאורך התלמים. לכן חכמים עשו את השדה שסביבו <em>בית הפרס</em>, מאה אמה של מענה: מי שהולך בו נטמא, כי הרגליים שלו עלולות להזיז עצם כשעורה. זו גזירת חכמים, וזו טומאה של ממש. את הקברות היו מציינים בסיד, כדי שכהנים יידעו להתרחק.'],
+    src: [SRC.oholot171, SRC.chagigah25b, SRC.maaserSheni51],
+  },
+  nofeach: {
+    title: ['Blowing your way across', 'נופח והולך'],
+    body: ['Shmuel says a person may blow on the ground of a beit haperas as he goes, to blow any bone out of his way, and that a beit haperas trodden flat by passers-by is tahor. But both are only for someone on his way to bring his korban Pesach: the Rabbis set aside their own decree so as not to stop a mitzvah that carries karet. For terumah, and for everything else, the decree stands.',
+      'שמואל אומר שאדם נופח בית הפרס והולך, כדי להעיף עצם מדרכו, ושבית הפרס שנדש טהור. אבל שני אלה הם רק למי שהולך להקריב את קרבן הפסח שלו: חכמים לא העמידו את גזירתם במקום כרת. לתרומה, ולכל דבר אחר, הגזירה עומדת.'],
+    src: [SRC.pesachim92b, SRC.chagigah25b],
+  },
+  firmFooting: {
+    title: ['Stones that don’t move', 'אבנים שאינן מתנדנדות'],
+    body: ['Someone who crosses a beit haperas on stones that don’t move, or riding on a person or an animal whose strength is good, stays tahor. On stones that rock, or on a beast whose strength is poor, he becomes tamei: what moves under him moves the earth, and whatever is in it.',
+      'המהלך בבית הפרס על גבי אבנים שאינן מתנדנדות, או על גבי אדם ובהמה שכוחן יפה, טהור. על גבי אבנים המתנדנדות, או על גבי אדם ובהמה שכוחן רע, טמא: מה שזז תחתיו מזיז את האדמה, ואת מה שיש בה.'],
+    src: [SRC.oholot186],
+  },
+  parasFix: {
+    title: ['Mending the field', 'לטהר בית הפרס'],
+    body: ['A beit haperas becomes tahor again if three tefachim of soil are taken off the top, or three tefachim of new soil are put on top of it, or if it is paved with stones that can’t move. Gidi chose the hard way first. Most people do.',
+      'בית הפרס נטהר אם מורידים ממנו שלושה טפחים של עפר, או נותנים עליו שלושה טפחים של עפר חדש, או אם מרצפים אותו באבנים שאינן מתנדנדות. גידי בחר קודם בדרך הקשה. רוב האנשים בוחרים בה.'],
+    src: [SRC.oholot185],
+  },
+  tevulYom: {
+    title: ['Three steps back to tahor', 'שלוש מדרגות בחזרה לטהרה'],
+    body: ['After immersing, a person is a <em>tevul yom</em> until sunset. He may eat chullin and ma’aser sheni straight away. Terumah waits for sunset (<em>he’erev shemesh</em>); touching it before then makes it pasul. Kodashim wait for sunset too, and someone who also owes a korban (a zav, a metzora, a woman after childbirth) waits for that as well: until then he is <em>mechusar kippurim</em>. Not everything waits for the sun: unwashed hands are fixed by washing them, at once. And a tevul yom may come as far as the Cheil, but not into the Ezrat Nashim.<br><br>Years later, the Mishnah tells, the Kohen who burned the Parah Adumah was made tamei on purpose and immersed first, to show the Tzedukim that a tevul yom may do it.',
+      'אחרי טבילה, אדם הוא <em>טבול יום</em> עד השקיעה. חולין ומעשר שני מותר לו לאכול מיד. תרומה מחכה להערב שמש; אם יגע בה לפני כן, היא נפסלת. גם קדשים מחכים לשקיעה, ומי שחייב גם קרבן (זב, מצורע, יולדת) מחכה גם לו: עד אז הוא <em>מחוסר כיפורים</em>. לא הכול מחכה לשמש: ידיים שלא נטלו מתקנים בנטילה, מיד. וטבול יום יכול להגיע עד החיל, אבל לא לעזרת נשים.<br><br>שנים אחר כך, מספרת המשנה, את הכהן ששרף את הפרה האדומה היו מטמאים בכוונה ומטבילים, כדי להראות לצדוקים שטבול יום כשר לכך.'],
+    src: [SRC.kelim15, SRC.negaim143, SRC.tevulYom22, SRC.parah37],
   },
   cheil: {
     title: ['The Cheil', 'החיל'],
@@ -202,7 +232,7 @@ SCENES.push({
     scatter(9, 6, r => K3.bush(r), [[0, 0], [1, 1], [2, 5], [6, 5], [8, 2], [0, 5]]);
     const shield = mesh(new THREE.CylinderGeometry(0.3, 0.3, 0.05, 10), mat('#8a3a2a')); shield.rotation.x = 1.4; deco(group(shield), 2, 2, { dx: 0.3, y: 0.06, block: false });
     deco(K3.tent(1.6, 1.4, '#cbb38c'), 8, 0, { dz: -1.2, block: false });
-    exitAt('exit', 8, 0, 'yehuda', ['Yehuda’s tent', 'האוהל של יהודה']);
+    exitAt('exit', 8, 0, 'pras', ['On toward Yehuda’s tent', 'הלאה, לכיוון האוהל של יהודה']);
   },
   hazards: () => [
     { tiles: rect(3, 5, 0, 2), why: ['That torn tent is spread over one of the fallen. Anywhere under the same roof, I’d become tamei met. Even on the bridge.', 'האוהל הקרוע פרוש מעל אחד הנופלים. בכל מקום תחת אותו גג אני נטמא טומאת מת. גם על הגשר.'], lesson: 'ohel' },
@@ -215,6 +245,138 @@ SCENES.push({
   },
   solution: [{ tile: [3, 2] }, { o: 'crate', a: 'take' }, { o: 'ditch', a: 'plank' }, { o: 'sword', a: 'look' }, { o: 'exit' }],
 });
+
+// ============================================================ 2b. The ploughed field (beit haperas)
+const PRAS_STONES = { s21: [2, 1, true], s22: [2, 2, false], s23: [2, 3, true], s24: [2, 4, false], s32: [3, 2, true], s34: [3, 4, false], s35: [3, 5, true] };   // id: [c, r, wobbly]
+const PRAS_PATCH = rect(4, 5, 2, 4);   // the part Gidi has already paved
+SCENES.push({
+  id: 'pras', act: 1, cols: 9, rows: 6, theme: 'dirt', light: 'dusk',
+  title: ['The Ploughed Field', 'בית הפרס'],
+  blurb: ['Past the battlefield, the last field before Yehuda’s tent. Someone has been ploughing it today. Someone has had a very bad day.', 'אחרי שדה הקרב, השדה האחרון לפני האוהל של יהודה. מישהו חרש אותו היום. למישהו היה יום מאוד רע.'],
+  start: [0, 3, Math.PI / 2],
+  pre() { ST.tested = {}; },
+  build() {
+    const r = rng(77);
+    // the ploughed part, with a trodden path along the back
+    for (let c = 2; c <= 6; c++) for (let rr = 0; rr < 6; rr++) {
+      if (PRAS_PATCH.some(t => t[0] === c && t[1] === rr)) continue;
+      if (rr === 0) { deco(group(mesh(new THREE.BoxGeometry(0.98, 0.02, 0.6), mat('#cdb48a'), 0, 0.01, 0, false)), c, rr, { block: false }); continue; }
+      deco(K3.furrows(r, 1 + Math.floor(r() * 3)), c, rr, { block: false });
+    }
+    // Gidi's paving, and his heap of stones
+    for (const [c, rr] of PRAS_PATCH) deco(group(mesh(new THREE.BoxGeometry(0.96, 0.06, 0.96), mat(C.stoneMid), 0, 0.03, 0, false)), c, rr, { block: false });
+    deco(group(...[0, 1, 2, 3, 4].map(i => mesh(new THREE.DodecahedronGeometry(0.16, 0), mat(i % 2 ? C.stone : C.stoneMid), (r() - 0.5) * 0.5, 0.12 + (i > 2 ? 0.14 : 0), (r() - 0.5) * 0.5))), 6, 5, { block: false });
+    // the grave marker Gidi's plough turned up, with lime poured on it
+    const marker = group(mesh(new THREE.BoxGeometry(0.42, 0.7, 0.16), mat('#efeae0'), 0, 0.35, 0), mesh(new THREE.BoxGeometry(0.5, 0.04, 0.3), mat('#f7f4ee'), 0, 0.01, 0.05, false));
+    marker.children[0].rotation.z = 0.18;
+    addObj('marker', { name: ['A broken gravestone, whitewashed', 'מצבה שבורה, מסוידת'], group: marker, at: [1, 1], tiles: [[1, 1]], anchorY: 1.1, actions: () => [A.look(['An old gravestone, cracked by a plough, with fresh lime poured all over it. That’s how graves are marked, so Kohanim keep away. Somebody ploughed right through a grave.', 'מצבה ישנה, סדוקה ממחרשה, ועליה סיד טרי שנשפך. ככה מציינים קברים, כדי שכהנים יתרחקו. מישהו חרש ממש דרך קבר.'], async () => {
+      if (ST.knows) return;
+      ST.knows = true; refresh();
+      await lines(['eli', ['And a plough drags bits of bone along every furrow. This whole field is a beit haperas now.', 'ומחרשה גוררת שברי עצמות לאורך כל תלם. כל השדה הזה הוא בית הפרס עכשיו.']]);
+      await lesson('beitPras');
+    })] });
+    // the stepping stones
+    for (const [id, [c, rr, wob]] of Object.entries(PRAS_STONES)) {
+      addObj(id, { name: ['A stepping stone', 'אבן דריכה'], tiles: [[c, rr]], solid: false, group: K3.stepStone(r, wob), at: [c, rr], anchorY: 0.5, hit: [0.7, 0.25, 0.7], range: 1,
+        actions: () => [A.look(ST.tested[id] === 'firm' ? ['Firm. It doesn’t budge.', 'יציבה. לא זזה.'] : ST.tested[id] === 'wobbly' ? ['It rocks. Not stepping on that.', 'מתנדנדת. עליה אני לא דורך.'] : ['A flat stone in the furrows. Is it firm, or does it rock?', 'אבן שטוחה בין התלמים. היא יציבה, או מתנדנדת?']),
+          A.act('test', ['Test it with a spear', 'לבדוק אותה עם רומח'], () => testStone(id, wob), !!ST.tested[id] || !ST.knows),
+          A.act('step', ['Step onto it', 'לעלות עליה'], async () => { const p = bfs(startOf(), [c, rr]); if (p) await walkPath(p); else await speak('eli', U.cantGet); }, ST.tested[id] !== 'firm')] });
+    }
+    // Gidi, his donkey and his ox, on the paved part
+    npc('farmer', 'farmer', 5, 2, { range: 1, actions: () => [A.talk(talkFarmer), A.look(['Gidi the ploughman. Mud to the knees, lime to the elbows, and the face of a man who has met a gravestone the hard way.', 'גידי החורש. בוץ עד הברכיים, סיד עד המרפקים, ופנים של אדם שפגש מצבה בדרך הקשה.'])] });
+    addObj('donkey', { name: ['Tzipora the donkey', 'ציפורה החמורה'], tiles: [[5, 3]], group: K3.beast('donkey'), at: [5, 3, 0, 0, -Math.PI / 2], anchorY: 1.1, range: 1,
+      actions: () => [A.look(['Tzipora. Small, grey, very old. Her knees knock when she stands still.', 'ציפורה. קטנה, אפורה, זקנה מאוד. הברכיים שלה נוקשות זו בזו גם כשהיא עומדת.']), A.act('ride', ['Ride her across', 'לרכוב עליה לצד השני'], rideDonkey)] });
+    ST.ox = addObj('ox', { name: ['Shimshon the ox', 'שמשון השור'], tiles: [[5, 4]], group: K3.beast('ox'), at: [5, 4, 0, 0, -Math.PI / 2], anchorY: 1.3, range: 1,
+      actions: () => [A.look(['Shimshon. An ox the size of a cart, standing on legs like pillars.', 'שמשון. שור בגודל של עגלה, עומד על רגליים כמו עמודים.']), A.act('ride', ['Ride him across', 'לרכוב עליו לצד השני'], rideOx)] });
+    scatter(13, 3, r => K3.bush(r), [[0, 0], [8, 5], [7, 0]]);
+    exitAt('exit', 8, 3, 'yehuda', ['Yehuda’s tent', 'האוהל של יהודה']);
+  },
+  hazards: s => {
+    const field = [];
+    for (let c = 2; c <= 6; c++) for (let rr = 1; rr < 6; rr++) if (!PRAS_PATCH.some(t => t[0] === c && t[1] === rr) && (s.tested || {})[Object.keys(PRAS_STONES).find(k => PRAS_STONES[k][0] === c && PRAS_STONES[k][1] === rr)] !== 'firm') field.push([c, rr]);
+    const path = [2, 3, 4, 5, 6].map(c => [c, 0]);
+    if (!s.knows) return [{ tiles: [...field, ...path], why: ['Fresh furrows, full of little white chips. And that stone by the edge looks like a grave marker. I should look at it before I take one step in there.', 'תלמים טריים, מלאים שבבים לבנים קטנים. והאבן ההיא בקצה נראית כמו ציון של קבר. כדאי שאסתכל עליה לפני שאני עושה צעד אחד לשם.'] }];
+    return [
+      { tiles: field, why: ['A beit haperas. If my foot shifts a chip of bone the size of a barley grain, I’m tamei, and I can’t go up to the Mikdash today.', 'בית הפרס. אם הרגל שלי תזיז שבב עצם בגודל גרגר שעורה, אני טמא, ולא אוכל לעלות למקדש היום.'], lesson: 'beitPras' },
+      { tiles: path, why: ['A path trodden flat by everyone who cut across. A trodden beit haperas counts as tahor, but only for someone on his way to bring his korban Pesach. It’s Kislev.', 'שביל שנדרך על ידי כל מי שקיצר דרכו. בית הפרס שנדש טהור, אבל רק למי שבדרך להקריב את קרבן הפסח שלו. עכשיו כסלו.'], lesson: 'nofeach' },
+    ];
+  },
+  objective: () => !ST.knows ? ['Find a way across the field to Yehuda’s tent', 'למצוא דרך לחצות את השדה לאוהל של יהודה']
+    : !PRAS_PATCH.some(t => t[0] === eli.c && t[1] === eli.r) && !ST.crossed && !ST.fixed ? ['Find firm stones out to Gidi, the ploughman', 'למצוא אבנים יציבות עד גידי החורש']
+      : !ST.fixed ? ['Talk to Gidi', 'לדבר עם גידי'] : !ST.crossed ? ['Ride across the rest of the field', 'לרכוב על פני שאר השדה'] : ['Go on to Yehuda’s tent', 'להמשיך לאוהל של יהודה'],
+  async intro() {
+    await lines(['farmer', ['(from the middle of the field) KOHEN! Don’t step in my field! I ploughed up a grave this morning!', '(מאמצע השדה) כהן! אל תדרוך לי בשדה! חרשתי היום בבוקר קבר!']], ['eli', ['You... ploughed up a grave.', 'חרשת... קבר.']], ['farmer', ['Didn’t know it was there! Nobody had marked it! I’ve marked it NOW.', 'לא ידעתי שהוא שם! אף אחד לא סימן אותו! עכשיו סימנתי.']]);
+  },
+  solution: [{ o: 'marker', a: 'look' }, { o: 's22', a: 'test' }, { o: 's24', a: 'test' }, { o: 's34', a: 'test' }, { tile: [4, 4] }, { o: 'farmer', a: 'talk' }, { o: 'donkey', a: 'ride' }, { o: 'ox', a: 'ride' }, { o: 'exit' }],
+});
+async function testStone(id, wob) {
+  const g = G.objs[id].group;
+  await animate(500, k => { g.rotation.z = wob ? Math.sin(k * Math.PI * 4) * 0.12 : 0; g.position.y = wob ? 0 : -Math.sin(k * Math.PI) * 0.01; });
+  ST.tested[id] = wob ? 'wobbly' : 'firm';
+  if (wob) await speak('eli', ['(tap) It rocks. Stand on that and the earth under it shifts, and whatever is in the earth. That’s as good as walking in the furrows.', '(טק) מתנדנדת. לעמוד עליה זה להזיז את האדמה שמתחתיה, וכל מה שיש בה. זה כמו ללכת בתלמים.']);
+  else await speak('eli', ['(tap) Solid. A stone that doesn’t move doesn’t move anything under it.', '(טק) יציבה. אבן שלא זזה לא מזיזה שום דבר שמתחתיה.']);
+  refresh();
+  await lesson('firmFooting');
+}
+async function talkFarmer() {
+  if (ST.crossed) { await speak('farmer', ['Three tefachim of soil! My back thanks you, Kohen.', 'שלושה טפחים של עפר! הגב שלי מודה לך, כהן.']); return; }
+  if (!ST.met) {
+    ST.met = true;
+    await lines(['farmer', ['You got out here! On my stones! You’re cleverer than my cousin. He just walked across.', 'הגעת לכאן! על האבנים שלי! אתה חכם יותר מבן הדוד שלי. הוא פשוט הלך.']], ['eli', ['Your cousin’s not a Kohen on his way to the Mikdash.', 'בן הדוד שלך הוא לא כהן בדרך למקדש.']], ['farmer', ['He’s not on his way anywhere. He’s tamei and sulking.', 'הוא לא בדרך לשום מקום. הוא טמא ונעלב.']]);
+  }
+  while (true) {
+    const opts = [{ t: ['How do I get the rest of the way across?', 'איך אני עובר את שאר הדרך?'] }];
+    if (!ST.fixed) opts.push({ t: ['Why are you paving your own field?', 'למה אתה מרצף את השדה של עצמך?'], ok: true });
+    else opts.push({ t: ['Could I ride one of your animals across?', 'אפשר לרכוב על אחת הבהמות שלך לצד השני?'], ok: true });
+    const i = await ask('farmer', ['Well?', 'נו?'], opts);
+    if (i === 0) {
+      await lines(['farmer', ['Easy! Blow on the ground in front of you, every step. Blows the bits of bone out of your way. My grandfather did it every Pesach.', 'קל! נושפים על האדמה לפניך, בכל צעד. זה מעיף את שברי העצמות מהדרך. סבא שלי עשה את זה כל פסח.']],
+        ['eli', ['Every Pesach. That’s exactly it. The Rabbis let you blow your way across only when you’re going up to bring the korban Pesach, because missing it is karet. They didn’t lift their decree for anything else.', 'כל פסח. זה בדיוק העניין. חכמים התירו לנשוף ולעבור רק למי שעולה להקריב את קרבן הפסח, כי מי שמפסיד אותו חייב כרת. לשום דבר אחר הם לא הורידו את הגזירה שלהם.']],
+        ['farmer', ['So blow harder?', 'אז לנשוף חזק יותר?']], ['eli', ['No.', 'לא.']]);
+      await lesson('nofeach');
+    } else if (!ST.fixed) {
+      await speak('farmer', ['My wife says the Rabbis say: pave it with stones that don’t move, and it’s tahor again. Every last stone! My back says the Rabbis never paved a field.', 'אשתי אומרת שחכמים אומרים: מרצפים באבנים שלא זזות, והוא שוב טהור. כל אבן ואבן! הגב שלי אומר שחכמים אף פעם לא ריצפו שדה.']);
+      await duel('farmer', [
+        { say: ['Is there any other way to make it tahor? Any way at all?', 'יש דרך אחרת לטהר אותו? כל דרך שהיא?'],
+          opts: [{ t: ['Wait seven days.', 'לחכות שבעה ימים.'], back: [['farmer', ['That’s for people. My field doesn’t count days. It barely counts furrows.', 'זה לאנשים. השדה שלי לא סופר ימים. הוא בקושי סופר תלמים.']]] },
+            { t: ['Take three tefachim of soil off the top, or pile three tefachim of new soil on top of it.', 'להוריד שלושה טפחים של עפר מלמעלה, או לשפוך עליו שלושה טפחים של עפר חדש.'], ok: true },
+            { t: ['Blow on it. A lot.', 'לנשוף עליו. הרבה.'], back: [['farmer', ['You just told me blowing doesn’t work!', 'הרגע אמרת לי שנשיפה לא עובדת!']], ['eli', ['I did. I was testing you.', 'אמרתי. בדקתי אותך.']]] }],
+          rule: ['A beit haperas becomes tahor if three tefachim of soil are taken off it or put on top of it, or if it is paved with stones that can’t move (Mishnah Oholot 18:5).', 'בית הפרס נטהר אם מורידים ממנו שלושה טפחים של עפר או נותנים עליו שלושה טפחים, או אם מרצפים אותו באבנים שאינן מתנדנדות (משנה אהלות יח, ה).'] },
+      ]);
+      await lines(['farmer', ['Three tefachim of soil? I have a whole hill of soil! Kohen, you’ve saved my back. Anything you need. Anything!', 'שלושה טפחים של עפר? יש לי גבעה שלמה של עפר! כהן, הצלת לי את הגב. כל מה שתצטרך. כל דבר!']]);
+      ST.fixed = true; objective();
+      await lesson('parasFix');
+    } else {
+      await lines(['farmer', ['Ride across? Of course! Take Tzipora, the donkey. She’s very sweet. She’s thirty-one.', 'לרכוב? בטח! קח את ציפורה, החמורה. היא מאוד מתוקה. היא בת שלושים ואחת.']], ['eli', ['Thirty-one.', 'שלושים ואחת.']], ['farmer', ['Shimshon the ox is busy. He hauls my stones.', 'שמשון השור עסוק. הוא סוחב לי את האבנים.']]);
+      ST.lent = true; objective(); return;
+    }
+  }
+}
+async function rideDonkey() {
+  if (!ST.lent) { await speak('eli', ['She’s Gidi’s. I should ask him first.', 'היא של גידי. כדאי שאשאל אותו קודם.']); return; }
+  await lines(['eli', ['Look at her knees. Put me on her back and every step she takes will sink and scuff the furrows. Riding a beast whose strength is poor is like walking it myself.', 'תראה את הברכיים שלה. אם אשב על הגב שלה, כל צעד שלה ישקע וישפשף את התלמים. לרכוב על בהמה שכוחה רע זה כמו ללכת ברגל.']],
+    ['farmer', ['Tzipora, he called you weak.', 'ציפורה, הוא קרא לך חלשה.']], ['eli', ['I said her strength was poor. It’s a technical term.', 'אמרתי שכוחה רע. זה מונח מקצועי.']],
+    ['farmer', ['Fine. FINE. Take Shimshon. The stones can wait.', 'טוב. טוב! קח את שמשון. האבנים יחכו.']]);
+  ST.oxOk = true; objective();
+  await lesson('firmFooting');
+}
+async function rideOx() {
+  if (!ST.oxOk) { await speak('farmer', [ST.lent ? 'Not Shimshon! He’s working. Take Tzipora.' : 'Oi! That’s my ox. Ask first.', ST.lent ? 'לא את שמשון! הוא עובד. קח את ציפורה.' : 'היי! זה השור שלי. קודם שואלים.']); return; }
+  await speak('eli', ['Legs like pillars. A beast whose strength is good doesn’t shift the ground under him. Up we go.', 'רגליים כמו עמודים. בהמה שכוחה יפה לא מזיזה את האדמה שמתחתיה. עולים.']);
+  endTalk();
+  const ox = ST.ox.group, rider = eli.model;
+  ox.rotation.y = Math.PI / 2; eli.face = eli.faceTo = Math.PI / 2;
+  // up onto his back, across the last furrows, and down on the far side
+  await animate(400, k => { rider.position.set(wx(eli.c) + (ox.position.x - wx(eli.c)) * k, 0.62 * k, wz(eli.r) + (ox.position.z - wz(eli.r)) * k); });
+  for (const [c, r] of [[6, 4], [7, 4]]) {
+    const from = ox.position.clone(), to = new THREE.Vector3(wx(c), 0, wz(r));
+    await animate(700, k => { ox.position.lerpVectors(from, to, k); rider.position.set(ox.position.x, 0.62, ox.position.z); });
+  }
+  moveObjTiles('ox', [[7, 4]]);
+  placeEli(7, 3);
+  ST.crossed = true; refresh();
+  await lines(['eli', ['Thank you, Shimshon.', 'תודה, שמשון.']], ['farmer', ['(from the middle of the field) Send him back when you’re done! And Kohen, three tefachim! I’ll remember!', '(מאמצע השדה) תשלח אותו בחזרה כשתסיים! וכהן, שלושה טפחים! אני אזכור!']]);
+}
 
 // ============================================================ 3. Yehuda's tent
 SCENES.push({
@@ -433,15 +595,19 @@ SCENES.push({
     });
     npc('gevini', 'gevini', 1, 3, { range: 2, actions: () => [A.talk(talkGevini), A.look(['Gevini the herald. A chest like a barrel and a voice, they say, you can hear three parsaot away.', 'גביני הכרוז. חזה כמו חבית וקול שאומרים שנשמע שלוש פרסאות.'])] });
     npc('avner', 'avner', 2, 5, { actions: () => [A.talk(() => speak('avner', ['This is as far as I go. Look, there’s a sign. Well, there’s a wall. Same thing.', 'עד כאן אני הולך. תראה, יש שלט. טוב, יש חומה. אותו דבר.'])), A.look(['Avner, standing at a very respectful distance from the Cheil.', 'אבנר, עומד במרחק מאוד מכבד מהחיל.'])] });
+    const [tc, tr] = ST.tuviaDone ? [3, 3] : [4, 2];
+    npc('tuvia', 'tuvia', tc, tr, { actions: () => [A.talk(talkTuvia), A.look(ST.tuviaDone ? ['Tuvia, watching the sun as if he could push it down by staring.', 'טוביה, מסתכל על השמש כאילו הוא יכול להוריד אותה במבט.'] : ['A young Kohen with a basket, sitting right in the gateway. He looks hungry and very confused.', 'כהן צעיר עם סל, יושב בדיוק בפתח השער. הוא נראה רעב ומבולבל מאוד.'])] });
     const off = CAST.officer(); deco(off, 7, 0, { dz: -0.3, block: false }); ST.off = off;
     exitAt('exit', 4, 0, 'hub', ['Into the Ezrat Nashim', 'אל עזרת הנשים'], () => ST.open || ['eli', ['The gate is shut, and the guard is... asleep.', 'השער סגור, והשומר... ישן.']]);
   },
-  objective: () => !ST.awake ? ['Wake the guard before the officer gets here', 'להעיר את השומר לפני שאיש הר הבית מגיע'] : !ST.open ? ['Talk your way past the guard', 'לשכנע את השומר לתת לך לעבור'] : ['Go through the gate', 'לעבור בשער'],
+  pre() { ST.tuviaDone = !!fl('tuvia'); },
+  objective: () => !ST.awake ? ['Wake the guard before the officer gets here', 'להעיר את השומר לפני שאיש הר הבית מגיע'] : !ST.passed ? ['Talk your way past the guard', 'לשכנע את השומר לתת לך לעבור'] : !ST.tuviaDone ? ['Help the Kohen sitting in the gateway', 'לעזור לכהן שיושב בשער'] : ['Go through the gate', 'לעבור בשער'],
   async intro() {
     await lines(['eli', ['Torches, coming this way. That’s the officer of the Temple Mount, doing his rounds.', 'לפידים, מתקרבים לכאן. זה איש הר הבית, בסיבוב שלו.']], ['eli', ['And that guard is asleep.', 'והשומר הזה ישן.']]);
   },
   tick(dt) { if (ST.off && !ST.open) ST.off.position.x = wx(7) - Math.min(1.2, (ST.t = (ST.t || 0) + dt * 0.01)); },
-  solution: [{ o: 'guard', a: 'wake' }, { o: 'gevini', a: 'talk' }, { o: 'guard', a: 'talk' }, { o: 'exit' }],
+  carry() { flag('tuvia'); },
+  solution: [{ o: 'guard', a: 'wake' }, { o: 'gevini', a: 'talk' }, { o: 'guard', a: 'talk' }, { o: 'tuvia', a: 'talk' }, { o: 'exit' }],
 });
 async function wakeGuard() {
   await lines(['eli', ['Excuse me? Sir?', 'סליחה? אדוני?']], ['guard', ['Zzz... five more minutes... zzz...', 'זזז... עוד חמש דקות... זזז...']], ['eli', ['If the officer finds a guard asleep, he can hit him with his stick and burn his clothes.', 'אם איש הר הבית מוצא שומר ישן, מותר לו להכות אותו במקל ולשרוף את בגדיו.']], ['guard', ['Zzz... let him... zzz...', 'זזז... שישרוף... זזז...']]);
@@ -476,6 +642,7 @@ async function talkGevini() {
 }
 async function talkGuard() {
   if (ST.open) { await speak('guard', ['Go on, go on. I’m guarding. Very awake.', 'לך, לך. אני שומר. ער מאוד.']); return; }
+  if (ST.passed) { await speak('guard', ['You may pass. Once he stops sitting in my gateway.', 'אתה רשאי לעבור. ברגע שהוא יפסיק לשבת לי בשער.']); return; }
   await speak('guard', ['Halt! Who goes there? State your business, and your status.', 'עצור! מי שם? מה העניין שלך, ומה המצב שלך?']);
   await duel('guard', [
     { say: ['You walked here across a battlefield! You’re tamei met! The Cheil is closed to anyone tamei met.', 'הלכת לכאן דרך שדה קרב! אתה טמא מת! החיל סגור בפני טמאי מת.'],
@@ -490,10 +657,72 @@ async function talkGuard() {
       rule: ['A tamei met person is an Av: touching him makes you tamei. Standing near him doesn’t.', 'טמא מת הוא אב הטומאה: נגיעה בו מטמאה. לעמוד לידו לא.'] },
   ]);
   await lines(['guard', ['Fine. You may pass. Him,', 'טוב. אתה רשאי לעבור. הוא,']], ['guard', ['(pointing at Avner) may not.', '(מצביע על אבנר) לא.']], ['avner', ['I know. I’ll wait here. I’ll guard the guard.', 'אני יודע. אני אחכה כאן. אני אשמור על השומר.']]);
+  ST.passed = true; objective();
+  if (!ST.tuviaDone) await lines(['guard', ['Once HE moves, that is. He’s been sitting in my gateway since noon, asking everyone what he’s allowed to eat.', 'כלומר, ברגע שהוא יזוז. הוא יושב לי בשער מהצהריים ושואל את כולם מה מותר לו לאכול.']], ['tuvia', ['Nobody will TELL me!', 'אף אחד לא מוכן להגיד לי!']]);
+  await openCheilGate();
+}
+// the gate opens once the guard is satisfied and Tuvia is out of the gateway
+async function openCheilGate() {
+  if (!ST.passed || !ST.tuviaDone || ST.open) return;
   endTalk();
   const doors = ST.gateG.userData.doors.children;
   await animate(600, k => doors.forEach((d, i) => { const s = i ? 1 : -1; d.rotation.y = s * 1.3 * k; d.position.x = s * (0.45 / 2 + k * 0.2); }));
   G.blocked.delete(K(4, 1)); ST.open = true; refresh();
   await lines(['officer', ['(arriving with torches) All well here?', '(מגיע עם לפידים) הכול בסדר כאן?']], ['guard', ['Never better, sir! Very awake, sir!', 'מעולם לא היה טוב יותר, אדוני! ער מאוד, אדוני!']], ['avner', ['Good luck, Eli. Find that jug. And if you ever need a hug—', 'בהצלחה, אלי. תמצא את הכד. ואם אי פעם תצטרך חיבוק—']], ['eli', ['I’ll write.', 'אני אכתוב.']]);
   await lesson('cheil');
+}
+
+// Tuvia, a Kohen who immersed this morning and is sitting in the Cheil gateway until sunset
+const TUVIA_FOOD = [
+  { id: 'figs', name: ['Dried figs of ma’aser sheni', 'דבלה של מעשר שני'], ok: 'now',
+    no: { sunset: ['Ma’aser sheni doesn’t wait for the sun. Once you’ve immersed, you can eat it.', 'מעשר שני לא מחכה לשמש. מרגע שטבלת, מותר לך לאכול אותו.'], korban: ['A korban? For figs? No. You immersed; that’s enough for ma’aser sheni.', 'קרבן? בשביל דבלה? לא. טבלת; זה מספיק למעשר שני.'] } },
+  { id: 'bread', name: ['A loaf of terumah', 'כיכר של תרומה'], ok: 'sunset',
+    no: { now: ['Stop! Don’t even touch it. A tevul yom makes terumah pasul just by touching it. Wait for the sun to set.', 'עצור! אל תיגע בה בכלל. טבול יום פוסל תרומה רק בנגיעה. חכה לשקיעה.'], korban: ['No korban for a dead mouse. Just a mikveh and a sunset.', 'אין קרבן על עכבר מת. רק מקווה ושקיעה.'] } },
+  { id: 'stew', name: ['A pot of lentil stew (chullin)', 'סיר תבשיל עדשים (חולין)'], ok: 'now',
+    no: { sunset: ['It’s chullin. Chullin doesn’t care about your sunset. You can even stir it: a tevul yom doesn’t make chullin tamei.', 'זה חולין. לחולין לא אכפת מהשקיעה שלך. מותר לך אפילו לבחוש: טבול יום לא מטמא חולין.'], korban: ['For lentils? Tuvia.', 'בשביל עדשים? טוביה.'] } },
+];
+async function talkTuvia() {
+  if (ST.tuviaDone) { await speak('tuvia', ['Figs now, stew now, terumah at sunset. I’m writing it on my hand. Not that hand.', 'דבלה עכשיו, תבשיל עכשיו, תרומה בשקיעה. אני כותב את זה על היד. לא היד ההיא.']); return; }
+  await lines(
+    ['tuvia', ['A Kohen! Finally, a Kohen! Sit, sit. Not too close. Actually, close is fine. Is close fine?', 'כהן! סוף סוף, כהן! שב, שב. לא קרוב מדי. בעצם, קרוב זה בסדר. קרוב זה בסדר?']],
+    ['eli', ['Why are you sitting in the gateway?', 'למה אתה יושב בשער?']],
+    ['tuvia', ['This morning a mouse fell on me in the storeroom. A DEAD mouse. I immersed straight away. And now everyone says I’m a tevul yom, and I can’t go in, and I’m starving, and nobody will tell me what I’m allowed to eat!', 'הבוקר נפל עליי עכבר במחסן. עכבר מת. טבלתי מיד. ועכשיו כולם אומרים שאני טבול יום, ושאסור לי להיכנס, ואני מת מרעב, ואף אחד לא מוכן להגיד לי מה מותר לי לאכול!']],
+    ['eli', ['Show me your basket.', 'תראה לי את הסל שלך.']],
+  );
+  // sort the basket: now, after sunset, or only after a korban
+  const done = {};
+  const when = { now: ['Now', 'עכשיו'], sunset: ['After sunset', 'אחרי השקיעה'], korban: ['Only after a korban', 'רק אחרי קרבן'] };
+  while (TUVIA_FOOD.some(f => !done[f.id])) {
+    const v = await openModal(() => card(['Tuvia’s basket', 'הסל של טוביה'], ['When may a tevul yom eat it?', 'מתי טבול יום יכול לאכול את זה?'],
+      `<div class="sortlist">${TUVIA_FOOD.map(f => `<div class="sortrow${done[f.id] ? ' done' : ''}"><b>${tx(f.name)}</b><span>${done[f.id] ? '✓ ' + tx(when[f.ok]) : Object.keys(when).map(k => btn(`${f.id}:${k}`, when[k], false, k === f.ok)).join('')}</span></div>`).join('')}</div>`, ''));
+    const [id, k] = String(v).split(':'); const f = TUVIA_FOOD.find(x => x.id === id);
+    if (!f) continue;
+    if (k === f.ok) { done[id] = true; await speak('tuvia', f.ok === 'now' ? ['Now? Really? (eats) Oh, that’s good.', 'עכשיו? באמת? (אוכל) אוי, זה טוב.'] : ['After sunset. I can wait. I can probably wait.', 'אחרי השקיעה. אני יכול לחכות. אני כנראה יכול לחכות.']); }
+    else await speak('eli', f.no[k]);
+  }
+  await duel('tuvia', [
+    { say: ['What if I wash my hands really, really well? Then can I have the terumah now?', 'ואם אני אטול ידיים ממש, ממש טוב? אז אפשר את התרומה עכשיו?'],
+      opts: [{ t: ['Yes, with plenty of water.', 'כן, עם הרבה מים.'], back: [['eli', ['Wait, no. Hold on.', 'רגע, לא. חכה.']]] },
+        { t: ['No. Washing fixes hands that are tamei by decree, right away. You’re a tevul yom all over. You wait for the sun.', 'לא. נטילה מתקנת ידיים שטמאות מדרבנן, מיד. אתה טבול יום כולך. אתה מחכה לשמש.'], ok: true },
+        { t: ['Only with soap.', 'רק עם סבון.'], back: [['tuvia', ['What’s soap?', 'מה זה סבון?']]] }],
+      rule: ['Unwashed hands are fixed by washing, at once; a tevul yom waits for sunset (Mishnah Chagigah 2:5; Zavim 5:12).', 'ידיים מתקנים בנטילה, מיד; טבול יום מחכה להערב שמש (משנה חגיגה ב, ה; זבים ה, יב).'] },
+    { say: ['And when the sun sets, do I have to bring a korban too, before I’m completely tahor?', 'וכשהשמש שוקעת, אני צריך להביא גם קרבן, לפני שאני טהור לגמרי?'],
+      opts: [{ t: ['Two doves and a goat.', 'שתי יונים ותיש.'], back: [['tuvia', ['I don’t own a goat!', 'אין לי תיש!']]] },
+        { t: ['No. A dead sheretz needs a mikveh and a sunset. A zav, a metzora, a woman after childbirth: they also need a korban before kodashim.', 'לא. שרץ מת צריך מקווה והערב שמש. זב, מצורע, יולדת: הם צריכים גם קרבן לפני קדשים.'], ok: true },
+        { t: ['A sheep. Just to be safe.', 'כבש. ליתר ביטחון.'], back: [['eli', ['There’s no “to be safe” with korbanot. You don’t bring one you don’t owe.', 'אין "ליתר ביטחון" בקרבנות. לא מביאים קרבן שלא חייבים.']]] }],
+      rule: ['Three steps: immersion (ma’aser sheni), sunset (terumah), a korban if one is owed (kodashim) (Mishnah Negaim 14:3).', 'שלוש מדרגות: טבילה (מעשר שני), הערב שמש (תרומה), כפרה אם צריך (קדשים) (משנה נגעים יד, ג).'] },
+    { say: ['Last one. Can I come in with you now, into the Ezrat Nashim?', 'אחרונה. אפשר להיכנס איתך עכשיו, לעזרת נשים?'],
+      opts: [{ t: ['Yes, if you walk behind me.', 'כן, אם תלך מאחוריי.'], back: [['eli', ['No, that’s Avner’s rule. A different rule entirely.', 'לא, זה הכלל של אבנר. כלל אחר לגמרי.']]] },
+        { t: ['No. A tevul yom may come this far, into the Cheil, but not into the Ezrat Nashim.', 'לא. טבול יום יכול להגיע עד כאן, לחיל, אבל לא לעזרת נשים.'], ok: true },
+        { t: ['Only on tiptoe.', 'רק על קצות האצבעות.'], back: [['tuvia', ['I’ve tried tiptoe. The guard noticed.', 'ניסיתי על קצות האצבעות. השומר שם לב.']]] }],
+      rule: ['A tevul yom may not enter the Ezrat Nashim (Mishnah Kelim 1:8).', 'טבול יום לא נכנס לעזרת נשים (משנה כלים א, ח).'] },
+  ]);
+  await lines(['tuvia', ['Then I’ll sit over there and watch the sun go down. Slowly. Very slowly.', 'אז אני אשב שם ואסתכל על השמש שוקעת. לאט. מאוד לאט.']]);
+  endTalk();
+  const g = G.objs.tuvia.group;
+  await slideTo(g, 3, 3, 600);
+  moveObjTiles('tuvia', [[3, 3]]); G.objs.tuvia.anchor.set(wx(3), G.objs.tuvia.anchor.y, wz(3));
+  ST.tuviaDone = true; flag('tuvia'); refresh();
+  await lesson('tevulYom');
+  await openCheilGate();
 }

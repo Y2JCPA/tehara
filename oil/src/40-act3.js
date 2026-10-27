@@ -317,6 +317,8 @@ SCENES.push({
         })] });
     deco(group(mesh(new THREE.BoxGeometry(3.2, 0.3, 1.0), mat(C.stone), 0, 0.15, 0), mesh(new THREE.BoxGeometry(2.6, 0.3, 0.8), mat(C.stoneMid), 0, 0.45, -0.1)), 5, 0, { block: [[4, 0], [6, 0]] });
     torchPost(7, 1, 0.3, 0); torchPost(3, 5, 0, 0.3);
+    // Tuvia, tahor since sunset (standing: nobody sits in the Azarah)
+    if (fl('tuvia')) npc('tuvia', 'tuvia', 7, 1, { group: person({ robe: C.linen, head: 'turban', beard: '#5a3a22' }), actions: () => [A.talk(talkTuviaNight), A.look(['Tuvia. Tahor, fed, and crumbs in his beard.', 'טוביה. טהור, שבע, ופירורים בזקן.'])] });
     exitAt('exit', 5, 0, 'heichal', ['Into the Heichal', 'אל ההיכל'], () => !fl('washed') ? ['keeper2', ['(from the gate) Kiyor first!', '(מהשער) קודם הכיור!']] : !has('firepan') ? ['eli', ['I need fire from the mizbe’ach for the menorah.', 'אני צריך אש מהמזבח בשביל המנורה.']] : true);
   },
   objective: () => !fl('washed') ? (ST.fresh ? ['Wash at the kiyor', 'לקדש ידיים ורגליים מן הכיור'] : ['Wash at the kiyor', 'לקדש ידיים ורגליים מן הכיור']) : !has('firepan') ? ['Take fire from the mizbe’ach', 'לקחת אש מהמזבח'] : ['Into the Heichal', 'אל ההיכל'],
@@ -375,6 +377,9 @@ async function fillLamps() {
   flag('jugOpened'); flag('filled'); renderStatus();
   await lesson('halfLog'); objective();
 }
+async function talkTuviaNight() {
+  await lines(['tuvia', ['Eli! The sun set! I’m tahor! I ate my terumah. The whole loaf.', 'אלי! השמש שקעה! אני טהור! אכלתי את התרומה שלי. את כל הכיכר.']], ['eli', ['The whole loaf?', 'את כל הכיכר?']], ['tuvia', ['I waited ALL afternoon. And no korban for me, so when the korbanot start again, I can eat kodashim too.', 'חיכיתי כל אחר הצהריים. ובלי קרבן, אז כשהקרבנות יתחדשו, מותר לי לאכול גם קדשים.']], ['eli', ['Tuvia, you’ve got it. Mikveh, sunset, korban if you owe one.', 'טוביה, הבנת. מקווה, הערב שמש, קרבן אם חייבים.']], ['tuvia', ['I wrote it on my hand. Want to see?', 'כתבתי את זה על היד. רוצה לראות?']]);
+}
 async function lightLamps() {
   if (!has('firepan')) { await speak('eli', ['I need fire from the outer mizbe’ach.', 'אני צריך אש מהמזבח החיצון.']); return; }
   endTalk();
@@ -394,7 +399,7 @@ async function lightLamps() {
   const NIGHTS = [
     [['The first night', 'הלילה הראשון'], ['Seven lamps, half a log each: exactly enough oil for one night. Eli sits by them until morning.', 'שבעה נרות, חצי לוג לכל אחד: בדיוק מספיק שמן ללילה אחד. אלי יושב לידם עד הבוקר.']],
     [['The second night', 'הלילה השני'], ['The jug is empty. The lamps should have gone out at dawn. They didn’t. Nobody has added a drop, and they burn on.', 'הכד ריק. הנרות היו צריכים לכבות עם שחר. הם לא כבו. אף אחד לא הוסיף טיפה, והם ממשיכים לדלוק.']],
-    [['The third night', 'הלילה השלישי'], ['In the morning the Kohanim come to tend the lamps, as they do every day. They find them still burning, and still full.', 'בבוקר הכהנים באים להטיב את הנרות, כמו בכל יום. הם מוצאים אותם עדיין דולקים, ועדיין מלאים.']],
+    [['The third night', 'הלילה השלישי'], ['In the morning the Kohanim come to tend the lamps, as they do every day, Tuvia among them, tahor since last sunset. They find the lamps still burning, and still full.', 'בבוקר הכהנים באים להטיב את הנרות, כמו בכל יום, וטוביה ביניהם, טהור מאז השקיעה. הם מוצאים את הנרות עדיין דולקים, ועדיין מלאים.']],
     [['The fourth night', 'הלילה הרביעי'], ['Far off in the hills, Kohanim who stayed tahor are crushing olives for new pure oil. Four days there, four days back.', 'רחוק בהרים, כהנים שנשארו טהורים כותשים זיתים לשמן טהור חדש. ארבעה ימים הלוך, ארבעה ימים חזור.']],
     [['The fifth night', 'הלילה החמישי'], ['Word has spread through Yerushalayim. People climb the Temple Mount at night just to see the light through the doors of the Heichal.', 'השמועה עברה בכל ירושלים. אנשים עולים להר הבית בלילה רק כדי לראות את האור דרך פתחי ההיכל.']],
     [['The sixth night', 'הלילה השישי'], ['Yehuda comes to the edge of the courtyard every evening and just watches. He doesn’t say anything. Neither does anyone else.', 'יהודה בא בכל ערב לקצה העזרה ופשוט מסתכל. הוא לא אומר כלום. גם אף אחד אחר לא.']],
