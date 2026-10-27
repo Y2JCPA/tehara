@@ -1,158 +1,197 @@
-# Tehara: The Last Jug (פך השמן) — design draft for the new direction
+# Tehara: The Last Jug (פך השמן): design draft for the new direction
 
-**Status:** draft for discussion. Nothing is built yet on this branch. The current game (`index.html`, the "road to Jerusalem" puzzles) and the 3D version (`legacy.html`) are left untouched until we decide what to keep.
+**Status:** draft, second pass. Nothing is built yet on this branch. Once it's built, this becomes the main game; the current puzzles (`index.html`) and the 3D version (`legacy.html`) stay reachable from a menu.
 
-**What's new:** one story instead of a level pack. You are a young Kohen at the end of the Chanukah battles. You have to find the one small jug of pure oil in the Beit HaMikdash and carry it, still tahor and still sealed, to the menorah. Every obstacle on the way is a real tumah or kedushah rule.
+**Decided so far**
+- **Story:** Eli, a young Kohen, finds the one jug of pure oil in the Beit HaMikdash after the Chanukah battles and carries it to the menorah. Yehuda HaMaccabi appears.
+- **Play:** point-and-click adventure. Tap where to go, tap things to use them.
+- **Look:** in the style of *Lara Croft GO*, kept simple enough to build (§6).
+- **Audience:** 12+. Players can read real explanations, Hebrew terms and sources, and handle d'oraita / d'rabbanan distinctions.
+- **Scope of halacha:** not only tumat met and ohel. The whole ladder of tumah (Av, Rishon, Sheni, Shlishi, Revi'i), how it works differently for chullin, terumah and kodesh, liquids, hands, and vessels (§3).
 
-**What carries over:** the research in [`research/`](research/) and the rules engine in `js/engine/tumah.js`. Most of the sources below are already checked there; the new ones were checked against Sefaria for this draft.
-
----
-
-## 1. The story in three acts
-
-**Prologue: after the battle.** The Chashmona'im have taken back Yerushalayim. Many of the fighters, Kohanim among them, became tamei met in the fighting; they will need seven days and the Parah Adumah water before they can go in (Bamidbar 19:11-12). You are the young Kohen who stayed back with the supplies and never came near the fallen. That makes you one of the few who can go into the Mikdash right now. Yehuda HaMaccabi gives you the job.
-
-**Act I: up to the Mikdash.** Get from the camp to the Temple Mount gates without becoming tamei met. This is where ohel, touching and carrying are introduced, one at a time.
-
-**Act II: the search.** Inside, the storerooms are wrecked. There are big jugs of oil everywhere: on shelves, knocked over, opened. Every one of them is unusable. You search the chambers, read the seals, and find the one small jug, hidden away and stamped with the Kohen Gadol's seal (Shabbat 21b).
-
-**Act III: the carry back.** Now you have the jug, and the way to the Heichal runs through the damaged courtyards. You may carry only this one small jug. It has to stay sealed, and you have to stay tahor, or you can't go past the gates. At the end you wash at the kiyor, build the menorah the Chashmona'im actually used (iron spears, Rosh Hashanah 24b), fill the seven lamps, and light. The jug holds enough for one night. The ending plays out the eight days.
+**What carries over:** the research in [`research/`](research/) (especially file 02, the full tumah ladder) and the rules engine in `js/engine/tumah.js`, which already models these levels.
 
 ---
 
-## 2. Gameplay: what you actually do
+## 1. The story
 
-The last two versions were mostly "tap the right button" scenes. This version needs real play, but still no reflexes or timers for 7-year-olds.
+**Prologue: after the battle.** The Chashmona'im have taken back Yerushalayim. Yehuda HaMaccabi is a Kohen himself, but he and most of the fighters became tamei met in the battle. They need seven days and the Parah Adumah water before they can go in (Bamidbar 19:11-12). Eli stayed back with the supplies and never came near the fallen. He's one of the few Kohanim who can go into the Mikdash today. Yehuda gives him the job: find pure oil and light the menorah.
 
-**Recommendation: a turn-based, grid-based adventure** in the style of *Lara Croft GO* / *Hitman GO* / *Monument Valley*. Each level is one room or courtyard seen from slightly above. You move the Kohen square by square (tap a square, arrows or swipe). Nothing moves until you move, so there's time to think, but the rooms are full of things you push, pull, open, close, carry and set down.
+**Act I: up to the Mikdash.** Get from the camp to the Temple Mount without becoming tamei. This act introduces the kinds of Av HaTumah and the three ways tumat met spreads: touching, carrying, and being under the same roof (ohel).
 
-Why this format fits the topic:
-- **Tumah rules are spatial.** "Under the same roof as a met" is a set of squares. "Touching" is standing next to and interacting. "Carrying" is picking up. A grid makes all of that exact and readable.
-- **It's real puzzle play,** not trivia. You can reach a dead end, back up (undo), and try another route.
-- **It scales.** Early rooms are 5×5 with one idea; late rooms combine three ideas with moving parts.
+**Act II: the search.** The storerooms are wrecked. Big jugs of oil are everywhere and none of them can be used. Eli works out which of them are tamei and how (the tumah ladder), reads the seals, and finds the one small jug, hidden away, with the Kohen Gadol's seal (Shabbat 21b).
 
-### Core verbs
+**Act III: the carry back.** The way to the Heichal runs through the damaged courtyards. Eli can carry only this one small jug. It has to stay sealed, nothing may touch the oil, and he has to stay tahor enough to pass every gate.
 
-| Verb | What it does in a room |
+**Finale.** Wash at the kiyor, build the menorah the Chashmona'im actually used (iron spears, Rosh Hashanah 24b), fill seven lamps, and light. Yehuda is there to see it. The jug holds enough for one night; the ending plays out the eight days.
+
+### Where Yehuda appears
+- **Prologue:** gives Eli the mission, and explains why he can't go himself.
+- **End of Act I:** at the Cheil gate. He can come no further and has to send Eli on alone (Mishnah Kelim 1:8).
+- **Finale:** watches from outside the Ezrat Kohanim as the lamps are lit, and at the end, nights 2 to 8.
+- Optional: he's the voice of the hint system ("Think like a Kohen: what touched what?").
+
+---
+
+## 2. Gameplay: point-and-click
+
+*Lara Croft GO* is itself a tap-to-move game: each level is a small diorama with a few spots you can walk to, and you tap the next spot or an object. That's a natural fit for point-and-click, and it keeps the game turn-based: nothing moves until the player acts, so there's time to read and think.
+
+### What the player does
+| Action | How |
 |---|---|
-| **Walk** | One square per turn. The Kohen refuses (with a short explanation) to step into a square that would make him tamei met, so kids learn the rule instead of "dying". Undo is always available. |
-| **Push / pull** | Crates, carts, planks, fallen beams. Used to build paths and to move roofs. |
-| **Raise / lower / slide a covering** | Tents, awnings, tarps, a siege tower's platform. This is how you remove or create an ohel. |
-| **Open / close** | Shutters, doors, trapdoors. Tumah passes only through an opening of a tefach or more, and a door has to stay shut by itself. |
-| **Inspect** | Look closely at a jug, a seal, a mark on the ground. Opens a close-up. |
-| **Pick up / set down the jug** | You can set the jug down to free your hands (to push a crate, climb), but where you set it matters. |
-| **Ask a friend** | Some rooms have a helper who is already tamei met (a fighter, a Levi) and can do things you can't: move a covered body to burial, carry away a bone. They can't follow you past the gates. |
+| **Walk** | Tap a spot. Eli walks there along the path. If the step would make him tamei, he stops and says why ("That awning is the same roof as the fallen soldier"). |
+| **Look** | Tap any object for a short description. Look closer opens a close-up (seals, labels, marks on the floor). |
+| **Use** | Tap an object to push, pull, open, close, lower, raise, light, pour. |
+| **Inventory** | A few items: the jug (once found), a wedge stone, a rope, a lamp, a stone cup. Drag an item onto something to use it. |
+| **Tag** (Act II on) | Mark any object with its status: Tahor, Av, Rishon, Sheni, Shlishi, Revi'i, Pasul. This is how the tumah-ladder puzzles work (§3). |
+| **Talk** | Yehuda, the tamei-met fighters at the gates, an old Levi who knows the storerooms. |
+| **Undo / restart** | Always available. No lives, no timers. |
 
-### The status panel (always on screen)
-- **The Kohen:** tahor / tamei met. If he becomes tamei met the level stops and explains why, then rewinds.
-- **The jug:** sealed ✓, upright ✓, nothing added ✓, never out of your care ✓.
-- **Tumah view** (toggle): shades every square that is under the same roof as a met, marks bones and anything that has become tamei. Hints switch it on automatically.
+### Always on screen
+- **Eli's status:** tahor / washed hands / unwashed hands (Sheni d'rabbanan) / tamei (and which kind, with what it would take to become tahor again).
+- **The jug:** sealed ✓, not moved by anyone else ✓, nothing added ✓, still in Eli's care ✓.
+- **Tumah view** (toggle): shades the area under the same roof as a met, and shows each object's tag once the player has worked it out.
 
-### Puzzle ideas built on the big jugs
-You said there could be large jugs around, but you only find one small one. The big jugs should be more than scenery:
-- **Decoys during the search:** they look like the answer and aren't (see Act II).
-- **Temptation later:** "The little jug won't last eight days. Top it up from this big one?" Opening the seal or mixing in tamei oil ruins the pure oil (oil is one of the seven liquids that take tumah, Rambam Tumat Okhalin 1:2). The right answer is to leave it. That sets up the miracle.
-- **Obstacles:** a spilled big jug makes a slick floor; a heavy jug is a block you can push but must not open.
-
----
-
-## 3. The oil checklist: what makes this jug fit for the menorah
-
-These run through the whole game and come together on the last screen as a checklist the player fills in.
-
-| Requirement | What it means for the game | Source |
-|---|---|---|
-| **Tahor** | Not touched or made tamei by anyone after it was sealed | Shabbat 21b; Rambam Chanukah 3:2 |
-| **Sealed with the Kohen Gadol's seal** | The seal is the proof. Rashi: "hidden, sealed with his ring, so he knew they had not touched it" | Shabbat 21b; Rashi there |
-| **Not moved** | Tosafot asks how a sealed jug could survive if the soldiers moved it, and answers that it must have been hidden in the ground. In the game, jugs that were moved don't count, and the real one is hidden | Tosafot Shabbat 21b |
-| **Tightly sealed clay** | A tightly sealed clay vessel (*tzamid patil*) protects what's inside even under the same roof as a met | Bamidbar 19:15; Rambam Tumat Met 21:1 |
-| **Pure olive oil, first pressing** | The menorah needs *shemen zayit zach katit*: the best, first oil. The jug's label shows it | Shemot 27:20; Mishnah Menachot 8:4-5 |
-| **Enough for one night** | Half a log per lamp, seven lamps: three and a half log | Mishnah Menachot 9:3 |
-
-**Why bother searching?** A grown-up question kids will ask: if tumah is allowed for the whole community (*tumah hutra b'tzibur*), why not use the tamei oil? The Why? card for the finding scene gives the short version: the Rambam rules that tumah is only *pushed aside* (*dechuyah*) for the community, so you must look for pure oil first (Yoma 6b; Rambam Bi'at HaMikdash 4:15; more answers in research file 03, §5).
+### What the big jugs are for
+- **Act II:** they're the evidence. Each one became tamei in a different way, and working out how is the puzzle.
+- **Act III:** the temptation. "The little jug won't last eight days. Top it up from this big one?" Opening the seal or mixing in tamei oil makes the pure oil tamei, so the right answer is to leave it. That sets up the miracle.
+- **Obstacles:** a spilled jug leaves a floor of tamei oil that you can't let touch the lamp or the wick.
 
 ---
 
-## 4. Level outline (first pass, 16 levels)
+## 3. The tumah ladder: making Av, Rishon, Sheni and the rest part of the game
 
-### Act I: up to the Mikdash (introduces tumat met)
-| # | Level | New idea | Source |
-|---|---|---|---|
-| 1 | **The Supply Tent** | Tutorial: walk, push, pick up. You're tahor because you stayed with the supplies | Bamidbar 19:11 |
-| 2 | **Same Roof** | A covered fallen fighter lies under a long market awning. Lower part of it or find a route that's never under the same roof | Rambam Tumat Met 1:10, 12:1 |
-| 3 | **The Siege Tower** | A siege tower's platform overhangs the street: it's an ohel. Roll it back so the overhang leaves your path | Rambam Tumat Met 12:1, 13:2 |
-| 4 | **Don't Kick It** | A tiny bone in the rubble doesn't spread tumah by roof, only by touching or moving it. Don't push a crate over it | Rambam Tumat Met 1:7, 2:10 |
-| 5 | **The Gate of the Cheil** | Your tamei friend can help you clear the way but must stop at the Cheil. You go on alone | Mishnah Kelim 1:8 |
+### Why it fits this story so well
+The oil for the menorah is set aside for the Mikdash, so it's treated like kodesh. For kodesh, tumah goes **four steps down**: even a Revi'i disqualifies it. Oil is also a **liquid**, and liquids are the most sensitive of all: anything that makes terumah unfit makes a liquid a **Rishon** (Mishnah Parah 8:7). Even unwashed hands are enough. So the oil is about the easiest thing in the world to ruin. That's why one sealed, untouched jug mattered so much, and it's why Eli has to understand the whole ladder, not only tumat met.
 
-### Act II: the search (the big jugs)
-| # | Level | New idea | Source |
-|---|---|---|---|
-| 6 | **Beit Shemaniya** | The oil chamber in the corner of the Ezrat Nashim. Every big jug is open or knocked over | Mishnah Middot 2:5 |
-| 7 | **Read the Seal** | Inspect seals: broken, missing, an ordinary seal, a seal that's been redone. Compare to the Kohen Gadol's ring | Shabbat 21b; Rashi |
-| 8 | **Dust Rings** | A jug with a perfect seal but a fresh dust ring next to it: it was moved. Not good enough | Tosafot Shabbat 21b |
-| 9 | **The Dark Storeroom** | Only by following clues (a loose floor tile, a sealed niche) do you find the small hidden jug | Tosafot Shabbat 21b; Rambam Chanukah 3:2 |
+### What the player learns, act by act
 
-### Act III: the carry back
-| # | Level | New idea | Source |
-|---|---|---|---|
-| 10 | **Hands Full** | You can set the jug down only on safe squares. Plan where to leave it while you move a beam | |
-| 11 | **Sealed Is Safe** | The only route passes a room with a met. The jug's tight seal would protect the oil, but you still mustn't go under that roof. Find a window shutter to close (a tefach matters) | Bamidbar 19:15; Rambam Tumat Met 14:1 |
-| 12 | **The Door That Stands by Itself** | A door held shut by a person doesn't block tumah; a door wedged with a stone does | Rambam Tumat Met 18:3 |
-| 13 | **Just a Little More Oil?** | The temptation puzzle: a big jug of tamei oil sits right on your path. Leave the seal alone | Rambam Tumat Okhalin 1:2 |
-| 14 | **Up the Courtyards** | Each gate checks your status and the jug's (Ezrat Nashim, Ezrat Yisrael, Ezrat Kohanim) | Mishnah Kelim 1:8-9 |
+**1. The kinds of Av (Act I).** Not all sources of tumah are equal.
+- A **met** is the strongest (*avi avot hatumah*). It spreads by touching, by carrying, and by being under the same roof.
+- A **sheretz** (a dead mouse) is an Av that spreads only by touching, not by carrying and not by roof. A Kohen is allowed to become tamei from one, but then he couldn't enter the Mikdash today.
+- A **tamei met person** (Yehuda and the fighters) is an Av too. If one of them takes Eli's hand, Eli becomes tamei until evening, after immersing (a Rishon). That's enough to keep him out of the Ezrat Nashim today.
+- **Rule the game teaches:** only an Av makes a *person* or a *vessel* tamei. A Rishon can't. (Mishnah Kelim 1:1-4; Rambam Tumat Met 5:7-8)
 
-### Finale: the menorah
-| # | Level | New idea | Source |
-|---|---|---|---|
-| 15 | **The Kiyor** | Wash hands and feet before going into the Heichal | Shemot 30:19-21 |
-| 16 | **Spears and Lamps** | The gold menorah is gone. Build one from iron spears, fill seven lamps with half a log each, and light. Then the eight-day ending | Rosh Hashanah 24b (= Menachot 28b, Avodah Zarah 43a); Mishnah Menachot 9:3; Shabbat 21b |
+**2. Counting the steps (Act II).** Whatever touches an Av becomes Rishon; whatever touches a Rishon becomes Sheni, and so on (Rambam Tumat Met 5:8). How far it goes depends on what the thing is:
 
-**Ending:** night by night the lamps keep burning while, in the background, olives are pressed and new pure oil is made (Rambam Chanukah 3:2: "until they crushed olives and produced pure oil"). Why it took eight days is its own Why? card (Ran and Maharsha: the olives were four days away; or everyone was tamei met and needed seven days; research file 03, §5).
+| | Rishon | Sheni | Shlishi | Revi'i |
+|---|---|---|---|---|
+| **Chullin** (ordinary food) | tamei | pasul, stops here | – | – |
+| **Terumah** | tamei | tamei | pasul, stops here | – |
+| **Kodesh** (the Mikdash's things, the menorah oil) | tamei | tamei | tamei | pasul, stops here |
+
+(Rambam She'ar Avot HaTumot 11:2-4; the Shlishi and Revi'i of food are d'rabbanan.)
+
+**3. Liquids jump back to the top (Act II).** A liquid that touches a Rishon *or a Sheni* becomes a Rishon, not one step further down (Mishnah Parah 8:7; Rambam She'ar Avot HaTumot 7). The one exception: a tevul yom doesn't do this.
+
+**4. Hands (Act II and the finale).** By rabbinic law, hands that haven't been washed are treated as a Sheni (Rambam She'ar Avot HaTumot 8:8). They disqualify terumah and kodesh and make liquids tamei. For kodesh, the hands have to be immersed, not just washed (Mishnah Chagigah 2:5). And in the Mikdash a Kohen washes hands and feet from the kiyor before he serves (Shemot 30:19-21).
+
+**5. Vessels (Act II).** Different materials follow different rules:
+- **Clay** becomes tamei only from the inside, through its airspace. Touching the outside does nothing (Vayikra 11:33). That's why the sealed clay jug survived.
+- **Metal** becomes tamei from any touch.
+- **Stone** never becomes tamei at all. So in a wrecked storeroom, the stone cup is the one vessel Eli can be sure of.
+- **A tight seal** (*tzamid patil*) protects a clay vessel's contents even under the same roof as a met (Bamidbar 19:15).
+
+**6. People's levels and the gates (Act III).** The courtyards are the test of everything above (Mishnah Kelim 1:5-9):
+
+| Gate | Who is stopped there |
+|---|---|
+| Cheil | anyone tamei met |
+| Ezrat Nashim | a *tevul yom* (immersed, but the sun hasn't set) |
+| Ezrat Yisrael | a *mechusar kippurim* (still needs to bring his korban) |
+| Ezrat Kohanim | anyone who isn't a Kohen, except to bring a korban |
+| Heichal | a Kohen who hasn't washed hands and feet |
+
+### The notebook
+Every rule Eli works out goes into a notebook ("Sefer Taharah"). By the end it holds the full ladder chart above, the gates, and a source page for each rule with Hebrew text and a Sefaria link. For 12+, each page also shows which parts are d'oraita and which are d'rabbanan.
 
 ---
 
-## 5. Handling the war, for kids
+## 4. Level outline (second pass, 17 scenes)
+
+### Act I: up to the Mikdash (kinds of Av; the three ways tumat met spreads)
+| # | Scene | What the player works out | Source |
+|---|---|---|---|
+| 1 | **The Supply Tent** | Tutorial: walk, look, use. Yehuda gives the mission and explains why he can't go | Bamidbar 19:11-12 |
+| 2 | **The Market Awning** | A covered fallen fighter lies under a long awning. Lower part of it, or find a way that's never under the same roof | Rambam Tumat Met 1:10, 12:1 |
+| 3 | **The Siege Tower** | Its platform overhangs the street and counts as a roof. Roll it back | Rambam Tumat Met 12:1, 13:2 |
+| 4 | **Bones in the Rubble** | A bone the size of a barley grain spreads tumah only by touching or moving it, not by roof. Don't push the crate over it | Rambam Tumat Met 1:7, 2:10 |
+| 5 | **The Mouse and the Helping Hand** | A dead mouse and a tamei-met fighter offering to help: both are an Av, neither spreads by roof, and both would keep Eli out today. Find another way to get the help (he can move things for you, as long as Eli doesn't touch him) | Mishnah Kelim 1:1; Rambam Tumat Met 5:7 |
+| 6 | **The Cheil** | Yehuda stops here. Eli goes on alone | Mishnah Kelim 1:8 |
+
+### Act II: the search (the ladder)
+| # | Scene | What the player works out | Source |
+|---|---|---|---|
+| 7 | **Beit Shemaniya** | The oil chamber in the corner of the Ezrat Nashim. Find out how each big jug became tamei. A mouse fell into one: its airspace made the jug and the oil tamei | Mishnah Middot 2:5; Vayikra 11:33 |
+| 8 | **What Touched What** | A detective scene. A ladle went from the mouse jug into a second jug, then a loaf touched the spill. Tag every object with its step on the ladder. The oil keeps jumping back to Rishon | Rambam Tumat Met 5:8; Mishnah Parah 8:7 |
+| 9 | **Three Shelves** | The Lechem HaPanim bakers' chamber: one touch, three results. Chullin stops at Sheni, terumah at Shlishi, kodesh goes to Revi'i | Mishnah Middot 1:6; Rambam She'ar Avot HaTumot 11:2-4 |
+| 10 | **Clay, Metal, Stone** | Which vessels can still be trusted? The stone cup is the only certain one | Vayikra 11:33; Mishnah Kelim 10:1 |
+| 11 | **Read the Seal** | Broken seals, an ordinary seal, a redone seal, and a perfect seal next to a fresh dust ring (moved). Compare to the Kohen Gadol's ring | Shabbat 21b; Rashi; Tosafot |
+| 12 | **The Hidden Jug** | A loose floor tile, a sealed niche, and the small jug with the Kohen Gadol's seal | Tosafot Shabbat 21b; Rambam Chanukah 3:2 |
+
+### Act III: the carry back (everything combined)
+| # | Scene | What the player works out | Source |
+|---|---|---|---|
+| 13 | **Sealed Is Safe** | The jug's tight seal would protect the oil from the roof of a met, but Eli still mustn't go under it. Close a shutter; one tefach matters | Bamidbar 19:15; Rambam Tumat Met 14:1 |
+| 14 | **The Door That Stands by Itself** | A door held shut by a person doesn't block tumah; a door wedged with a stone does | Rambam Tumat Met 18:3 |
+| 15 | **Just a Little More Oil?** | A big jug of tamei oil sits right on the path. Leave the seal alone | Mishnah Parah 8:7; Rambam Tumat Okhalin 1:2 |
+| 16 | **The Gates** | Each courtyard checks Eli and the jug | Mishnah Kelim 1:5-9 |
+
+### Finale
+| # | Scene | What the player works out | Source |
+|---|---|---|---|
+| 17 | **Kiyor, Spears and Lamps** | Wash hands and feet; the gold menorah is gone, so build one from iron spears; fill seven lamps with half a log each; light. Then the eight days | Shemot 30:19-21; Rosh Hashanah 24b (= Menachot 28b, Avodah Zarah 43a); Mishnah Menachot 9:3; Shabbat 21b |
+
+**Why search at all?** If tumah is allowed for the whole community (*tumah hutra b'tzibur*), why not use the tamei oil? The Rambam rules it's only *pushed aside* (*dechuyah*), so you have to look for pure oil first (Yoma 6b; Rambam Bi'at HaMikdash 4:15). For 12+ the notebook also gives the other answers (Pnei Yehoshua, Chatam Sofer; research file 03, §5).
+
+**Why eight days?** Night by night the lamps keep burning while olives are pressed for new pure oil (Rambam Chanukah 3:2). The notebook gives the explanations: the olives were four days away (Ran, Maharsha), or everyone was tamei met and needed seven days.
+
+---
+
+## 5. Handling the war
 
 - No fighting on screen. The game starts after the battle.
-- The fallen are shown as covered, still shapes with respect, never bodies or blood. The text says plainly that burying them is a mitzvah and that becoming tamei for it is good; it's just that *you* can't today, because you're needed in the Mikdash.
-- Bones are small, plain and not scary.
-- Left out: the rabbinic decree treating gentiles like zavim (it's the deeper reason sealed jugs mattered, but it isn't appropriate here), and the idols the Greeks set up. Middot 1:6's defiled altar stones can appear as a background detail.
+- The fallen are covered, still shapes, shown with respect. The text says that burying them is a mitzvah, and that becoming tamei for it is good; Eli just can't today because he's needed in the Mikdash.
+- Left out: the rabbinic decree treating gentiles like zavim (the deeper reason a moved jug didn't count) and the idols the Greeks set up. The notebook can mention for older players that "there were further rabbinic reasons" without the details. The defiled altar stones (Middot 1:6) can be a background detail.
 
 ---
 
-## 6. Graphics: what we need to decide
+## 6. Graphics: a *Lara Croft GO* look without a huge art budget
 
-The previous art was drawn in code by an AI: first as three.js dioramas, then as flat SVG. Both came out generic. The format above doesn't depend on one art style, so the code will keep all art behind a sprite/asset layer and the style can be swapped without touching the puzzles.
+What makes that look work isn't detail. It's a few strict rules:
+- **Low-poly, flat-shaded shapes.** Big simple forms, no textures, clean silhouettes.
+- **A small palette per scene** (5–7 colors), with one warm key light and cool shadows.
+- **One fixed camera per scene,** high and at an angle, so every scene reads like a small diorama floating in fog or darkness.
+- **Very few objects,** each of them important.
 
-The real options:
+That's a style that suits code, because it's about simple shapes and good lighting, not hand-painted detail. The plan:
+1. **three.js, one fixed camera per scene.** No free camera to build or test.
+2. **Simple architecture built in code from a small kit:** floor tiles, steps, walls, columns, arches, gates, awnings, crates, jugs, the menorah. These are all simple shapes, which is what low-poly is good at.
+3. **Free (CC0) low-poly asset packs for the rest,** such as Kenney, Quaternius or KayKit, recolored to the palette. Licenses to be checked before anything goes in.
+4. **Characters (Eli, Yehuda, the Levi)** are the hardest part. Start from a CC0 low-poly character base and give it Kohen's clothes and a recolor, rather than modeling from scratch.
+5. **Close-ups** (seals, labels, the jug) as flat 2D illustrations over the scene, which are easier to make sharp than 3D.
 
-| Option | Looks like | What it takes | Risk |
-|---|---|---|---|
-| **A. Illustrated 2D sprites** (painted or vector, from a human artist or an image generator) | A storybook or modern mobile game | Someone produces ~40 tiles/props + 2 characters + a few close-ups, to a consistent spec. I write the spec and the pipeline | Needs an art source outside this repo |
-| **B. Pixel art** | *Stardew Valley*, *Eastward* | Can be drawn in code or bought as a pack, then customized; easy to keep consistent | Ancient-Temple packs are rare; code-drawn pixel art has the same ceiling as before |
-| **C. Bold flat vector (SVG)** with a strict design system | *Monument Valley*, *Alto's*, Kurzgesagt | Achievable in code, but only with tight reference images to copy the shapes, palette and lighting from | This is what failed last time without references |
-| **D. Low-poly 3D** | *Lara Croft GO* | three.js is already in the repo | Also tried; same problem |
+**Why this should go better than the last 3D attempt:** last time there were no style rules or references, lots of small objects, and a moving camera. This time the reference is fixed (*Lara Croft GO*), the rules above are fixed, and we judge one room before building more.
 
-**What would help most:** 3–5 reference images of the exact look you want (games, illustrations, anything), plus whether you're open to using an image generator or a paid asset pack. With those, I'd make one test room (the Beit Shemaniya storeroom with the big jugs) in that style before building the rest.
+**Next step: one test scene.** Beit Shemaniya (scene 7): the oil chamber with the big jugs, Eli, tap to walk, tap a jug to look at it, and the tumah view. If the look isn't right, we change the style before any more scenes exist. If code-built art still isn't good enough, the fallback is to keep the same gameplay and swap in purchased or generated art.
 
 ---
 
-## 7. Build plan once the art direction is set
+## 7. Build plan
 
-1. Grid engine: rooms from data files, turn loop, undo, push/pull, coverings, the jug, a "tumah view" built on `js/engine/tumah.js` (ohel zones, touch, carry).
-2. Levels 1–5 playable with placeholder tiles, so the gameplay can be tested before the art is final.
-3. Art pipeline for the chosen style, starting with the test room.
-4. Acts II–III and the finale.
-5. Bilingual text (English/Hebrew), Why? cards with Sefaria links, the oil checklist, saving progress on the device.
-6. Tests for every level's solution and every rule, and a review by a rav before release.
+1. **Test scene** (above), to settle the look.
+2. **Engine:** scenes from data files, walk spots and paths, objects with actions, inventory, tagging, undo, and the status panel, all running on `js/engine/tumah.js`.
+3. **Act I** playable end to end.
+4. **Acts II–III and the finale.**
+5. English and Hebrew text, the notebook with Sefaria links, saved progress on the device.
+6. Tests for every scene's solution and every rule. A rav reviews the halacha before release.
 
 ---
 
 ## 8. Open questions
 
-1. **Start over or keep the current game?** My suggestion: build this as the new main game on this branch and keep the current puzzles reachable from a menu (or as `legacy` pages) rather than deleting them.
-2. **Grid adventure OK?** Or do you want something with free movement (a side-scroller where you walk and jump)? Free movement is more "game-like" but makes the tumah rules fuzzier and adds reflex difficulty.
-3. **Who is the hero?** A named young Kohen (Eli from the earlier version, or someone new), and does Yehuda HaMaccabi appear?
-4. **Age range:** still 7+? That decides how hard Act III gets and how much text the Why? cards carry.
-5. **The friend who's tamei met:** good as a helper character, or too confusing?
-6. **Where the jug is found:** the Gemara says only that it was found; the oil chamber (Beit Shemaniya) is my choice for where the search starts, and "hidden in the floor" follows Tosafot. Fine with you?
+1. **Is menorah oil "kodesh" for the ladder (tumah to Revi'i)?** I've assumed yes because it's set aside for the Mikdash. This should be confirmed by a rav before the game relies on it.
+2. **Yehuda is a Kohen and tamei met:** happy with that as the reason he sends Eli?
+3. **The helping-hand puzzle (scene 5):** the tamei-met fighter can move things for Eli as long as they don't touch. Is that clear enough, or too fiddly?
+4. **The detective scene (8):** this is the hardest scene in the game and the core of the ladder teaching. Should there be an easier version first?
