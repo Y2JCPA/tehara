@@ -373,7 +373,10 @@ function renderSpeak() {
     focusIf(nextBtn);
   }
 }
-function speak(who, html, choices, duel) { return new Promise(res => { cur = { who, html, choices, duel, res }; renderSpeak(); }); }
+// `done` marks a line that has been answered, so a card opened over an unanswered line can bring it back
+function speak(who, html, choices, duel) {
+  return new Promise(res => { const c = { who, html, choices, duel }; c.res = v => { c.done = true; res(v); }; cur = c; renderSpeak(); });
+}
 $('.next', dlg).onclick = () => dlgNext && dlgNext();
 $('.text', dlg).onclick = () => dlgNext && dlgNext();
 function endTalk() { dlg.hidden = true; setTalking(false); }
@@ -392,7 +395,11 @@ function renderModal() {
   const { build, wire, res } = curModal;
   modal.innerHTML = `<div class="card" role="dialog" aria-modal="true">${build()}</div>`;
   modal.hidden = false;
-  const close = v => { modal.hidden = true; modal.innerHTML = ''; curModal = null; res(v); };
+  const close = v => {
+    modal.hidden = true; modal.innerHTML = ''; curModal = null; res(v);
+    // the notebook or menu was opened in the middle of a conversation: put the line back
+    if (cur && !cur.done && dlg.hidden) renderSpeak();
+  };
   modal.querySelectorAll('[data-v]').forEach(b => b.onclick = () => close(b.dataset.v));
   modal.querySelectorAll('[data-lang]').forEach(b => b.onclick = toggleLang);
   if (wire) wire(modal, close);
@@ -466,7 +473,9 @@ function showTagPicker(id) {
 
 // ============================================================ shared actions
 const busyN = { n: 0 };
-const busy = async fn => { busyN.n++; closeMenu(); try { await fn(); } finally { busyN.n--; if (!busyN.n) endTalk(); } };
+const busy = async fn => { busyN.n++; closeMenu(); try { await fn(); } finally { busyN.n = Math.max(0, busyN.n - 1); if (!busyN.n) endTalk(); } };
+// leaving a scene abandons whatever conversation was running in it
+function dropConversation() { busyN.n = 0; cur = null; dlgNext = null; endTalk(); }
 // menu items: [key, label, fn, disabled]
 const A = {
   look: (text, then) => ['look', U.look, () => busy(async () => { await speak('eli', text); if (then) await then(); })],
@@ -698,7 +707,7 @@ const fade = $('#fade');
 const actLabel = sc => sc.act === 4 ? U.finale : [`${U.act[0]} ${['', 'I', 'II', 'III'][sc.act]}`, `${U.act[1]} ${['', 'א׳', 'ב׳', 'ג׳'][sc.act]}`];
 async function loadScene(id, opts = {}) {
   const sc = sceneById(id);
-  G.loading = true; G.started = false; closeMenu(); endTalk();
+  G.loading = true; G.started = false; closeMenu(); dropConversation();
   fade.classList.add('on'); await wait(REDUCED ? 0 : 380);
   for (const o of Object.values(G.objs)) { o.label?.remove(); o.exitLabel?.remove(); }
   room.clear(); mice.length = 0; anims.length = 0;
@@ -746,7 +755,7 @@ async function theEnd() {
 }
 
 async function titleScreen() {
-  G.screen = 'title'; G.started = false; renderStatus(); objective();
+  G.screen = 'title'; G.started = false; dropConversation(); renderStatus(); objective();
   if (!G.sc) await loadScene('camp', { backdrop: true });
   applyStatic();
   while (true) {
