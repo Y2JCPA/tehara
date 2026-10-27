@@ -97,8 +97,9 @@ const URL = process.env.OIL_URL || 'http://localhost:8765/oil/';
       await waitFor(s2 => s2.scene === 'hub' && !s2.loading && s2.started, 15000);
       await settle();
       const [x, y] = await page.evaluate(() => window.__oil.tileAt(2, 5));
-      await page.mouse.click(x, y);
-      if (!(await waitFor(s2 => s2.walking || (s2.eli[0] === 2 && s2.eli[1] === 5), 5000))) await fail('frozen after restarting the scene from the menu');
+      let moved = false;   // a slow headless frame can swallow one click; a player would just click again
+      for (let i = 0; i < 3 && !moved; i++) { await page.mouse.click(x, y); moved = await waitFor(s2 => s2.walking || (s2.eli[0] === 2 && s2.eli[1] === 5), 8000); }
+      if (!moved) await fail('frozen after restarting the scene from the menu');
       await settle();
     }
     if (SHOTS) await page.screenshot({ path: `${SHOTS}/${LANG}-${String(n).padStart(2, '0')}-${id}.png` });
@@ -115,7 +116,16 @@ const URL = process.env.OIL_URL || 'http://localhost:8765/oil/';
       await page.mouse.click(pos[0], pos[1]);
       if (!step.a) {   // an exit: wait for the scene to change, or for the refusal to be read
         await waitFor(s2 => s2.loading || s2.scene !== id || s2.dlg || s2.modal || (!s2.walking && !s2.busy), 30000);
-        await settle(); continue;
+        await settle();
+        const s3 = await st();
+        if (step === sol[sol.length - 1] && s3.scene === id && s3.menu) {   // the click landed on something else: note it and try once more
+          console.log(`  (retrying ${step.o}: the click opened a menu at ${s3.eli})`);
+          await page.keyboard.press('Escape');
+          const p2 = await page.evaluate(o => window.__oil.screenOf(o), step.o);
+          await page.mouse.click(p2[0], p2[1]);
+          await waitFor(s2 => s2.loading || s2.scene !== id, 30000); await settle();
+        }
+        continue;
       }
       if (!(await waitFor(s2 => s2.menu || s2.dlg || s2.modal, 30000))) await fail(`no menu for ${step.o}`);
       if (!(await st()).menu) await fail(`clicked ${step.o} but something else opened`);

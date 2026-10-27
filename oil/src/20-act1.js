@@ -9,7 +9,8 @@ function deco(g, c, r, { dx = 0, dz = 0, ry = 0, y = 0, block = true } = {}) {
 const block = tiles => tiles.forEach(t => G.blocked.add(K(...t)));
 function npc(id, cast, c, r, def = {}) {
   const g = CAST[cast]();
-  return addObj(id, { npc: true, tiles: [[c, r]], at: [c, r, def.dx || 0, def.dz || 0], group: g, anchorY: (g.userData.top || 0.8) + 0.55, name: PEOPLE[id]?.name || PEOPLE[cast]?.name, ...def });
+  // every character gets a generous invisible box around them, so they're easy to tap
+  return addObj(id, { npc: true, tiles: [[c, r]], at: [c, r, def.dx || 0, def.dz || 0], group: g, anchorY: (g.userData.top || 0.8) + 0.55, name: PEOPLE[id]?.name || PEOPLE[cast]?.name, hit: [0.8, (g.userData.top || 0.8) + 0.35, 0.8], ...def });
 }
 // a clickable prop: look text plus optional extra actions
 function thing(id, name, g, c, r, { dx = 0, dz = 0, ry = 0, tiles = [[c, r]], look, acts = [], anchorY = 1, solid = true } = {}) {

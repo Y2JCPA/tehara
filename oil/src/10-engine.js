@@ -211,7 +211,8 @@ function addObj(id, def) {
     const arrow = mesh(new THREE.ConeGeometry(0.16, 0.34, 4), basic('#ffd67a', { transparent: true, opacity: 0.9 }), 0, 0.5, 0, false);
     arrow.rotation.x = Math.PI; o.arrow = arrow;
     const ring = mesh(new THREE.RingGeometry(0.26, 0.36, 4).rotateX(-Math.PI / 2), basic('#ffd67a', { transparent: true, opacity: 0.55 }), 0, 0.01, 0, false);
-    const eg = group(arrow, ring); const [c, r] = o.tiles[0]; eg.position.set(wx(c), 0, wz(r));
+    const pad = mesh(new THREE.BoxGeometry(0.9, 0.7, 0.9), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false }), 0, 0.35, 0, false);   // a generous tap target
+    const eg = group(arrow, ring, pad); const [c, r] = o.tiles[0]; eg.position.set(wx(c), 0, wz(r));
     eg.traverse(m => { if (m.isMesh) m.userData.oid = id; }); room.add(eg); o.exitGroup = eg;
     o.anchor = new THREE.Vector3(wx(c), 1.1, wz(r));
   }
@@ -869,7 +870,7 @@ function tick() {
     if (o.group.userData.body && !REDUCED) o.group.userData.body.rotation.z = Math.sin(t * 1.3 + o.id.length) * 0.015;
   }
   for (const mm of mice) stepMouse(mm, dt, t);
-  room.traverse(o => { if (o.userData.flicker) o.scale.y = 1 + Math.sin(t * 17 + o.id) * 0.12 + Math.sin(t * 7.3) * 0.08; });
+  room.traverse(o => { if (o.userData.flicker) o.scale.y = (o.userData.flickerBase || 1) * (1 + Math.sin(t * 17 + o.id) * 0.12 + Math.sin(t * 7.3) * 0.08); });
   marker.material.opacity *= 0.96;
   // tumah view
   const sb = sun.userData.base ?? 3.1;

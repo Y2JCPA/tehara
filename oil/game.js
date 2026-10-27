@@ -616,7 +616,8 @@ function addObj(id, def) {
     const arrow = mesh(new THREE.ConeGeometry(0.16, 0.34, 4), basic('#ffd67a', { transparent: true, opacity: 0.9 }), 0, 0.5, 0, false);
     arrow.rotation.x = Math.PI; o.arrow = arrow;
     const ring = mesh(new THREE.RingGeometry(0.26, 0.36, 4).rotateX(-Math.PI / 2), basic('#ffd67a', { transparent: true, opacity: 0.55 }), 0, 0.01, 0, false);
-    const eg = group(arrow, ring); const [c, r] = o.tiles[0]; eg.position.set(wx(c), 0, wz(r));
+    const pad = mesh(new THREE.BoxGeometry(0.9, 0.7, 0.9), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false }), 0, 0.35, 0, false);   // a generous tap target
+    const eg = group(arrow, ring, pad); const [c, r] = o.tiles[0]; eg.position.set(wx(c), 0, wz(r));
     eg.traverse(m => { if (m.isMesh) m.userData.oid = id; }); room.add(eg); o.exitGroup = eg;
     o.anchor = new THREE.Vector3(wx(c), 1.1, wz(r));
   }
@@ -1274,7 +1275,7 @@ function tick() {
     if (o.group.userData.body && !REDUCED) o.group.userData.body.rotation.z = Math.sin(t * 1.3 + o.id.length) * 0.015;
   }
   for (const mm of mice) stepMouse(mm, dt, t);
-  room.traverse(o => { if (o.userData.flicker) o.scale.y = 1 + Math.sin(t * 17 + o.id) * 0.12 + Math.sin(t * 7.3) * 0.08; });
+  room.traverse(o => { if (o.userData.flicker) o.scale.y = (o.userData.flickerBase || 1) * (1 + Math.sin(t * 17 + o.id) * 0.12 + Math.sin(t * 7.3) * 0.08); });
   marker.material.opacity *= 0.96;
   // tumah view
   const sb = sun.userData.base ?? 3.1;
@@ -1341,7 +1342,8 @@ function deco(g, c, r, { dx = 0, dz = 0, ry = 0, y = 0, block = true } = {}) {
 const block = tiles => tiles.forEach(t => G.blocked.add(K(...t)));
 function npc(id, cast, c, r, def = {}) {
   const g = CAST[cast]();
-  return addObj(id, { npc: true, tiles: [[c, r]], at: [c, r, def.dx || 0, def.dz || 0], group: g, anchorY: (g.userData.top || 0.8) + 0.55, name: PEOPLE[id]?.name || PEOPLE[cast]?.name, ...def });
+  // every character gets a generous invisible box around them, so they're easy to tap
+  return addObj(id, { npc: true, tiles: [[c, r]], at: [c, r, def.dx || 0, def.dz || 0], group: g, anchorY: (g.userData.top || 0.8) + 0.55, name: PEOPLE[id]?.name || PEOPLE[cast]?.name, hit: [0.8, (g.userData.top || 0.8) + 0.35, 0.8], ...def });
 }
 // a clickable prop: look text plus optional extra actions
 function thing(id, name, g, c, r, { dx = 0, dz = 0, ry = 0, tiles = [[c, r]], look, acts = [], anchorY = 1, solid = true } = {}) {
@@ -1964,15 +1966,16 @@ SCENES.push({
   },
   objective: () => !fl('warmup') ? [`Work out what the apprentice’s hands did (${HUB_TAGS.filter(id => (P.tags.hub || {})[id]).length} of 4)`, `לברר מה עשו הידיים של השוליה (${HUB_TAGS.filter(id => (P.tags.hub || {})[id]).length} מתוך 4)`]
     : !has('lamp') && !has('lampLit') ? ['Find a lamp for the dark oil chamber', 'למצוא נר ללשכת השמנים החשוכה']
-      : !has('lampLit') ? [fl('shaved') ? 'Ask the nazir to light your lamp' : 'Get a flame. The Nazirites’ chamber has a fire going.', fl('shaved') ? 'לבקש מהנזיר להדליק את הנר' : 'להשיג להבה. בלשכת הנזירים דולקת אש.']
+      : !has('lampLit') ? (fl('shaved') ? ['Ask the nazir for a flame for your lamp', 'לבקש מהנזיר להבה לנר'] : !fl('razorQuest') ? ['Find a flame for your lamp. The Nazirites’ chamber has a fire going.', 'למצוא להבה לנר. בלשכת הנזירים דולקת אש.'] : has('razor') ? ['Bring the nazir his razor', 'להביא לנזיר את התער שלו'] : ['Find the nazir’s razor in the wood chamber', 'למצוא את התער של הנזיר בלשכת העצים'])
         : ['Go into Beit Shemaniya, the oil chamber', 'להיכנס לבית שמניה, לשכת השמנים'],
   async intro() {
     await lines(['narr', ['The Ezrat Nashim. Four chambers sit in its corners, open to the sky: the Nazirites’, the wood chamber, the metzora’im’s, and Beit Shemaniya, the oil chamber.', 'עזרת הנשים. ארבע לשכות בפינותיה, פתוחות לשמיים: לשכת הנזירים, לשכת העצים, לשכת המצורעים, ובית שמניה, לשכת השמנים.']], ['eli', ['The oil chamber. If there’s pure oil anywhere, it’s there.', 'לשכת השמנים. אם יש שמן טהור איפשהו, הוא שם.']], ['baker', ['Kohen! Kohen, please! I carried everything up from the camp: my bread, the terumah, my wine. I touched everything. I didn’t wash my hands. There wasn’t any water! Is it all ruined?', 'כהן! כהן, בבקשה! סחבתי הכול מהמחנה: הלחם שלי, התרומה, היין שלי. נגעתי בהכול. לא נטלתי ידיים. לא היו מים! הכול הרוס?']], ['eli', ['Let’s work out exactly what your hands did.', 'בוא נברר בדיוק מה הידיים שלך עשו.']]);
   },
   carry() { flag('warmup'); },
-  // one list per visit: first from the Cheil, then back from the wood chamber, then from the Nazirites' chamber
+  // one list per visit: from the Cheil, back from the nazir, back from the wood chamber, back from the nazir again
   solution: [
-    [{ o: 'oilDoor' }, { o: 'hands', a: 'tag', t: 'rishon' }, { o: 'hands', a: 'tag', t: 'sheni' }, { o: 'loafC', a: 'tag', t: 'tahor' }, { o: 'loafT', a: 'tag', t: 'shlishi' }, { o: 'wine', a: 'tag', t: 'shlishi' }, { o: 'wine', a: 'tag', t: 'rishon' }, { o: 'yochanan', a: 'talk' }, { o: 'niche', a: 'take' }, { o: 'woodDoor' }],
+    [{ o: 'oilDoor' }, { o: 'hands', a: 'tag', t: 'rishon' }, { o: 'hands', a: 'tag', t: 'sheni' }, { o: 'loafC', a: 'tag', t: 'tahor' }, { o: 'loafT', a: 'tag', t: 'shlishi' }, { o: 'wine', a: 'tag', t: 'shlishi' }, { o: 'wine', a: 'tag', t: 'rishon' }, { o: 'yochanan', a: 'talk' }, { o: 'niche', a: 'take' }, { o: 'nazirDoor' }],
+    [{ o: 'woodDoor' }],
     [{ o: 'nazirDoor' }],
     [{ o: 'oilDoor' }],
   ],
@@ -1991,6 +1994,8 @@ async function talkYochanan() {
 }
 
 // ============================================================ 9. The Nazirites' chamber
+// The order is fixed: the nazir has to tell Eli about his razor (flag razorQuest) before the
+// wood inspector will hand it over, and the nazir only offers a flame once Eli has a lamp.
 SCENES.push({
   id: 'nazir', act: 2, cols: 7, rows: 5, theme: 'stone', light: 'evening',
   title: ['The Nazirites’ Chamber', 'לשכת הנזירים'],
@@ -2003,26 +2008,32 @@ SCENES.push({
     const l = new THREE.PointLight('#ff9a40', 7, 5, 2); l.position.set(wx(4), 0.8, wz(1)); room.add(l);
     npc('nazir', 'nazir', 3, 1, { actions: () => [A.talk(talkNazir), A.look(fl('shaved') ? ['The former nazir. Bald, beaming, and slightly chilly.', 'הנזיר לשעבר. קירח, קורן, וקצת קר לו.'] : ['A nazir on the last day of his nezirut. Thirty days of hair. He keeps stroking it.', 'נזיר ביום האחרון של נזירותו. שלושים יום של שיער. הוא לא מפסיק ללטף אותו.']),
       ...(has('razor') && !fl('shaved') ? [A.act('give', ['Give him his razor', 'לתת לו את התער'], giveRazor)] : []),
-      ...(fl('shaved') && has('lamp') ? [A.act('light', ['Ask him to light your lamp', 'לבקש שידליק את הנר'], lightLamp)] : [])] });
+      ...(fl('shaved') && has('lamp') ? [A.act('light', ['Ask him for a flame for your lamp', 'לבקש ממנו להבה לנר'], lightLamp)] : [])] });
     if (fl('shaved')) G.objs.nazir.group.userData.hair.visible = false;
     scatter(6, 3, r => K3.log(0.6), [[5, 0], [6, 0], [6, 1]]);
     exitAt('exit', 0, 3, 'hub', ['Back to the courtyard', 'חזרה לעזרה']);
   },
-  objective: () => !fl('shaved') ? (has('razor') ? ['Give the nazir his razor', 'לתת לנזיר את התער שלו'] : ['Find the nazir’s razor', 'למצוא את התער של הנזיר'])
-    : has('lampLit') ? ['Back to the courtyard', 'חזרה לעזרה'] : has('lamp') ? ['Ask the nazir to light your lamp', 'לבקש מהנזיר להדליק את הנר'] : ['Bring a lamp from the courtyard', 'להביא נר מהעזרה'],
-  carry() { flag('shaved'); take('lamp'); give('lampLit'); },
-  solution: [{ o: 'nazir', a: 'talk' }, { o: 'nazir', a: 'give' }, { o: 'exit' }],
+  objective: () => !fl('razorQuest') ? ['Talk to the nazir', 'לדבר עם הנזיר']
+    : !fl('shaved') ? (has('razor') ? ['Give the nazir his razor', 'לתת לנזיר את התער שלו'] : ['Find the nazir’s razor. He thinks it’s in the wood chamber.', 'למצוא את התער של הנזיר. הוא חושב שהוא בלשכת העצים.'])
+      : has('lamp') ? ['Ask the nazir for a flame', 'לבקש מהנזיר להבה'] : ['Back to the courtyard', 'חזרה לעזרה'],
+  carry() { flag('razorQuest'); flag('shaved'); take('lamp'); give('lampLit'); },
+  // one list per visit: first to hear about the razor, then to give it back
+  solution: [
+    [{ o: 'nazir', a: 'talk' }, { o: 'exit' }],
+    [{ o: 'nazir', a: 'give' }, { o: 'exit' }],
+  ],
 });
 async function talkNazir() {
-  if (fl('shaved')) { await speak('nazir', has('lampLit') ? ['I feel so light. Is it cold in here, or is it me?', 'אני מרגיש כל כך קל. קר פה, או שזה אני?'] : ['Bring me something to put a flame in, and you shall have one.', 'תביא לי משהו לשים בו להבה, ותקבל אחת.']); return; }
+  if (fl('shaved')) { await speak('nazir', has('lampLit') ? ['I feel so light. Is it cold in here, or is it me?', 'אני מרגיש כל כך קל. קר פה, או שזה אני?'] : ['Thirty days of hair, gone. I feel so light.', 'שלושים יום של שיער, ואין. אני מרגיש כל כך קל.']); return; }
+  if (fl('razorQuest')) { await speak('nazir', has('razor') ? ['Is that... is that my razor?', 'זה... זה התער שלי?'] : ['Any sign of my razor? The wood chamber, I think. I think.', 'יש סימן לתער שלי? בלשכת העצים, נדמה לי. נדמה לי.']); return; }
   await lines(
     ['nazir', ['Thirty days. Thirty days of no wine, no grapes, no raisins, no haircuts. Today it ends! My shelamim are cooking, the fire’s going, and I have to shave and throw my hair under the pot.', 'שלושים יום. שלושים יום בלי יין, בלי ענבים, בלי צימוקים, בלי תספורת. היום זה נגמר! השלמים שלי מתבשלים, האש בוערת, ואני צריך לגלח ולהשליך את השער מתחת לדוד.']],
     ['nazir', ['Only... I can’t find my razor.', 'רק... אני לא מוצא את התער שלי.']],
   );
-  const i = await ask('nazir', ['Have you seen a razor?', 'ראית תער?'], [{ t: ['Where did you last have it?', 'איפה הוא היה בפעם האחרונה?'], ok: true }, { t: ['Could you light my lamp from your fire?', 'אתה יכול להדליק את הנר שלי מהאש שלך?'] }]);
-  if (i === 1) await speak('nazir', ['Bring me my razor and I’ll light every lamp you own.', 'תביא לי את התער שלי ואני אדליק לך כל נר שיש לך.']);
+  await ask('nazir', ['Have you seen a razor?', 'ראית תער?'], [{ t: ['Where did you last have it?', 'איפה הוא היה בפעם האחרונה?'], ok: true }]);
   await speak('nazir', ['The wood chamber. I went to borrow kindling. I think. I don’t know. I haven’t been able to think since the grapes stopped.', 'לשכת העצים. הלכתי לשאול קיסמים. נדמה לי. אני לא יודע. אני לא מצליח לחשוב מאז שהענבים נגמרו.']);
-  if (has('razor')) await speak('eli', ['...Is this it?', '...זה הוא?']);
+  await speak('eli', ['I’ll look for it.', 'אני אחפש אותו.']);
+  flag('razorQuest'); objective();
 }
 async function giveRazor() {
   if (!has('razor')) return;
@@ -2033,15 +2044,17 @@ async function giveRazor() {
   await animate(800, k => { g.userData.hair.scale.y = 1 - k; });
   g.userData.hair.visible = false;
   flag('shaved');
-  await lines(['nazir', ['There. And into the fire under the pot it goes, just as the Mishnah says.', 'הנה. ולתוך האש שמתחת לדוד, בדיוק כמו שכתוב במשנה.']], ['nazir', ['Now. Your lamp.', 'ועכשיו. הנר שלך.']]);
+  await speak('nazir', ['There. And into the fire under the pot it goes, just as the Mishnah says.', 'הנה. ולתוך האש שמתחת לדוד, בדיוק כמו שכתוב במשנה.']);
   await lesson('nazirHair');
-  if (has('lamp')) await lightLamp();
-  else await lines(['eli', ['I don’t have it with me.', 'הוא לא איתי.']], ['nazir', ['Then bring it. The fire isn’t going anywhere. Neither is my hair.', 'אז תביא אותו. האש לא הולכת לשום מקום. גם השיער שלי לא.']]);
+  if (has('lamp')) {
+    await lines(['eli', ['Could I take a flame from your fire? For my lamp. The oil chamber is pitch dark.', 'אפשר לקחת להבה מהאש שלך? בשביל הנר שלי. בלשכת השמנים חושך מצרים.']]);
+    await lightLamp();
+  } else await speak('nazir', ['Thank you, Kohen. I owe you one.', 'תודה, כהן. אני חייב לך.']);
   objective();
 }
 async function lightLamp() {
   take('lamp'); give('lampLit');
-  await lines(['nazir', ['One flame, from the fire of a very happy nazir.', 'להבה אחת, מהאש של נזיר מאוד שמח.']], ['eli', ['Thank you. And... it looks good. Very aerodynamic.', 'תודה. ו... זה נראה טוב. מאוד אווירודינמי.']]);
+  await lines(['nazir', ['For the man who found my razor? One flame, from the fire of a very happy nazir.', 'בשביל מי שמצא לי את התער? להבה אחת, מהאש של נזיר מאוד שמח.']], ['eli', ['Thank you. And... it looks good. Very aerodynamic.', 'תודה. ו... זה נראה טוב. מאוד אווירודינמי.']]);
   objective();
 }
 
@@ -2058,8 +2071,10 @@ SCENES.push({
     thing('pile', ['A pile of logs', 'ערימת עצים'], pile, 5, 0, { dx: -0.2, tiles: [[4, 0], [5, 0], [6, 0]], look: ['Four thousand logs, checked. Probably.', 'ארבעת אלפים עצים, בדוקים. כנראה.'] });
     npc('inspector', 'inspector', 2, 1, { actions: () => [A.talk(talkInspector), A.look(['A Kohen with a blemish, so he can’t serve at the mizbe’ach. Instead he checks every log that goes onto it. He takes this extremely seriously.', 'כהן בעל מום, ולכן הוא לא יכול לעבוד על המזבח. במקום זה הוא בודק כל עץ שעולה עליו. הוא לוקח את זה מאוד ברצינות.'])] });
     const razor = group(mesh(new THREE.BoxGeometry(0.22, 0.02, 0.06), mat('#b8bec6', { metalness: 0.6, roughness: 0.3 }), 0, 0.66, 0), mesh(new THREE.BoxGeometry(0.6, 0.05, 0.5), mat(C.wood), 0, 0.62, 0), mesh(new THREE.BoxGeometry(0.06, 0.6, 0.4), mat(C.woodDark), 0, 0.3, 0));
-    ST.razorG = razor.children[0]; ST.razorG.visible = !fl('logFound');
-    thing('table', ['The inspector’s table', 'השולחן של הבודק'], razor, 1, 1, { look: fl('logFound') ? ['An empty table. Very tidy.', 'שולחן ריק. מאוד מסודר.'] : ['A razor, covered in bark. The nazir’s, unless I’m very wrong.', 'תער, מכוסה קליפות עץ. של הנזיר, אלא אם כן אני ממש טועה.'] });
+    ST.razorG = razor.children[0]; ST.razorG.visible = !has('razor') && !fl('shaved');
+    addObj('table', { name: ['The inspector’s table', 'השולחן של הבודק'], group: razor, at: [1, 1], tiles: [[1, 1]], anchorY: 1,
+      actions: () => [A.look(!ST.razorG.visible ? ['An empty table. Very tidy.', 'שולחן ריק. מאוד מסודר.'] : fl('razorQuest') ? ['A razor, covered in bark. The nazir’s, unless I’m very wrong.', 'תער, מכוסה קליפות עץ. של הנזיר, אלא אם כן אני ממש טועה.'] : ['A razor, covered in bark. Odd thing to find in a wood chamber.', 'תער, מכוסה קליפות עץ. דבר מוזר למצוא בלשכת העצים.']),
+        ...(ST.razorG.visible ? [A.say('take', ['Take the razor', 'לקחת את התער'], ['inspector', ['That’s mine! I found it. Finders, keepers. Scrapers.', 'זה שלי! אני מצאתי אותו. מי שמוצא, שומר. ומגרד.']])] : [])] });
     const logs = { logA: ['Tiny holes all along it. Something lives in here.', 'חורים קטנטנים לכל אורכו. מישהו גר כאן.'], logB: ['Smooth. No holes, no sawdust, no tenants.', 'חלק. בלי חורים, בלי נסורת, בלי דיירים.'], logC: ['Looks fine... until I turn it over. A worm waves at me.', 'נראה בסדר... עד שאני הופך אותו. תולעת מנופפת אליי.'] };
     Object.entries(logs).forEach(([id, look], i) => {
       thing(id, [`Log ${['one', 'two', 'three'][i]}`, `עץ ${['ראשון', 'שני', 'שלישי'][i]}`], K3.log(0.8, ['#86603c', '#8c6a44', '#7e5a38'][i]), 3 + i, 3, { anchorY: 0.8, look,
@@ -2067,14 +2082,23 @@ SCENES.push({
     });
     exitAt('exit', 0, 3, 'hub', ['Back to the courtyard', 'חזרה לעזרה']);
   },
-  objective: () => fl('logFound') ? ['Back to the courtyard', 'חזרה לעזרה'] : ['Help the inspector find a log without worms', 'לעזור לבודק למצוא עץ בלי תולעים'],
+  objective: () => !fl('logFound') ? ['Help the inspector find a log without worms', 'לעזור לבודק למצוא עץ בלי תולעים']
+    : fl('razorQuest') && !has('razor') && !fl('shaved') ? ['Ask the inspector for the nazir’s razor', 'לבקש מהבודק את התער של הנזיר'] : ['Back to the courtyard', 'חזרה לעזרה'],
   carry() { flag('logFound'); give('wedge'); },
   solution: [{ o: 'inspector', a: 'talk' }, { o: 'logC', a: 'fit' }, { o: 'logB', a: 'fit' }, { o: 'exit' }],
 });
+// the razor only changes hands once the nazir has said it's his, and once the inspector has his log
+const razorOwed = () => fl('razorQuest') && fl('logFound') && !has('razor') && !fl('shaved');
+async function handOverRazor() {
+  give('razor'); if (ST.razorG) ST.razorG.visible = false;
+  await speak('inspector', ['The nazir’s, you say? Then take it, with my blessing. I’ll scrape bark with my fingernails like everyone else.', 'של הנזיר, אתה אומר? אז קח אותו, בברכה. אני אגרד קליפות עם הציפורניים כמו כולם.']);
+  objective();
+}
 async function talkInspector() {
+  if (razorOwed()) { await speak('eli', ['That razor on your table. It belongs to the nazir next door. He can’t finish his nezirut without it.', 'התער הזה על השולחן שלך. הוא של הנזיר מהלשכה הסמוכה. הוא לא יכול לסיים את הנזירות בלעדיו.']); await handOverRazor(); return; }
   if (fl('logFound')) { await speak('inspector', ['One good log. I may weep.', 'עץ טוב אחד. אני עלול לבכות.']); return; }
-  await lines(
-    ['inspector', ['Every log for the mizbe’ach gets checked. A log with a worm in it is unfit. I have checked four thousand logs today. I can’t see straight. Find me one good log among these three and I’ll stop talking.', 'כל עץ למזבח נבדק. עץ שיש בו תולעת פסול. בדקתי היום ארבעת אלפים עצים. אני כבר לא רואה ישר. תמצא לי עץ טוב אחד מבין השלושה האלה ואני אפסיק לדבר.']],
+  await speak('inspector', ['Every log for the mizbe’ach gets checked. A log with a worm in it is unfit. I have checked four thousand logs today. I can’t see straight. Find me one good log among these three and I’ll stop talking.', 'כל עץ למזבח נבדק. עץ שיש בו תולעת פסול. בדקתי היום ארבעת אלפים עצים. אני כבר לא רואה ישר. תמצא לי עץ טוב אחד מבין השלושה האלה ואני אפסיק לדבר.']);
+  if (fl('razorQuest') && !has('razor') && !fl('shaved')) await lines(
     ['eli', ['Is that a razor on your table?', 'זה תער על השולחן שלך?']],
     ['inspector', ['This? I found it. It’s very good for scraping bark.', 'זה? מצאתי אותו. הוא מצוין לגירוד קליפות.']],
     ['eli', ['It’s the nazir’s.', 'הוא של הנזיר.']],
@@ -2083,8 +2107,9 @@ async function talkInspector() {
 }
 async function markLog(id) {
   if (id !== 'logB') { await lines(['inspector', ['A worm! Look! Right there! Waving!', 'תולעת! תסתכל! ממש שם! מנופפת!']], ['eli', ['...Hello, worm.', '...שלום, תולעת.']]); return; }
-  flag('logFound'); give('razor'); give('wedge'); if (ST.razorG) ST.razorG.visible = false;
-  await lines(['inspector', ['No holes. No sawdust. Fit for the mizbe’ach. Finally.', 'בלי חורים. בלי נסורת. כשר למזבח. סוף סוף.']], ['inspector', ['Here: the razor. And take this stone too. I use it to keep the door from slamming. It’s a very good stone. Don’t tell anyone I gave you a stone; they’ll all want one.', 'הנה: התער. ותיקח גם את האבן הזאת. אני משתמש בה כדי שהדלת לא תיטרק. זו אבן טובה מאוד. אל תספר לאף אחד שנתתי לך אבן; כולם ירצו אחת.']]);
+  flag('logFound'); give('wedge');
+  await lines(['inspector', ['No holes. No sawdust. Fit for the mizbe’ach. Finally.', 'בלי חורים. בלי נסורת. כשר למזבח. סוף סוף.']], ['inspector', ['Take this stone. I use it to keep the door from slamming. It’s a very good stone. Don’t tell anyone I gave you a stone; they’ll all want one.', 'קח את האבן הזאת. אני משתמש בה כדי שהדלת לא תיטרק. זו אבן טובה מאוד. אל תספר לאף אחד שנתתי לך אבן; כולם ירצו אחת.']]);
+  if (razorOwed()) { await speak('eli', ['And the razor? The nazir is waiting for it.', 'והתער? הנזיר מחכה לו.']); await handOverRazor(); }
   await lesson('worms');
   objective();
 }
@@ -2378,7 +2403,7 @@ Object.assign(RULES, {
   },
   eightDays: {
     title: ['Eight days', 'שמונה ימים'],
-    body: ['“They found only one jug of oil lying with the seal of the Kohen Gadol, with enough to light for one day. A miracle happened, and they lit from it for eight days.” The Rambam adds: until they crushed olives and produced pure oil.', '"ולא מצאו אלא פך אחד של שמן שהיה מונח בחותמו של כהן גדול, ולא היה בו אלא להדליק יום אחד. נעשה בו נס והדליקו ממנו שמונה ימים." והרמב"ם מוסיף: עד שכתשו זיתים והוציאו שמן טהור.'],
+    body: ['“They found only one jug of oil lying with the seal of the Kohen Gadol, with enough to light for one day. A miracle happened, and they lit from it for eight days.” The Rambam adds: until they crushed olives and produced pure oil. And so, following Beit Hillel, we add one more light each night of Chanukah: in holiness you go up, not down.', '"ולא מצאו אלא פך אחד של שמן שהיה מונח בחותמו של כהן גדול, ולא היה בו אלא להדליק יום אחד. נעשה בו נס והדליקו ממנו שמונה ימים." והרמב"ם מוסיף: עד שכתשו זיתים והוציאו שמן טהור. ולכן, כבית הלל, מוסיפים בכל לילה של חנוכה עוד נר: מעלין בקודש ואין מורידין.'],
     src: [SRC.shabbat21b, SRC.chanukah32],
   },
 });
@@ -2540,14 +2565,15 @@ SCENES.push({
   blurb: ['The Nikanor Gate into the Ezrat Yisrael, then the line into the Ezrat Kohanim. Each has a keeper, and each keeper has questions.', 'שער ניקנור אל עזרת ישראל, ואחריו הגבול של עזרת כהנים. לכל אחד יש שומר, ולכל שומר יש שאלות.'],
   start: [0, 2, Math.PI / 2],
   build() {
-    for (let r = 0; r < 6; r++) if (r !== 2) deco(group(mesh(new THREE.BoxGeometry(0.96, 1.9, 0.96), mat(C.stone), 0, 0.95, 0)), 3, r);
-    ST.g1 = K3.gate(0.9, 1.9, false); deco(ST.g1, 3, 2, { ry: Math.PI / 2, block: false }); G.blocked.add(K(3, 2));
+    // low walls and the keepers in front of them, so the camera can see who you're talking to
+    for (let r = 0; r < 6; r++) if (r !== 2) { const h = r < 2 ? 0.9 : 0.35; deco(group(mesh(new THREE.BoxGeometry(0.96, h, 0.96), mat(C.stone), 0, h / 2, 0)), 3, r); }
+    ST.g1 = K3.gate(0.9, 1.5, false); deco(ST.g1, 3, 2, { ry: Math.PI / 2, block: false }); G.blocked.add(K(3, 2));
     for (let r = 0; r < 6; r++) if (r !== 2) deco(K3.fence(1), 6, r, { ry: Math.PI / 2 });
     ST.g2 = K3.gate(0.9, 1.3, false); deco(ST.g2, 6, 2, { ry: Math.PI / 2, block: false }); G.blocked.add(K(6, 2));
-    npc('keeper1', 'keeper', 2, 1, { name: PEOPLE.keeper1.name, actions: () => [A.talk(talkKeeper1), A.look(['The keeper of the Nikanor Gate. He looks like he has asked these questions ten thousand times and enjoyed every one.', 'שומר שער ניקנור. נראה שהוא שאל את השאלות האלה עשרת אלפים פעם ונהנה מכל אחת.'])] });
-    npc('keeper2', 'keeper', 5, 1, { name: PEOPLE.keeper2.name, actions: () => [A.talk(talkKeeper2), A.look(['An old Kohen keeping the line of the Ezrat Kohanim.', 'כהן זקן ששומר על הגבול של עזרת כהנים.'])] });
+    npc('keeper1', 'keeper', 2, 3, { name: PEOPLE.keeper1.name, actions: () => [A.talk(talkKeeper1), A.look(['The keeper of the Nikanor Gate. He looks like he has asked these questions ten thousand times and enjoyed every one.', 'שומר שער ניקנור. נראה שהוא שאל את השאלות האלה עשרת אלפים פעם ונהנה מכל אחת.'])] });
+    npc('keeper2', 'keeper', 5, 4, { name: PEOPLE.keeper2.name, actions: () => [A.talk(talkKeeper2), A.look(['An old Kohen keeping the line of the Ezrat Kohanim.', 'כהן זקן ששומר על הגבול של עזרת כהנים.'])] });
     G.objs.keeper2.group.traverse(m => { if (m.isMesh && m.material.color.getHexString() === '6a587c') m.material = mat(C.linen); });
-    torchPost(2, 3, 0.3, 0); torchPost(5, 3, 0.3, 0);
+    torchPost(2, 1, 0.3, 0); torchPost(5, 1, 0.3, 0);
     exitAt('exit', 8, 2, 'kiyor', ['Into the Ezrat Kohanim', 'אל עזרת כהנים']);
   },
   objective: () => !ST.pass1 ? ['Answer the keeper of the Nikanor Gate', 'לענות לשומר שער ניקנור'] : !ST.pass2 ? ['Answer the keeper of the Kohanim’s court', 'לענות לשומר עזרת כהנים'] : ['Into the Ezrat Kohanim', 'אל עזרת כהנים'],
@@ -2669,6 +2695,12 @@ SCENES.push({
         A.act('light', ['Light the lamps', 'להדליק את הנרות'], lightLamps, !fl('filled'))] });
     for (const [c, r] of [[5, 1], [6, 1]]) { const l = new THREE.PointLight('#ffcf8a', 3, 4, 2); l.position.set(wx(c), 2.2, wz(r)); room.add(l); }
   },
+  tick(dt) {
+    const sp = ST.sparks; if (!sp || REDUCED) return;
+    const a = sp.geometry.attributes.position;
+    for (let i = 0; i < a.count; i++) { let y = a.getY(i) + dt * (0.25 + (i % 7) * 0.05); if (y > 3) y = 0; a.setY(i, y); }
+    a.needsUpdate = true;
+  },
   objective: () => !fl('built') ? ['Make a menorah', 'לעשות מנורה'] : !fl('filled') ? ['Fill the lamps', 'למלא את הנרות'] : ['Light the menorah', 'להדליק את המנורה'],
   async intro() { await lines(['eli', ['No menorah. The Greeks took it.', 'אין מנורה. היוונים לקחו אותה.']], ['eli', ['We have pure oil and no menorah. That might be a first.', 'יש לנו שמן טהור ואין מנורה. זה אולי לראשונה.']]); },
   solution: [{ o: 'spot', a: 'build' }, { o: 'spot', a: 'fill' }, { o: 'spot', a: 'light' }],
@@ -2699,20 +2731,42 @@ async function lightLamps() {
   endTalk();
   const lamps = ST.menorah.userData.lamps;
   for (const l of lamps) { l.userData.flame.visible = true; l.userData.flame.userData.flicker = true; await wait(REDUCED ? 0 : 220); }
-  const glow = new THREE.PointLight('#ffd27a', 0, 6, 2); glow.position.set(wx(2), 2.2, wz(4)); room.add(glow);
-  await animate(800, k => { glow.intensity = k * 10; });
+  const glow = new THREE.PointLight('#ffd27a', 0, 7, 2); glow.position.set(wx(2), 2.2, wz(4)); room.add(glow);
+  await animate(800, k => { glow.intensity = k * 8; });
   take('firepan'); flag('lit');
+  // golden sparks rising from the menorah; each night shows more of them
+  const N = 240, pos = new Float32Array(N * 3), r = rng(5);
+  for (let i = 0; i < N; i++) { pos[i * 3] = (r() - 0.5) * 1.6; pos[i * 3 + 1] = r() * 3; pos[i * 3 + 2] = (r() - 0.5) * 1.6; }
+  const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.BufferAttribute(pos, 3)); geo.setDrawRange(0, 0);
+  const sparks = new THREE.Points(geo, new THREE.PointsMaterial({ color: '#ffd98a', size: 0.06, transparent: true, opacity: 0.85, depthWrite: false }));
+  sparks.position.set(wx(2), 0.4, wz(4)); room.add(sparks); ST.sparks = sparks;
   await lines(['narr', ['Seven lamps, burning. Enough oil for one night.', 'שבעה נרות דולקים. שמן מספיק ללילה אחד.']]);
-  await openModal(() => `<div class="splash nights"><div class="eyebrow">${tx(['The Heichal', 'ההיכל'])}</div><h2 id="nightN">${tx(['Night 1', 'לילה 1'])}</h2><div class="nightbar"><i></i></div><p class="lede" id="nightT">${tx(['The lamps burn through the night.', 'הנרות דולקים כל הלילה.'])}</p><div class="actions">${btn('ok', U.next, true)}</div></div>`, m => {
-    const h = m.querySelector('#nightN'), p = m.querySelector('#nightT'), bar = m.querySelector('.nightbar i');
-    let n = 1;
-    const steps = [['The lamps burn through the night.', 'הנרות דולקים כל הלילה.'], ['Morning. The jug is empty, and the lamps are still burning.', 'בוקר. הכד ריק, והנרות עדיין דולקים.'], ['Far away, olives are being crushed for new pure oil.', 'רחוק מכאן, כותשים זיתים לשמן טהור חדש.'], ['Still burning.', 'עדיין דולקים.'], ['Still burning.', 'עדיין דולקים.'], ['Still burning. People have started coming just to look.', 'עדיין דולקים. אנשים התחילו לבוא רק כדי להסתכל.'], ['The new oil is on its way.', 'השמן החדש בדרך.'], ['The new pure oil arrives. The lamps have burned for eight days.', 'השמן הטהור החדש מגיע. הנרות דלקו שמונה ימים.']];
-    const t = setInterval(() => {
-      if (modal.hidden || n >= 8) { clearInterval(t); return; }
-      n++; h.textContent = tx([`Night ${n}`, `לילה ${n}`]); p.textContent = tx(steps[n - 1]); bar.style.width = (n / 8 * 100) + '%';
-    }, REDUCED ? 30 : 700);
-    bar.style.width = '12.5%';
-  });
+  endTalk();
+  const NIGHTS = [
+    [['The first night', 'הלילה הראשון'], ['Seven lamps, half a log each: exactly enough oil for one night. Eli sits by them until morning.', 'שבעה נרות, חצי לוג לכל אחד: בדיוק מספיק שמן ללילה אחד. אלי יושב לידם עד הבוקר.']],
+    [['The second night', 'הלילה השני'], ['The jug is empty. The lamps should have gone out at dawn. They didn’t. Nobody has added a drop, and they burn on.', 'הכד ריק. הנרות היו צריכים לכבות עם שחר. הם לא כבו. אף אחד לא הוסיף טיפה, והם ממשיכים לדלוק.']],
+    [['The third night', 'הלילה השלישי'], ['In the morning the Kohanim come to tend the lamps, as they do every day. They find them still burning, and still full.', 'בבוקר הכהנים באים להטיב את הנרות, כמו בכל יום. הם מוצאים אותם עדיין דולקים, ועדיין מלאים.']],
+    [['The fourth night', 'הלילה הרביעי'], ['Far off in the hills, Kohanim who stayed tahor are crushing olives for new pure oil. Four days there, four days back.', 'רחוק בהרים, כהנים שנשארו טהורים כותשים זיתים לשמן טהור חדש. ארבעה ימים הלוך, ארבעה ימים חזור.']],
+    [['The fifth night', 'הלילה החמישי'], ['Word has spread through Yerushalayim. People climb the Temple Mount at night just to see the light through the doors of the Heichal.', 'השמועה עברה בכל ירושלים. אנשים עולים להר הבית בלילה רק כדי לראות את האור דרך פתחי ההיכל.']],
+    [['The sixth night', 'הלילה השישי'], ['Yehuda comes to the edge of the courtyard every evening and just watches. He doesn’t say anything. Neither does anyone else.', 'יהודה בא בכל ערב לקצה העזרה ופשוט מסתכל. הוא לא אומר כלום. גם אף אחד אחר לא.']],
+    [['The seventh night', 'הלילה השביעי'], ['Yehuda and the fighters were sprinkled with the Parah Adumah water on the third day and the seventh, and have immersed. At nightfall they are tahor.', 'יהודה והלוחמים הוזו במי פרה אדומה ביום השלישי ובשביעי, וטבלו. עם צאת הכוכבים הם טהורים.']],
+    [['The eighth night', 'הלילה השמיני'], ['The new pure oil arrives. The men who fought for the Mikdash walk into its courtyards, tahor. One small jug has burned for eight nights.', 'השמן הטהור החדש מגיע. האנשים שנלחמו על המקדש נכנסים לעזרות שלו, טהורים. כד קטן אחד דלק שמונה לילות.']],
+  ];
+  const flames = ST.menorah.userData.lamps.map(l => l.userData.flame);
+  for (let n = 1; n <= 8; n++) {
+    // each night: more light, more sparks, bigger flames
+    const from = glow.intensity;
+    await animate(900, k => {
+      glow.intensity = from + ((6 + n * 5) - from) * k;
+      flames.forEach(f => { const g = 1 + (n - 1 + k) * 0.09; f.scale.x = f.scale.z = g; f.userData.flickerBase = g; });
+      renderer.toneMappingExposure = 1.1 + (n - 1 + k) * 0.035;
+    });
+    geo.setDrawRange(0, n * 30);
+    const [title, text] = NIGHTS[n - 1];
+    await openModal(() => `<div class="splash nights" style="--n:${n}"><div class="eyebrow">${tx([`Night ${n} of 8`, `לילה ${n} מתוך 8`])}</div><h2>${tx(title)}</h2>
+      <div class="lights" aria-hidden="true">${Array.from({ length: 8 }, (_, i) => `<i class="${i < n ? 'on' : ''}${i === n - 1 ? ' new' : ''}"></i>`).join('')}</div>
+      <p class="lede">${tx(text)}</p><div class="actions">${btn('ok', n < 8 ? ['Next night ▸', 'ללילה הבא ◂'] : U.next, true)}</div></div>`);
+  }
   await lines(
     ['yehuda', ['(from the Ezrat Yisrael) Eli. They’re still burning.', '(מעזרת ישראל) אלי. הם עדיין דולקים.']],
     ['eli', ['Eight nights. One jug.', 'שמונה לילות. כד אחד.']],
@@ -2744,6 +2798,7 @@ window.__oil = {
     const p = screenPos(v); return [p.x, p.y];
   },
   tileAt: (c, r) => { const p = screenPos(new THREE.Vector3(wx(c), 0, wz(r))); return [p.x, p.y]; },
+  hitAt: (x, y) => { const h = pick({ clientX: x, clientY: y }); return h && (h.oid || h.tile); },
   solution: id => sceneById(id)?.solution,
   scenes: () => SCENES.map(s => s.id),
 };

@@ -17,6 +17,7 @@ window.__oil = {
     const p = screenPos(v); return [p.x, p.y];
   },
   tileAt: (c, r) => { const p = screenPos(new THREE.Vector3(wx(c), 0, wz(r))); return [p.x, p.y]; },
+  hitAt: (x, y) => { const h = pick({ clientX: x, clientY: y }); return h && (h.oid || h.tile); },
   solution: id => sceneById(id)?.solution,
   scenes: () => SCENES.map(s => s.id),
 };

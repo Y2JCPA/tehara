@@ -52,7 +52,7 @@ Object.assign(RULES, {
   },
   eightDays: {
     title: ['Eight days', 'שמונה ימים'],
-    body: ['“They found only one jug of oil lying with the seal of the Kohen Gadol, with enough to light for one day. A miracle happened, and they lit from it for eight days.” The Rambam adds: until they crushed olives and produced pure oil.', '"ולא מצאו אלא פך אחד של שמן שהיה מונח בחותמו של כהן גדול, ולא היה בו אלא להדליק יום אחד. נעשה בו נס והדליקו ממנו שמונה ימים." והרמב"ם מוסיף: עד שכתשו זיתים והוציאו שמן טהור.'],
+    body: ['“They found only one jug of oil lying with the seal of the Kohen Gadol, with enough to light for one day. A miracle happened, and they lit from it for eight days.” The Rambam adds: until they crushed olives and produced pure oil. And so, following Beit Hillel, we add one more light each night of Chanukah: in holiness you go up, not down.', '"ולא מצאו אלא פך אחד של שמן שהיה מונח בחותמו של כהן גדול, ולא היה בו אלא להדליק יום אחד. נעשה בו נס והדליקו ממנו שמונה ימים." והרמב"ם מוסיף: עד שכתשו זיתים והוציאו שמן טהור. ולכן, כבית הלל, מוסיפים בכל לילה של חנוכה עוד נר: מעלין בקודש ואין מורידין.'],
     src: [SRC.shabbat21b, SRC.chanukah32],
   },
 });
@@ -214,14 +214,15 @@ SCENES.push({
   blurb: ['The Nikanor Gate into the Ezrat Yisrael, then the line into the Ezrat Kohanim. Each has a keeper, and each keeper has questions.', 'שער ניקנור אל עזרת ישראל, ואחריו הגבול של עזרת כהנים. לכל אחד יש שומר, ולכל שומר יש שאלות.'],
   start: [0, 2, Math.PI / 2],
   build() {
-    for (let r = 0; r < 6; r++) if (r !== 2) deco(group(mesh(new THREE.BoxGeometry(0.96, 1.9, 0.96), mat(C.stone), 0, 0.95, 0)), 3, r);
-    ST.g1 = K3.gate(0.9, 1.9, false); deco(ST.g1, 3, 2, { ry: Math.PI / 2, block: false }); G.blocked.add(K(3, 2));
+    // low walls and the keepers in front of them, so the camera can see who you're talking to
+    for (let r = 0; r < 6; r++) if (r !== 2) { const h = r < 2 ? 0.9 : 0.35; deco(group(mesh(new THREE.BoxGeometry(0.96, h, 0.96), mat(C.stone), 0, h / 2, 0)), 3, r); }
+    ST.g1 = K3.gate(0.9, 1.5, false); deco(ST.g1, 3, 2, { ry: Math.PI / 2, block: false }); G.blocked.add(K(3, 2));
     for (let r = 0; r < 6; r++) if (r !== 2) deco(K3.fence(1), 6, r, { ry: Math.PI / 2 });
     ST.g2 = K3.gate(0.9, 1.3, false); deco(ST.g2, 6, 2, { ry: Math.PI / 2, block: false }); G.blocked.add(K(6, 2));
-    npc('keeper1', 'keeper', 2, 1, { name: PEOPLE.keeper1.name, actions: () => [A.talk(talkKeeper1), A.look(['The keeper of the Nikanor Gate. He looks like he has asked these questions ten thousand times and enjoyed every one.', 'שומר שער ניקנור. נראה שהוא שאל את השאלות האלה עשרת אלפים פעם ונהנה מכל אחת.'])] });
-    npc('keeper2', 'keeper', 5, 1, { name: PEOPLE.keeper2.name, actions: () => [A.talk(talkKeeper2), A.look(['An old Kohen keeping the line of the Ezrat Kohanim.', 'כהן זקן ששומר על הגבול של עזרת כהנים.'])] });
+    npc('keeper1', 'keeper', 2, 3, { name: PEOPLE.keeper1.name, actions: () => [A.talk(talkKeeper1), A.look(['The keeper of the Nikanor Gate. He looks like he has asked these questions ten thousand times and enjoyed every one.', 'שומר שער ניקנור. נראה שהוא שאל את השאלות האלה עשרת אלפים פעם ונהנה מכל אחת.'])] });
+    npc('keeper2', 'keeper', 5, 4, { name: PEOPLE.keeper2.name, actions: () => [A.talk(talkKeeper2), A.look(['An old Kohen keeping the line of the Ezrat Kohanim.', 'כהן זקן ששומר על הגבול של עזרת כהנים.'])] });
     G.objs.keeper2.group.traverse(m => { if (m.isMesh && m.material.color.getHexString() === '6a587c') m.material = mat(C.linen); });
-    torchPost(2, 3, 0.3, 0); torchPost(5, 3, 0.3, 0);
+    torchPost(2, 1, 0.3, 0); torchPost(5, 1, 0.3, 0);
     exitAt('exit', 8, 2, 'kiyor', ['Into the Ezrat Kohanim', 'אל עזרת כהנים']);
   },
   objective: () => !ST.pass1 ? ['Answer the keeper of the Nikanor Gate', 'לענות לשומר שער ניקנור'] : !ST.pass2 ? ['Answer the keeper of the Kohanim’s court', 'לענות לשומר עזרת כהנים'] : ['Into the Ezrat Kohanim', 'אל עזרת כהנים'],
@@ -343,6 +344,12 @@ SCENES.push({
         A.act('light', ['Light the lamps', 'להדליק את הנרות'], lightLamps, !fl('filled'))] });
     for (const [c, r] of [[5, 1], [6, 1]]) { const l = new THREE.PointLight('#ffcf8a', 3, 4, 2); l.position.set(wx(c), 2.2, wz(r)); room.add(l); }
   },
+  tick(dt) {
+    const sp = ST.sparks; if (!sp || REDUCED) return;
+    const a = sp.geometry.attributes.position;
+    for (let i = 0; i < a.count; i++) { let y = a.getY(i) + dt * (0.25 + (i % 7) * 0.05); if (y > 3) y = 0; a.setY(i, y); }
+    a.needsUpdate = true;
+  },
   objective: () => !fl('built') ? ['Make a menorah', 'לעשות מנורה'] : !fl('filled') ? ['Fill the lamps', 'למלא את הנרות'] : ['Light the menorah', 'להדליק את המנורה'],
   async intro() { await lines(['eli', ['No menorah. The Greeks took it.', 'אין מנורה. היוונים לקחו אותה.']], ['eli', ['We have pure oil and no menorah. That might be a first.', 'יש לנו שמן טהור ואין מנורה. זה אולי לראשונה.']]); },
   solution: [{ o: 'spot', a: 'build' }, { o: 'spot', a: 'fill' }, { o: 'spot', a: 'light' }],
@@ -373,20 +380,42 @@ async function lightLamps() {
   endTalk();
   const lamps = ST.menorah.userData.lamps;
   for (const l of lamps) { l.userData.flame.visible = true; l.userData.flame.userData.flicker = true; await wait(REDUCED ? 0 : 220); }
-  const glow = new THREE.PointLight('#ffd27a', 0, 6, 2); glow.position.set(wx(2), 2.2, wz(4)); room.add(glow);
-  await animate(800, k => { glow.intensity = k * 10; });
+  const glow = new THREE.PointLight('#ffd27a', 0, 7, 2); glow.position.set(wx(2), 2.2, wz(4)); room.add(glow);
+  await animate(800, k => { glow.intensity = k * 8; });
   take('firepan'); flag('lit');
+  // golden sparks rising from the menorah; each night shows more of them
+  const N = 240, pos = new Float32Array(N * 3), r = rng(5);
+  for (let i = 0; i < N; i++) { pos[i * 3] = (r() - 0.5) * 1.6; pos[i * 3 + 1] = r() * 3; pos[i * 3 + 2] = (r() - 0.5) * 1.6; }
+  const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.BufferAttribute(pos, 3)); geo.setDrawRange(0, 0);
+  const sparks = new THREE.Points(geo, new THREE.PointsMaterial({ color: '#ffd98a', size: 0.06, transparent: true, opacity: 0.85, depthWrite: false }));
+  sparks.position.set(wx(2), 0.4, wz(4)); room.add(sparks); ST.sparks = sparks;
   await lines(['narr', ['Seven lamps, burning. Enough oil for one night.', 'שבעה נרות דולקים. שמן מספיק ללילה אחד.']]);
-  await openModal(() => `<div class="splash nights"><div class="eyebrow">${tx(['The Heichal', 'ההיכל'])}</div><h2 id="nightN">${tx(['Night 1', 'לילה 1'])}</h2><div class="nightbar"><i></i></div><p class="lede" id="nightT">${tx(['The lamps burn through the night.', 'הנרות דולקים כל הלילה.'])}</p><div class="actions">${btn('ok', U.next, true)}</div></div>`, m => {
-    const h = m.querySelector('#nightN'), p = m.querySelector('#nightT'), bar = m.querySelector('.nightbar i');
-    let n = 1;
-    const steps = [['The lamps burn through the night.', 'הנרות דולקים כל הלילה.'], ['Morning. The jug is empty, and the lamps are still burning.', 'בוקר. הכד ריק, והנרות עדיין דולקים.'], ['Far away, olives are being crushed for new pure oil.', 'רחוק מכאן, כותשים זיתים לשמן טהור חדש.'], ['Still burning.', 'עדיין דולקים.'], ['Still burning.', 'עדיין דולקים.'], ['Still burning. People have started coming just to look.', 'עדיין דולקים. אנשים התחילו לבוא רק כדי להסתכל.'], ['The new oil is on its way.', 'השמן החדש בדרך.'], ['The new pure oil arrives. The lamps have burned for eight days.', 'השמן הטהור החדש מגיע. הנרות דלקו שמונה ימים.']];
-    const t = setInterval(() => {
-      if (modal.hidden || n >= 8) { clearInterval(t); return; }
-      n++; h.textContent = tx([`Night ${n}`, `לילה ${n}`]); p.textContent = tx(steps[n - 1]); bar.style.width = (n / 8 * 100) + '%';
-    }, REDUCED ? 30 : 700);
-    bar.style.width = '12.5%';
-  });
+  endTalk();
+  const NIGHTS = [
+    [['The first night', 'הלילה הראשון'], ['Seven lamps, half a log each: exactly enough oil for one night. Eli sits by them until morning.', 'שבעה נרות, חצי לוג לכל אחד: בדיוק מספיק שמן ללילה אחד. אלי יושב לידם עד הבוקר.']],
+    [['The second night', 'הלילה השני'], ['The jug is empty. The lamps should have gone out at dawn. They didn’t. Nobody has added a drop, and they burn on.', 'הכד ריק. הנרות היו צריכים לכבות עם שחר. הם לא כבו. אף אחד לא הוסיף טיפה, והם ממשיכים לדלוק.']],
+    [['The third night', 'הלילה השלישי'], ['In the morning the Kohanim come to tend the lamps, as they do every day. They find them still burning, and still full.', 'בבוקר הכהנים באים להטיב את הנרות, כמו בכל יום. הם מוצאים אותם עדיין דולקים, ועדיין מלאים.']],
+    [['The fourth night', 'הלילה הרביעי'], ['Far off in the hills, Kohanim who stayed tahor are crushing olives for new pure oil. Four days there, four days back.', 'רחוק בהרים, כהנים שנשארו טהורים כותשים זיתים לשמן טהור חדש. ארבעה ימים הלוך, ארבעה ימים חזור.']],
+    [['The fifth night', 'הלילה החמישי'], ['Word has spread through Yerushalayim. People climb the Temple Mount at night just to see the light through the doors of the Heichal.', 'השמועה עברה בכל ירושלים. אנשים עולים להר הבית בלילה רק כדי לראות את האור דרך פתחי ההיכל.']],
+    [['The sixth night', 'הלילה השישי'], ['Yehuda comes to the edge of the courtyard every evening and just watches. He doesn’t say anything. Neither does anyone else.', 'יהודה בא בכל ערב לקצה העזרה ופשוט מסתכל. הוא לא אומר כלום. גם אף אחד אחר לא.']],
+    [['The seventh night', 'הלילה השביעי'], ['Yehuda and the fighters were sprinkled with the Parah Adumah water on the third day and the seventh, and have immersed. At nightfall they are tahor.', 'יהודה והלוחמים הוזו במי פרה אדומה ביום השלישי ובשביעי, וטבלו. עם צאת הכוכבים הם טהורים.']],
+    [['The eighth night', 'הלילה השמיני'], ['The new pure oil arrives. The men who fought for the Mikdash walk into its courtyards, tahor. One small jug has burned for eight nights.', 'השמן הטהור החדש מגיע. האנשים שנלחמו על המקדש נכנסים לעזרות שלו, טהורים. כד קטן אחד דלק שמונה לילות.']],
+  ];
+  const flames = ST.menorah.userData.lamps.map(l => l.userData.flame);
+  for (let n = 1; n <= 8; n++) {
+    // each night: more light, more sparks, bigger flames
+    const from = glow.intensity;
+    await animate(900, k => {
+      glow.intensity = from + ((6 + n * 5) - from) * k;
+      flames.forEach(f => { const g = 1 + (n - 1 + k) * 0.09; f.scale.x = f.scale.z = g; f.userData.flickerBase = g; });
+      renderer.toneMappingExposure = 1.1 + (n - 1 + k) * 0.035;
+    });
+    geo.setDrawRange(0, n * 30);
+    const [title, text] = NIGHTS[n - 1];
+    await openModal(() => `<div class="splash nights" style="--n:${n}"><div class="eyebrow">${tx([`Night ${n} of 8`, `לילה ${n} מתוך 8`])}</div><h2>${tx(title)}</h2>
+      <div class="lights" aria-hidden="true">${Array.from({ length: 8 }, (_, i) => `<i class="${i < n ? 'on' : ''}${i === n - 1 ? ' new' : ''}"></i>`).join('')}</div>
+      <p class="lede">${tx(text)}</p><div class="actions">${btn('ok', n < 8 ? ['Next night ▸', 'ללילה הבא ◂'] : U.next, true)}</div></div>`);
+  }
   await lines(
     ['yehuda', ['(from the Ezrat Yisrael) Eli. They’re still burning.', '(מעזרת ישראל) אלי. הם עדיין דולקים.']],
     ['eli', ['Eight nights. One jug.', 'שמונה לילות. כד אחד.']],
