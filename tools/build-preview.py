@@ -3,7 +3,7 @@ from pathlib import Path
 import re
 
 root = Path(__file__).resolve().parents[1]
-html = (root / 'index.html').read_text()
+html = (root / 'classic.html').read_text()
 html = html.replace('<link rel="stylesheet" href="css/rebuild.css">', '<style>' + (root / 'css/rebuild.css').read_text() + '</style>')
 for path in ['js/engine/tumah.js', 'js/rebuild/levels.js', 'js/rebuild/art.js', 'js/rebuild/app.js']:
     html = html.replace(f'<script src="{path}"></script>', '<script>' + (root / path).read_text().replace('</script', '<\\/script') + '</script>')

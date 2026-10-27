@@ -1,11 +1,11 @@
 {
-  "name": "Tehara · The road to Jerusalem",
+  "name": "Tehara · The Last Jug",
   "short_name": "Tehara",
-  "description": "An illustrated puzzle adventure about tumah and taharah.",
+  "description": "A Chanukah point-and-click adventure about tumah and taharah.",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#f7f4eb",
-  "theme_color": "#244e42",
+  "background_color": "#141a2a",
+  "theme_color": "#141a2a",
   "icons": [
     {
       "src": "icon.svg",
