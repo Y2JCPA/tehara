@@ -1,6 +1,6 @@
 # Tehara: The Last Jug (פך השמן): design draft for the new direction
 
-**Status:** draft, third pass. One test scene is built (`oil/`, see §7); the rest isn't yet. Once it's built, this becomes the main game; the current puzzles (`index.html`) and the 3D version (`legacy.html`) stay reachable from a menu.
+**Status:** the whole game is built and playable in English and Hebrew: [`oil/`](../oil/), 17 scenes (§5a). The current puzzles (`index.html`) and the 3D version (`legacy.html`) are untouched; once this is reviewed it becomes the main game.
 
 **Decided so far**
 - **Story:** Eli, a young Kohen, finds the one jug of pure oil in the Beit HaMikdash after the Chanukah battles and carries it to the menorah. Yehuda HaMaccabi is tamei met from the fighting, so he sends Eli.
@@ -204,6 +204,34 @@ The Ezrat Nashim is a hub with four corner chambers (Mishnah Middot 2:5). Scenes
 **Why eight days?** Night by night the lamps keep burning while olives are pressed for new pure oil (Rambam Chanukah 3:2). The notebook gives the explanations: the olives were four days away (Ran, Maharsha), or everyone was tamei met and needed seven days.
 
 ---
+
+## 5a. What's built (17 scenes)
+
+The plan in §5 was trimmed to 17 scenes so every one has a real puzzle. Changes from the plan: Yochanan of the seals stands in the Ezrat Nashim instead of having his own scene; the "three shelves" lesson moved into the courtyard warm-up (a baker's apprentice with unwashed hands, a terumah loaf and a cup of wine); the wood inspector gives Eli the nazir's razor and a wedge stone; and the spears, signed for as three, turn out to be seven.
+
+| # | Scene | The puzzle | Source |
+|---|---|---|---|
+| 1 | The Supply Camp | Tutorial; sign for the spears | |
+| 2 | Across the Battlefield | The only bridge is under a tent over one of the fallen; build another with a plank. The sword is "like the met" | Bamidbar 19:14, 16; Rambam Tumat Met 5:3, 12:1 |
+| 3 | Yehuda's Tent | Yehuda keeps his distance; *dechuyah* vs *hutrah*; don't shake Avner's hand | Yoma 6b; Rambam Bi'at HaMikdash 4:15; Mishnah Kelim 1:1 |
+| 4 | The Market Awning | Avner's tarp joins the awning over a fallen fighter into one roof | Rambam Tumat Met 12:1 |
+| 5 | Bones in the Rubble | Pushing the crate would move a barley-sized bone; Avner buries it | Rambam Tumat Met 2:9-10 |
+| 6 | Philo's Stall | Owl seals; a live mouse | Shabbat 21b with Rashi; Vayikra 11:31 |
+| 7 | The Cheil Gate | Wake the sleeping guard with Gevini's call; a duel about tumat met | Mishnah Middot 1:2; Yoma 20b; Mishnah Kelim 1:8 |
+| 8 | The Ezrat Nashim (hub) | Unwashed hands: chullin stays tahor, terumah is Shlishi, wine is Rishon | Rambam She'ar Avot HaTumot 8:8, 11:2-3; Mishnah Parah 8:7 |
+| 9 | The Nazirites' Chamber | Return the razor; the hair goes under the pot; the lamp is lit | Mishnah Nazir 6:8; Middot 2:5 |
+| 10 | The Wood Chamber | Find the log with no worms | Mishnah Middot 2:5 |
+| 11 | Beit Shemaniya | The tumah ladder, the seal, the hidden jug, the duel | (the original test scene) |
+| 12 | Sealed Is Safe | An open window of a tefach brings tumah into the passage room; close the shutter | Rambam Tumat Met 14:1; Bamidbar 19:15 |
+| 13 | The Door That Stands by Itself | A Levi holding the door shut doesn't count; a wedged stone does | Mishnah Oholot 6:1 |
+| 14 | Philo's Last Offer | Duel: seals, "half and half", *dechuyah* | Rambam Tumat Okhalin 4:2 |
+| 15 | The Gates | Who may enter each courtyard | Mishnah Kelim 1:8-9 |
+| 16 | The Kiyor | Water that stood overnight; Ben Katin's machine; wash; fire from the outer mizbe'ach | Mishnah Yoma 3:10; Shemot 30:19-21; Yoma 45b |
+| 17 | Spears and Lamps | Build the menorah from iron spears (straight branches, as the Rambam drew it); half a log per lamp; eight nights | Rosh Hashanah 24b; Mishnah Menachot 9:3; Shabbat 21b; Rambam Chanukah 3:2 |
+
+**How it's put together.** The sources are in `oil/src/` (engine, one file per act); `python3 tools/build-oil.py` concatenates them into `oil/game.js`, and `python3 tools/build-oil.py OUT.html` also writes a single shareable page. Progress, the notebook and the language choice are saved on the device; the title screen has New game, Continue and Chapters.
+
+**Testing.** `tests/e2e/oil.e2e.cjs` starts a new game from the title screen and plays every scene through the real interface, wrong answers included, until it is back at the title screen: `node tests/e2e/oil.e2e.cjs en` or `he`, with optional width and height.
 
 ## 6. Handling the war
 

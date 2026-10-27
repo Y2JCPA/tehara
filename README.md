@@ -13,6 +13,10 @@ No build, account, server API, or installation is required. All artwork is local
 
 ![The rebuilt Tehara home screen](artifacts/home-desktop.png)
 
+## The Last Jug (new, in progress)
+
+A point-and-click adventure in low-poly 3D, in English and Hebrew: Eli, a young Kohen, finds the one sealed jug of pure oil after the Chanukah battles and carries it to the menorah. Seventeen scenes, the full ladder of tumah (Av, Rishon, Sheni, Shlishi, Revi'i), and a lot of arguing. Open **[oil/](oil/)** with the local server running. Design and sources: [docs/OIL_QUEST.md](docs/OIL_QUEST.md). Build with `python3 tools/build-oil.py`; test with `node tests/e2e/oil.e2e.cjs en` (or `he`).
+
 ## The rebuilt game
 
 - **10 road puzzles:** bridge tutorial, shared roofs, moving bones, overhanging branches, steady stepping stones, blowing and choosing footsteps, lime markings, a lost grave, immersion and nightfall, and carrying terumah across a plowed-grave field.
