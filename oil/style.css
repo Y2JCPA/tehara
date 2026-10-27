@@ -287,3 +287,14 @@ body.talking #caption { opacity: 0; }
 .nightbar i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--gold-deep), var(--gold)); transition: width .6s ease; }
 .nights h2 { font-variant-numeric: tabular-nums; }
 #objective[hidden] { display: none !important; }
+/* the eight nights: a light for each night, and a card that glows a little more each time */
+#modal:has(.nights) { background: linear-gradient(to bottom, transparent 40%, rgba(8, 9, 16, .55)); place-items: end center; }   /* low on the screen, so the menorah shows above it */
+.card:has(.nights) { box-shadow: 0 20px 60px #000b, 0 0 calc(var(--n, 1) * 14px) rgba(226, 176, 74, .35); border-color: color-mix(in srgb, var(--gold) 60%, transparent); }
+.nights { --n: 1; }
+.nights h2 { color: color-mix(in srgb, var(--gold) calc(var(--n) * 12%), var(--ink)); }
+.lights { display: flex; gap: 10px; margin: 6px 0 14px; }
+.lights i { width: 16px; height: 26px; border-radius: 50% 50% 45% 45% / 65% 65% 35% 35%; background: rgba(255,255,255,.08); }
+.lights i.on { background: radial-gradient(circle at 50% 70%, #fff4c2, var(--gold) 55%, var(--gold-deep)); box-shadow: 0 0 calc(4px + var(--n) * 2px) var(--gold); }
+.lights i.new { animation: newlight .9s ease-out; }
+@keyframes newlight { from { transform: scale(.2); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+html[dir="rtl"] .lights { direction: rtl; }
