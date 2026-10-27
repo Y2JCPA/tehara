@@ -23,6 +23,15 @@
   color-scheme: dark;
 }
 html, body { height: 100%; }
+/* Hebrew: Hebrew faces, no faux italics, everything else follows dir="rtl" */
+html[lang="he"] {
+  --f-display: "Frank Ruhl Libre", "David", "Times New Roman", serif;
+  --f-ui: "Assistant", "Arial Hebrew", "Segoe UI", system-ui, sans-serif;
+}
+html[lang="he"] em, html[lang="he"] #caption, html[lang="he"] .bubble { font-style: normal; }
+html[lang="he"] .place .eyebrow, html[lang="he"] .card .eyebrow, html[lang="he"] #dlg .who, html[lang="he"] .nb h3 { letter-spacing: 0; }
+#btn-lang { font-family: var(--f-he); font-size: 15px; }
+html[lang="he"] #btn-lang { font-family: var(--f-ui); }
 [hidden] { display: none !important; }
 body {
   margin: 0; overflow: hidden; background: var(--night); color: var(--ink);
