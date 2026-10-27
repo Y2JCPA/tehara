@@ -40,6 +40,17 @@ const SRC = {
   oholot61: sef('Mishnah_Oholot.6.1', 'Mishnah Oholot 6:1', 'משנה אהלות ו, א'),
   parah87: sef('Mishnah_Parah.8.7', 'Mishnah Parah 8:7', 'משנה פרה ח, ז'),
   tevulYom22: sef('Mishnah_Tevul_Yom.2.2', 'Mishnah Tevul Yom 2:2', 'משנה טבול יום ב, ב'),
+  tevulYom42: sef('Mishnah_Tevul_Yom.4.2', 'Mishnah Tevul Yom 4:2', 'משנה טבול יום ד, ב'),
+  kelim15: sef('Mishnah_Kelim.1.5', 'Mishnah Kelim 1:5', 'משנה כלים א, ה'),
+  negaim143: sef('Mishnah_Negaim.14.3', 'Mishnah Negaim 14:3', 'משנה נגעים יד, ג'),
+  parah37: sef('Mishnah_Parah.3.7', 'Mishnah Parah 3:7', 'משנה פרה ג, ז'),
+  zavim512: sef('Mishnah_Zavim.5.12', 'Mishnah Zavim 5:12', 'משנה זבים ה, יב'),
+  oholot171: sef('Mishnah_Oholot.17.1', 'Mishnah Oholot 17:1', 'משנה אהלות יז, א'),
+  oholot185: sef('Mishnah_Oholot.18.5', 'Mishnah Oholot 18:5', 'משנה אהלות יח, ה'),
+  oholot186: sef('Mishnah_Oholot.18.6', 'Mishnah Oholot 18:6', 'משנה אהלות יח, ו'),
+  maaserSheni51: sef('Mishnah_Maaser_Sheni.5.1', 'Mishnah Ma’aser Sheni 5:1', 'משנה מעשר שני ה, א'),
+  pesachim92b: sef('Pesachim.92b', 'Pesachim 92b', 'פסחים צב:'),
+  chagigah25b: sef('Chagigah.25b', 'Chagigah 25b', 'חגיגה כה:'),
   middot12: sef('Mishnah_Middot.1.2', 'Mishnah Middot 1:2', 'משנה מידות א, ב'),
   middot25: sef('Mishnah_Middot.2.5', 'Mishnah Middot 2:5', 'משנה מידות ב, ה'),
   nazir68: sef('Mishnah_Nazir.6.8', 'Mishnah Nazir 6:8', 'משנה נזיר ו, ח'),
@@ -319,6 +330,37 @@ const K3 = {
     for (let i = 0; i < 3; i++) g.add(mesh(new THREE.IcosahedronGeometry(0.35 + r() * 0.15, 0), mat(i % 2 ? '#7d8a55' : '#6c7a4a'), (r() - 0.5) * 0.4, 1.0 + r() * 0.3, (r() - 0.5) * 0.4));
     return g;
   },
+  // a four-legged animal: 'ox' is broad with horns; 'donkey' is small, with long ears and knobbly knees
+  beast(kind = 'ox') {
+    const ox = kind === 'ox', col = ox ? '#7a5638' : '#8d8579', g = new THREE.Group();
+    const w = ox ? 0.42 : 0.3, h = ox ? 0.36 : 0.28, len = ox ? 0.95 : 0.75, legH = ox ? 0.42 : 0.4;
+    g.add(mesh(new THREE.BoxGeometry(w, h, len), mat(col), 0, legH + h / 2, 0));
+    for (const sx of [-1, 1]) for (const sz of [-1, 1]) {
+      const leg = mesh(new THREE.BoxGeometry(ox ? 0.11 : 0.07, legH, ox ? 0.11 : 0.07), mat(ox ? '#5e4129' : '#77705f'), sx * (w / 2 - 0.06), legH / 2, sz * (len / 2 - 0.1));
+      if (!ox) leg.rotation.z = sx * 0.12;   // knock-kneed
+      g.add(leg);
+    }
+    const head = mesh(new THREE.BoxGeometry(ox ? 0.3 : 0.2, ox ? 0.26 : 0.2, ox ? 0.34 : 0.36), mat(col), 0, legH + h * (ox ? 0.8 : 1.1), len / 2 + 0.12);
+    head.rotation.x = ox ? 0.25 : -0.2; g.add(head);
+    if (ox) for (const sx of [-1, 1]) { const horn = mesh(new THREE.ConeGeometry(0.04, 0.22, 5), mat('#e8dcc0'), sx * 0.2, legH + h + 0.05, len / 2 + 0.06); horn.rotation.z = -sx * 1.1; g.add(horn); }
+    else for (const sx of [-1, 1]) { const ear = mesh(new THREE.ConeGeometry(0.04, 0.24, 4), mat(col), sx * 0.07, legH + h + 0.2, len / 2 + 0.06); ear.rotation.z = -sx * 0.25; g.add(ear); }
+    const tail = mesh(new THREE.CylinderGeometry(0.015, 0.02, 0.32, 4), mat(col), 0, legH + h * 0.5, -len / 2 - 0.05); tail.rotation.x = 0.4; g.add(tail);
+    g.userData.top = legH + h + 0.1;
+    return g;
+  },
+  // a flat stepping stone; 'wobbly' ones sit a little crooked
+  stepStone(r, wobbly = false) {
+    const s = mesh(new THREE.DodecahedronGeometry(0.34, 0), mat(wobbly ? '#bfb3a0' : '#b8ab96')); s.scale.set(1.1, 0.22, 1); s.position.y = 0.05;
+    if (wobbly) { s.rotation.z = 0.12; s.rotation.x = -0.08; }
+    s.rotation.y = r() * 3; return group(s);
+  },
+  // ploughed furrows over one tile, with little white chips in them
+  furrows(r, chips = 3) {
+    const g = new THREE.Group();
+    for (let i = 0; i < 3; i++) g.add(mesh(new THREE.BoxGeometry(0.92, 0.07, 0.12), mat('#7d6342'), 0, 0.02, -0.3 + i * 0.3, false));
+    for (let i = 0; i < chips; i++) g.add(mesh(new THREE.BoxGeometry(0.035, 0.02, 0.05), mat('#efe6d2'), (r() - 0.5) * 0.8, 0.07, (r() - 0.5) * 0.8, false));
+    return g;
+  },
   mouse() {
     const g = new THREE.Group();
     const b = mesh(new THREE.IcosahedronGeometry(0.07, 0), mat(C.mouse)); b.scale.set(0.9, 0.7, 1.4); b.position.y = 0.05; g.add(b);
@@ -403,4 +445,6 @@ const CAST = {
   baker: () => person({ robe: '#e6d6b8', head: 'cap', headColor: '#cbb48a', scale: 0.9 }),
   shimi: () => person({ robe: '#6a587c', head: 'wrap', headColor: '#8a6a4a', beard: '#6a5a4a' }),
   keeper: () => person({ robe: '#6a587c', head: 'wrap', headColor: '#4a3a5a', beard: C.beard, prop: 'staff' }),
+  farmer: () => person({ robe: '#8a7048', head: 'wrap', headColor: '#c9b48a', beard: '#6a4a2e', scale: 1.05 }),
+  tuvia: () => person({ robe: C.linen, head: 'turban', beard: '#5a3a22', pose: 'sit' }),
 };

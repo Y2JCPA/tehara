@@ -298,3 +298,10 @@ body.talking #caption { opacity: 0; }
 .lights i.new { animation: newlight .9s ease-out; }
 @keyframes newlight { from { transform: scale(.2); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 html[dir="rtl"] .lights { direction: rtl; }
+/* sorting a basket: one row per item, a button for each answer */
+.sortlist { display: grid; gap: 10px; margin: 10px 0 4px; }
+.sortrow { display: grid; gap: 6px; padding: 10px 12px; border-radius: 12px; background: rgba(255,255,255,.04); }
+.sortrow span { display: flex; flex-wrap: wrap; gap: 6px; }
+.sortrow .btn { padding: 6px 12px; font-size: .92em; }
+.sortrow.done { opacity: .7; }
+.sortrow.done span { color: var(--good); }
