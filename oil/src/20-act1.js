@@ -279,7 +279,7 @@ SCENES.push({
     for (const [id, [c, rr, wob]] of Object.entries(PRAS_STONES)) {
       addObj(id, { name: ['A stepping stone', 'אבן דריכה'], tiles: [[c, rr]], solid: false, group: K3.stepStone(r, wob), at: [c, rr], anchorY: 0.5, hit: [0.7, 0.25, 0.7], range: 1,
         actions: () => [A.look(ST.tested[id] === 'firm' ? ['Firm. It doesn’t budge.', 'יציבה. לא זזה.'] : ST.tested[id] === 'wobbly' ? ['It rocks. Not stepping on that.', 'מתנדנדת. עליה אני לא דורך.'] : ['A flat stone in the furrows. Is it firm, or does it rock?', 'אבן שטוחה בין התלמים. היא יציבה, או מתנדנדת?']),
-          A.act('test', ['Test it with a spear', 'לבדוק אותה עם רומח'], () => testStone(id, wob), !!ST.tested[id] || !ST.knows),
+          A.act('test', ['Test it with a spear', 'לבדוק אותה עם רומח'], () => testStone(id, wob), !!ST.tested[id]),
           A.act('step', ['Step onto it', 'לעלות עליה'], async () => { const p = bfs(startOf(), [c, rr]); if (p) await walkPath(p); else await speak('eli', U.cantGet); }, ST.tested[id] !== 'firm')] });
     }
     // Gidi, his donkey and his ox, on the paved part
@@ -295,27 +295,42 @@ SCENES.push({
     const field = [];
     for (let c = 2; c <= 6; c++) for (let rr = 1; rr < 6; rr++) if (!PRAS_PATCH.some(t => t[0] === c && t[1] === rr) && (s.tested || {})[Object.keys(PRAS_STONES).find(k => PRAS_STONES[k][0] === c && PRAS_STONES[k][1] === rr)] !== 'firm') field.push([c, rr]);
     const path = [2, 3, 4, 5, 6].map(c => [c, 0]);
-    if (!s.knows) return [{ tiles: [...field, ...path], why: ['Fresh furrows, full of little white chips. And that stone by the edge looks like a grave marker. I should look at it before I take one step in there.', 'תלמים טריים, מלאים שבבים לבנים קטנים. והאבן ההיא בקצה נראית כמו ציון של קבר. כדאי שאסתכל עליה לפני שאני עושה צעד אחד לשם.'] }];
+    const stoneAt = t => Object.keys(PRAS_STONES).find(k => PRAS_STONES[k][0] === t[0] && PRAS_STONES[k][1] === t[1]);
+    const tested = s.tested || {};
+    const dirt = field.filter(t => !stoneAt(t)), wobbly = field.filter(t => tested[stoneAt(t)] === 'wobbly'), untested = field.filter(t => stoneAt(t) && !tested[stoneAt(t)]);
+    const stoneHint = [
+      { tiles: untested, why: ['A stepping stone. Before I trust it, I’ll tap it with the butt of a spear and see if it rocks. (Tap the stone.)', 'אבן דריכה. לפני שאני סומך עליה, אדפוק עליה עם קת של רומח ואראה אם היא מתנדנדת. (הקש על האבן.)'] },
+      { tiles: wobbly, why: ['That stone rocks. Stepping on it would shift the earth under it. I need firm ones.', 'האבן הזאת מתנדנדת. לדרוך עליה זה להזיז את האדמה שמתחתיה. אני צריך יציבות.'], lesson: 'firmFooting' },
+    ];
+    if (!s.knows) return [...stoneHint, { tiles: [...dirt, ...path], why: ['Fresh furrows, full of little white chips. I’m not putting a foot in there. Those flat stepping stones might be a way across, if they’re firm.', 'תלמים טריים, מלאים שבבים לבנים קטנים. אני לא שם רגל שם. אבני הדריכה השטוחות האלה אולי יהיו דרך לעבור, אם הן יציבות.'] }];
     return [
-      { tiles: field, why: ['A beit haperas. If my foot shifts a chip of bone the size of a barley grain, I’m tamei, and I can’t go up to the Mikdash today.', 'בית הפרס. אם הרגל שלי תזיז שבב עצם בגודל גרגר שעורה, אני טמא, ולא אוכל לעלות למקדש היום.'], lesson: 'beitPras' },
+      ...stoneHint,
+      { tiles: dirt, why: ['A beit haperas. If my foot shifts a chip of bone the size of a barley grain, I’m tamei, and I can’t go up to the Mikdash today.', 'בית הפרס. אם הרגל שלי תזיז שבב עצם בגודל גרגר שעורה, אני טמא, ולא אוכל לעלות למקדש היום.'], lesson: 'beitPras' },
       { tiles: path, why: ['A path trodden flat by everyone who cut across. A trodden beit haperas counts as tahor, but only for someone on his way to bring his korban Pesach. It’s Kislev.', 'שביל שנדרך על ידי כל מי שקיצר דרכו. בית הפרס שנדש טהור, אבל רק למי שבדרך להקריב את קרבן הפסח שלו. עכשיו כסלו.'], lesson: 'nofeach' },
     ];
   },
-  objective: () => !ST.knows ? ['Find a way across the field to Yehuda’s tent', 'למצוא דרך לחצות את השדה לאוהל של יהודה']
-    : !PRAS_PATCH.some(t => t[0] === eli.c && t[1] === eli.r) && !ST.crossed && !ST.fixed ? ['Find firm stones out to Gidi, the ploughman', 'למצוא אבנים יציבות עד גידי החורש']
+  objective: () => !PRAS_PATCH.some(t => t[0] === eli.c && t[1] === eli.r) && !ST.crossed && !ST.fixed ? ['Tap the stepping stones with a spear to find a firm way out to Gidi', 'לדפוק על אבני הדריכה עם רומח ולמצוא דרך יציבה עד גידי']
       : !ST.fixed ? ['Talk to Gidi', 'לדבר עם גידי'] : !ST.crossed ? ['Ride across the rest of the field', 'לרכוב על פני שאר השדה'] : ['Go on to Yehuda’s tent', 'להמשיך לאוהל של יהודה'],
   async intro() {
-    await lines(['farmer', ['(from the middle of the field) KOHEN! Don’t step in my field! I ploughed up a grave this morning!', '(מאמצע השדה) כהן! אל תדרוך לי בשדה! חרשתי היום בבוקר קבר!']], ['eli', ['You... ploughed up a grave.', 'חרשת... קבר.']], ['farmer', ['Didn’t know it was there! Nobody had marked it! I’ve marked it NOW.', 'לא ידעתי שהוא שם! אף אחד לא סימן אותו! עכשיו סימנתי.']]);
+    await lines(['farmer', ['(from the middle of the field) KOHEN! Don’t step in my field! I ploughed up a grave this morning!', '(מאמצע השדה) כהן! אל תדרוך לי בשדה! חרשתי היום בבוקר קבר!']], ['eli', ['You... ploughed up a grave.', 'חרשת... קבר.']], ['farmer', ['Didn’t know it was there! Nobody had marked it! I’ve marked it NOW. Come out on the stepping stones, but mind, some of them rock!', 'לא ידעתי שהוא שם! אף אחד לא סימן אותו! עכשיו סימנתי. בוא על אבני הדריכה, אבל זהירות, חלק מהן מתנדנדות!']], ['eli', ['Then I’ll tap each one with the butt of a spear before I step on it.', 'אז אדפוק על כל אחת עם קת של רומח לפני שאני דורך עליה.']]);
   },
-  solution: [{ o: 'marker', a: 'look' }, { o: 's22', a: 'test' }, { o: 's24', a: 'test' }, { o: 's34', a: 'test' }, { tile: [4, 4] }, { o: 'farmer', a: 'talk' }, { o: 'donkey', a: 'ride' }, { o: 'ox', a: 'ride' }, { o: 'exit' }],
+  solution: [{ o: 's22', a: 'test' }, { o: 's32', a: 'test' }, { o: 'marker', a: 'look' }, { o: 's24', a: 'test' }, { o: 's34', a: 'test' }, { tile: [4, 4] }, { o: 'farmer', a: 'talk' }, { o: 'donkey', a: 'ride' }, { o: 'ox', a: 'ride' }, { o: 'exit' }],
 });
 async function testStone(id, wob) {
   const g = G.objs[id].group;
   await animate(500, k => { g.rotation.z = wob ? Math.sin(k * Math.PI * 4) * 0.12 : 0; g.position.y = wob ? 0 : -Math.sin(k * Math.PI) * 0.01; });
   ST.tested[id] = wob ? 'wobbly' : 'firm';
+  // mark it so the player can see the answer: a pale stone with a gold ring for firm, a dark one for wobbly
+  g.children[0].material = mat(wob ? '#7d6a5e' : '#e6dcc4');
+  if (!wob) g.add(mesh(new THREE.RingGeometry(0.36, 0.43, 16).rotateX(-Math.PI / 2), basic('#ffd67a', { transparent: true, opacity: 0.8 }), 0, 0.03, 0, false));
   if (wob) await speak('eli', ['(tap) It rocks. Stand on that and the earth under it shifts, and whatever is in the earth. That’s as good as walking in the furrows.', '(טק) מתנדנדת. לעמוד עליה זה להזיז את האדמה שמתחתיה, וכל מה שיש בה. זה כמו ללכת בתלמים.']);
   else await speak('eli', ['(tap) Solid. A stone that doesn’t move doesn’t move anything under it.', '(טק) יציבה. אבן שלא זזה לא מזיזה שום דבר שמתחתיה.']);
   refresh();
+  if (!ST.knows) {   // the first tap turns up what's in the furrows
+    ST.knows = true; refresh();
+    await lines(['eli', ['Wait. Those white chips in the furrows are bone. And that whitewashed stone by the edge is a gravestone. Gidi ploughed right through a grave: this whole field is a beit haperas.', 'רגע. השבבים הלבנים בתלמים הם עצמות. והאבן המסוידת בקצה היא מצבה. גידי חרש ממש דרך קבר: כל השדה הזה הוא בית הפרס.']]);
+    await lesson('beitPras');
+  }
   await lesson('firmFooting');
 }
 async function talkFarmer() {
